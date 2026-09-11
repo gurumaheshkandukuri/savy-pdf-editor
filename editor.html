@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SAVY PDF Editor — Local & Secure Document Workspace</title>
+    <meta
+      name="description"
+      content="High-fidelity browser PDF workspace. View, review, and navigate PDF documents directly in local browser memory without server uploads."
+    />
+    <meta property="og:title" content="SAVY PDF Editor — Local & Secure Document Workspace" />
+    <meta
+      property="og:description"
+      content="Privacy-first browser PDF editor and viewer. Zero cloud uploads, zero telemetry."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="/editor.html" />
+    <meta name="theme-color" content="#2563EB" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="stylesheet" href="/css/editor.css" />
+
+    <!-- Core Client-Side Engines (Loaded locally into browser sandbox) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.9/pdf-lib.min.js"></script>
+  </head>
+  <body>
+    <div class="editor-shell" id="editorAppRoot">
+      <!-- Top Navigation Header -->
+      <header class="editor-header" id="editorHeader" role="banner">
+        <div class="header-left">
+          <a href="/index.html" class="editor-logo" id="headerLogoLink" aria-label="SAVY Return to Home">
+            <img src="/assets/images/savy-logo.svg" alt="SAVY Logo" width="100" height="28" />
+          </a>
+
+          <!-- Active File Information Area -->
+          <div class="file-info-chip" id="fileInfoArea" role="status" aria-label="Current Document Details">
+            <img src="/assets/icons/file-pdf.svg" class="file-info-icon" alt="" aria-hidden="true" />
+            <span class="file-info-name" id="fileName">No document opened</span>
+            <span class="file-info-meta" id="fileMeta">—</span>
+          </div>
+        </div>
+
+        <div class="header-center">
+          <div class="privacy-pill" id="privacyShieldBadge">
+            <img src="/assets/icons/shield.svg" alt="" aria-hidden="true" />
+            <span>Files Stay on Your Device</span>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Open New File CTA -->
+          <button type="button" class="btn-header btn-header-secondary" id="btnOpenFile" aria-label="Open New PDF File">
+            <img src="/assets/icons/upload.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <span>Open PDF</span>
+          </button>
+
+          <!-- Export Area (Clear Phase 2 Disabled State) -->
+          <button
+            type="button"
+            class="btn-header btn-header-primary is-disabled"
+            id="btnExport"
+            aria-label="Export PDF Document (Phase 2)"
+            title="PDF Export via pdf-lib is planned for Phase 2"
+          >
+            <img src="/assets/icons/download.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <span>Export</span>
+            <span class="badge-tag">Phase 2</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Editor Body -->
+      <div class="editor-body">
+        <!-- Left-Side Tool Panel -->
+        <nav class="editor-toolbar" id="editorToolbar" aria-label="PDF Editing and Viewing Tools">
+          <!-- Populated dynamically and accessibly by PDFTools module -->
+        </nav>
+
+        <!-- Main PDF Workspace / Canvas Area -->
+        <main class="editor-workspace" id="editorWorkspace" role="main">
+          <!-- Workspace Empty State (When no PDF is loaded) -->
+          <div class="workspace-empty-state" id="workspaceEmptyState" role="region" aria-label="Document Dropzone">
+            <div class="empty-icon-box">
+              <img src="/assets/icons/upload.svg" alt="" aria-hidden="true" />
+            </div>
+            <h2 class="empty-title">Ready to Open Document</h2>
+            <p class="empty-desc">
+              Drag and drop your PDF file directly into this workspace, or select a file from your device.
+              Every byte is processed strictly in your local browser sandbox.
+            </p>
+            <div class="empty-actions">
+              <button type="button" class="btn-header btn-header-primary" id="btnEmptyBrowse">
+                Browse PDF File
+              </button>
+            </div>
+            <div class="empty-privacy-badge">
+              <img src="/assets/icons/lock.svg" alt="" aria-hidden="true" />
+              <span>Zero cloud storage. Your data never leaves your computer.</span>
+            </div>
+          </div>
+
+          <!-- Active PDF Canvas Viewport Container -->
+          <div class="pdf-viewport-container" id="pdfViewportContainer">
+            <div class="pdf-page-wrapper" id="pdfPageWrapper">
+              <canvas id="pdfCanvas" class="pdf-page-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Loading Overlay -->
+          <div class="pdf-loading-overlay" id="pdfLoadingOverlay" role="status" aria-label="Rendering PDF">
+            <div class="spinner"></div>
+            <p style="font-size: 0.875rem; color: var(--color-text-secondary); font-weight: 500;">
+              Rendering page locally...
+            </p>
+          </div>
+
+          <!-- Floating Bottom Navigation & Zoom Controls -->
+          <aside class="floating-bottom-bar" id="floatingControlBar" aria-label="Page Navigation and Zoom Controls">
+            <!-- Page Navigation -->
+            <div class="control-group" role="group" aria-label="Page Navigation">
+              <button
+                type="button"
+                class="btn-icon-control"
+                id="btnPrevPage"
+                aria-label="Previous Page"
+                disabled
+              >
+                <img src="/assets/icons/chevron-left.svg" alt="" aria-hidden="true" />
+              </button>
+
+              <div class="page-indicator">
+                <input
+                  type="number"
+                  id="pageNumInput"
+                  class="page-num-input"
+                  value="0"
+                  min="1"
+                  max="1"
+                  aria-label="Current Page Number"
+                />
+                <span>/</span>
+                <span id="totalPages">0</span>
+              </div>
+
+              <button
+                type="button"
+                class="btn-icon-control"
+                id="btnNextPage"
+                aria-label="Next Page"
+                disabled
+              >
+                <img src="/assets/icons/chevron-right.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+
+            <div class="control-divider" aria-hidden="true"></div>
+
+            <!-- Zoom Controls -->
+            <div class="control-group" role="group" aria-label="Zoom Controls">
+              <button
+                type="button"
+                class="btn-icon-control"
+                id="btnZoomOut"
+                aria-label="Zoom Out"
+              >
+                <img src="/assets/icons/zoom-out.svg" alt="" aria-hidden="true" />
+              </button>
+
+              <select id="zoomSelect" class="zoom-select" aria-label="Zoom Level Preset">
+                <option value="0.50">50%</option>
+                <option value="0.75">75%</option>
+                <option value="1.00" selected>100%</option>
+                <option value="1.25">125%</option>
+                <option value="1.50">150%</option>
+                <option value="2.00">200%</option>
+                <option value="fit-width">Fit Width</option>
+                <option value="fit-page">Fit Page</option>
+              </select>
+
+              <button
+                type="button"
+                class="btn-icon-control"
+                id="btnZoomIn"
+                aria-label="Zoom In"
+              >
+                <img src="/assets/icons/zoom-in.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
+          </aside>
+        </main>
+
+        <!-- Right-Side Properties & Inspector Panel -->
+        <aside class="editor-sidebar" id="editorSidebar" aria-label="Document and Tool Properties">
+          <!-- Document Metadata Section -->
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">Document Properties</h3>
+            <div class="meta-table">
+              <div class="meta-row">
+                <span class="meta-key">File Name</span>
+                <span class="meta-val" id="metaPropName">None</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key">File Size</span>
+                <span class="meta-val" id="metaPropSize">—</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key">Total Pages</span>
+                <span class="meta-val" id="metaPropPages">—</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-key">Format</span>
+                <span class="meta-val" id="metaPropVersion">PDF 1.7</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Tool / Roadmap Properties Section -->
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">Active Tool</h3>
+            <div class="phase2-notice-card">
+              <strong id="toolPropTitle">Selection Mode</strong>
+              <p id="toolPropDesc">
+                Click and drag to navigate or select text. Advanced drawing, signatures, and annotation properties will become configurable here in Phase 2.
+              </p>
+            </div>
+          </div>
+
+          <!-- Local Privacy Assurance Checklist -->
+          <div class="sidebar-section">
+            <h3 class="sidebar-title">Security Status</h3>
+            <div class="privacy-status-box">
+              <img src="/assets/icons/shield.svg" alt="" aria-hidden="true" />
+              <div>
+                <p class="privacy-status-title">Local Browser Sandbox</p>
+                <p class="privacy-status-text">
+                  All rendering is performed by client-side WebAssembly and Canvas. No external network requests are permitted.
+                </p>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Hidden File Picker Input -->
+      <input
+        type="file"
+        id="fileInputHidden"
+        style="display: none"
+        accept="application/pdf,.pdf"
+        aria-label="Hidden PDF File Input"
+      />
+
+      <!-- Floating Toast Notifications -->
+      <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+    </div>
+
+    <!-- Application Controller -->
+    <script type="module" src="/js/editor.js"></script>
+  </body>
+</html>

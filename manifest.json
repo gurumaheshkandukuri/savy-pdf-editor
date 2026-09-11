@@ -1,0 +1,16 @@
+{
+  "name": "SAVY — Privacy-First PDF Workspace",
+  "short_name": "SAVY",
+  "description": "Free, privacy-first, browser-based, all-in-one PDF workspace. Process PDF files locally on your device without cloud storage.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#F8FAFC",
+  "theme_color": "#2563EB",
+  "icons": [
+    {
+      "src": "/assets/images/savy-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
