@@ -3,41 +3,126 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SAVY — Free, Privacy-First Browser PDF Workspace</title>
+    <title>SAVY — Free Online PDF Editor & Privacy-First Browser Workspace</title>
     <meta
       name="description"
-      content="SAVY is a free, privacy-first, browser-based, all-in-one PDF workspace. Process, view, and organize PDF files locally on your device with zero cloud storage."
+      content="Free, privacy-first browser PDF workspace. Edit, merge, split, compress, sign, and convert PDF documents locally in your browser with zero cloud storage and no server uploads."
     />
-    <meta property="og:title" content="SAVY — Free, Privacy-First Browser PDF Workspace" />
+    <link rel="canonical" href="https://savypdf.com/" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="SAVY — Free Online PDF Editor & Privacy-First Browser Workspace" />
     <meta
       property="og:description"
-      content="All-in-one browser PDF workspace. Process PDF files 100% locally on your device with no uploads or cloud storage."
+      content="Free, privacy-first browser PDF editor. Edit, merge, split, compress, and sign PDF files locally with zero uploads and no accounts."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="/index.html" />
+    <meta property="og:url" content="https://savypdf.com/" />
+    <meta property="og:image" content="https://savypdf.com/assets/images/og-preview.png" />
+
+    <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SAVY — Free Online PDF Editor & Privacy-First Browser Workspace" />
+    <meta
+      name="twitter:description"
+      content="Edit, merge, split, compress, and sign PDF documents in your browser. 100% private with no server uploads."
+    />
+    <meta name="twitter:image" content="https://savypdf.com/assets/images/og-preview.png" />
+
     <meta name="theme-color" content="#2563EB" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="icon" type="image/svg+xml" href="./assets/images/savy-logo.svg" />
+    <link rel="apple-touch-icon" href="./assets/images/apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "name": "SAVY PDF Workspace",
+          "url": "https://savypdf.com/",
+          "operatingSystem": "All (Browser-based)",
+          "applicationCategory": "BusinessApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "description": "Free, privacy-first browser-based PDF workspace for editing, merging, splitting, compressing, annotating, and converting PDF documents without server uploads."
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is SAVY and how does it protect my privacy?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "SAVY is an all-in-one browser PDF workspace. Unlike traditional online PDF tools that transmit your files to remote servers, SAVY executes all parsing, editing, rendering, and export locally within your browser sandbox. Your PDF is processed locally in your browser and is never uploaded to SAVY servers."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is SAVY really free with no hidden limits?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. SAVY is 100% free with no monthly subscription tiers, no page count restrictions, and no watermarks stamped onto your exported documents."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do I need to install software or create an account?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No account, registration, or software installation is required. You can use SAVY immediately in any modern desktop or mobile browser."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do AI features work without uploading my PDF?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "SAVY AI document summarization, key points extraction, and Q&A run locally in your browser using client-side natural language heuristics and Chrome Built-in Prompt APIs where supported. Your document text is never sent to external AI servers."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I use SAVY on mobile devices?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. SAVY provides a responsive interface with touch drawing, pinch-to-zoom, mobile tool drawers, and responsive page navigation for iOS and Android devices."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <!-- Top Site Navigation -->
     <header class="site-header" id="siteHeader">
       <div class="container header-inner">
-        <a href="/index.html" class="logo-link" id="navLogoLink" aria-label="SAVY Home">
-          <img src="/assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
+        <a href="./index.html" class="logo-link" id="navLogoLink" aria-label="SAVY Home">
+          <img src="./assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
         </a>
 
         <nav aria-label="Primary Navigation">
           <ul class="nav-menu">
+            <li><a href="#tools" class="nav-link">PDF Tools</a></li>
             <li><a href="#features" class="nav-link">Features</a></li>
-            <li><a href="#privacy" class="nav-link">Privacy Architecture</a></li>
-            <li><a href="#comparison" class="nav-link">Security Comparison</a></li>
+            <li><a href="#privacy" class="nav-link">Privacy</a></li>
+            <li><a href="#comparison" class="nav-link">Comparison</a></li>
+            <li><a href="#faq" class="nav-link">FAQ</a></li>
           </ul>
         </nav>
 
         <div class="header-actions">
-          <a href="/editor.html" class="btn btn-primary" id="headerOpenEditorBtn">
+          <a href="./editor.html" class="btn btn-primary" id="headerOpenEditorBtn">
             Open PDF Editor
           </a>
         </div>
@@ -49,7 +134,7 @@
       <section class="hero-section" id="heroSection">
         <div class="container">
           <div class="hero-badge" id="heroPrivacyBadge">
-            <img src="/assets/icons/shield.svg" alt="" aria-hidden="true" />
+            <img src="./assets/icons/shield.svg" alt="" aria-hidden="true" />
             <span>100% Client-Side • Zero Cloud Storage</span>
           </div>
 
@@ -59,11 +144,11 @@
 
           <p class="hero-subtitle" id="heroSubtitleText">
             View, annotate, sign, and organize PDF documents with complete peace of mind.
-            Your confidential files are processed entirely in local memory—never uploaded to external servers.
+            Your PDF is processed locally in your browser and is never uploaded to SAVY servers.
           </p>
 
           <div class="hero-cta-group">
-            <a href="/editor.html" class="btn btn-primary btn-lg" id="heroPrimaryCta">
+            <a href="./editor.html" class="btn btn-primary btn-lg" id="heroPrimaryCta">
               Launch PDF Editor
             </a>
             <a href="#privacy" class="btn btn-outline btn-lg" id="heroLearnMoreBtn">
@@ -81,7 +166,7 @@
               tabindex="0"
             >
               <div class="upload-icon-container">
-                <img src="/assets/icons/upload.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/upload.svg" alt="" aria-hidden="true" />
               </div>
 
               <h2 class="upload-title" id="uploadTitleHeading">Drop your PDF document here</h2>
@@ -96,8 +181,8 @@
               </div>
 
               <div class="upload-privacy-note" id="uploadPrivacyLabel">
-                <img src="/assets/icons/lock.svg" alt="" aria-hidden="true" />
-                <span>Your files stay strictly on your device. Zero bytes leave your browser.</span>
+                <img src="./assets/icons/lock.svg" alt="" aria-hidden="true" />
+                <span>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</span>
               </div>
 
               <input
@@ -118,7 +203,7 @@
           <div class="privacy-grid">
             <div class="privacy-card" id="privacyItemZeroUploads">
               <div class="privacy-card-icon">
-                <img src="/assets/icons/shield.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/shield.svg" alt="" aria-hidden="true" />
               </div>
               <div>
                 <h3 class="privacy-card-title">No Server Uploads</h3>
@@ -131,7 +216,7 @@
 
             <div class="privacy-card" id="privacyItemZeroCloud">
               <div class="privacy-card-icon">
-                <img src="/assets/icons/lock.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/lock.svg" alt="" aria-hidden="true" />
               </div>
               <div>
                 <h3 class="privacy-card-title">No Cloud Storage</h3>
@@ -144,7 +229,7 @@
 
             <div class="privacy-card" id="privacyItemFreeForever">
               <div class="privacy-card-icon">
-                <img src="/assets/icons/check.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/check.svg" alt="" aria-hidden="true" />
               </div>
               <div>
                 <h3 class="privacy-card-title">Completely Free</h3>
@@ -154,6 +239,111 @@
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PDF Tools Directory -->
+      <section class="tools-section" id="tools">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">Explore PDF Tools</span>
+            <h2 class="section-title">Free, Private Client-Side PDF Tools</h2>
+            <p class="section-subtitle">
+              Every tool executes 100% locally in your browser. No files are uploaded to any server.
+            </p>
+          </div>
+
+          <div class="tools-grid">
+            <a href="./tools/pdf-editor.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="./assets/icons/pen.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">PDF Editor <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Add text, annotations, freehand drawings, signatures, and stamps directly in your browser.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./tools/merge-pdf.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="./assets/icons/layers.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">Merge PDF <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Combine multiple separate PDF files into a single unified document in seconds.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./tools/split-pdf.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="./assets/icons/crop.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">Split PDF <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Extract specific pages or break a PDF into individual files with custom page ranges.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./tools/compress-pdf.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="./assets/icons/download.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">Compress PDF <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Reduce document file size to share easily via email without sacrificing readability.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./tools/pdf-to-image.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="./assets/icons/image.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">PDF to Image <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Convert PDF pages into high-resolution PNG or JPG images directly on your device.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./tools/image-to-pdf.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="./assets/icons/file-pdf.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">Image to PDF <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Convert JPG, PNG, and WebP images into standard PDF documents in your browser.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./tools/pdf-to-text.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="./assets/icons/type.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">PDF to Text <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Extract readable text and document content instantly with one-click copy and export.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./tools/redact-pdf.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="./assets/icons/eye-off.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">Redact PDF <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Permanently black out sensitive data and confidential numbers with sanitized redaction.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./tools/pdf-forms.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="./assets/icons/check.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">Fill PDF Forms <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Fill out interactive PDF forms, checkboxes, and text inputs securely with zero cloud storage.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./tools/ocr-pdf.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="./assets/icons/search.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">OCR PDF Scanner <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Recognize text from paper scans and images using local WebAssembly Tesseract OCR.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
           </div>
         </div>
       </section>
@@ -172,68 +362,68 @@
           <div class="features-grid">
             <div class="feature-card" id="featureCardViewer">
               <div class="feature-icon-wrapper">
-                <img src="/assets/icons/file-pdf.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/file-pdf.svg" alt="" aria-hidden="true" />
               </div>
               <h3 class="feature-title">High-Fidelity PDF Viewer</h3>
               <p class="feature-description">
                 Crisp high-DPI canvas rendering powered by PDF.js. Includes smooth zooming, fit-to-width, fit-to-page, and intuitive page navigation.
               </p>
-              <span class="feature-phase-badge badge-ready">Phase 1: Ready</span>
+              <span class="feature-phase-badge badge-ready">Production Ready</span>
             </div>
 
             <div class="feature-card" id="featureCardAnnotations">
               <div class="feature-icon-wrapper">
-                <img src="/assets/icons/type.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/type.svg" alt="" aria-hidden="true" />
               </div>
               <h3 class="feature-title">Text & Note Annotations</h3>
               <p class="feature-description">
                 Place vector text elements, highlights, and custom margin notes onto any page without disturbing existing text geometry.
               </p>
-              <span class="feature-phase-badge badge-phase2">Phase 2: In Roadmap</span>
+              <span class="feature-phase-badge badge-ready">Production Ready</span>
             </div>
 
             <div class="feature-card" id="featureCardDraw">
               <div class="feature-icon-wrapper">
-                <img src="/assets/icons/pen.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/pen.svg" alt="" aria-hidden="true" />
               </div>
               <h3 class="feature-title">Freehand Markup & Pen</h3>
               <p class="feature-description">
                 Sketch diagrams, strike through obsolete clauses, and underline important clauses using customizable vector strokes.
               </p>
-              <span class="feature-phase-badge badge-phase2">Phase 2: In Roadmap</span>
+              <span class="feature-phase-badge badge-ready">Production Ready</span>
             </div>
 
             <div class="feature-card" id="featureCardSignatures">
               <div class="feature-icon-wrapper">
-                <img src="/assets/icons/signature.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/signature.svg" alt="" aria-hidden="true" />
               </div>
               <h3 class="feature-title">Digital Signatures & Stamps</h3>
               <p class="feature-description">
                 Draw or insert digital signature stamps directly onto contracts and agreements securely without third-party services.
               </p>
-              <span class="feature-phase-badge badge-phase2">Phase 2: In Roadmap</span>
+              <span class="feature-phase-badge badge-ready">Production Ready</span>
             </div>
 
             <div class="feature-card" id="featureCardOrganize">
               <div class="feature-icon-wrapper">
-                <img src="/assets/icons/layers.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/layers.svg" alt="" aria-hidden="true" />
               </div>
               <h3 class="feature-title">Page Reordering & Merging</h3>
               <p class="feature-description">
                 Rearrange pages, rotate orientations, extract select ranges, or merge separate documents directly in client memory.
               </p>
-              <span class="feature-phase-badge badge-phase2">Phase 2: In Roadmap</span>
+              <span class="feature-phase-badge badge-ready">Production Ready</span>
             </div>
 
             <div class="feature-card" id="featureCardExport">
               <div class="feature-icon-wrapper">
-                <img src="/assets/icons/download.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/download.svg" alt="" aria-hidden="true" />
               </div>
               <h3 class="feature-title">Client-Side PDF Compilation</h3>
               <p class="feature-description">
                 Zero-cloud assembly leveraging pdf-lib. Compiles modifications into clean, standard-compliant PDF binaries in fractions of a second.
               </p>
-              <span class="feature-phase-badge badge-phase2">Phase 2: In Roadmap</span>
+              <span class="feature-phase-badge badge-ready">Production Ready</span>
             </div>
           </div>
         </div>
@@ -296,6 +486,82 @@
         </div>
       </section>
 
+      <!-- Frequently Asked Questions -->
+      <section class="faq-section" id="faq">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">FAQ</span>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">
+              Common questions about SAVY's client-side architecture, security, and capabilities.
+            </p>
+          </div>
+
+          <div class="faq-list">
+            <div class="faq-item open">
+              <button type="button" class="faq-item-trigger" aria-expanded="true">
+                <span>What is SAVY and how does it protect my privacy?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>SAVY is a free, all-in-one browser PDF workspace. Unlike traditional online PDF services that require uploading your sensitive tax documents, contracts, or personal records to remote cloud servers, SAVY executes all parsing, editing, rendering, and export locally within your browser sandbox.</p>
+                <p><strong>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</strong></p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-item-trigger" aria-expanded="false">
+                <span>Is SAVY really free with no hidden limits?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>Yes. SAVY is 100% free with no monthly subscription tiers, no page count restrictions, and no watermarks stamped onto your exported documents. You can merge, split, edit, compress, and convert documents freely.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-item-trigger" aria-expanded="false">
+                <span>Do I need to install software or create an account?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>No account, registration, email address, or software installation is required. You can use SAVY immediately in any modern desktop or mobile web browser.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-item-trigger" aria-expanded="false">
+                <span>How do AI features work without uploading my PDF?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>SAVY AI document summarization, key points extraction, and Q&A run locally in your browser using client-side natural language processing heuristics and Chrome's Built-in Prompt APIs where available. Your document text is never sent to external AI servers.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-item-trigger" aria-expanded="false">
+                <span>Can I use SAVY on mobile devices and tablets?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>Yes. SAVY features a responsive layout with touch-friendly controls, touch drawing, pinch-to-zoom, mobile tool drawers, and responsive thumbnail navigation for iOS and Android smartphones and tablets.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-item-trigger" aria-expanded="false">
+                <span>How does SAVY compare to traditional cloud PDF editors?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>Traditional PDF editors transmit complete PDF payloads across the internet to their servers where files are stored in temporary buckets, risking data exposure. SAVY transmits 0 bytes of your PDF over the internet—everything happens inside your computer's RAM using open-source engines like Mozilla's PDF.js and pdf-lib.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Final Call to Action -->
       <section class="cta-section" id="ctaSection">
         <div class="container">
@@ -303,7 +569,7 @@
           <p class="cta-desc">
             No registration, no installation, and no upload queues. Launch the workspace right in your browser now.
           </p>
-          <a href="/editor.html" class="btn btn-primary btn-lg" id="bottomCtaBtn">
+          <a href="./editor.html" class="btn btn-primary btn-lg" id="bottomCtaBtn">
             Open SAVY PDF Workspace
           </a>
         </div>
@@ -315,8 +581,8 @@
       <div class="container">
         <div class="footer-top">
           <div class="footer-brand">
-            <a href="/index.html" class="logo-link" aria-label="SAVY Home">
-              <img src="/assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
+            <a href="./index.html" class="logo-link" aria-label="SAVY Home">
+              <img src="./assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
             </a>
             <p class="footer-desc">
               Free, privacy-first, browser-based PDF workspace. Engineered with modern client-side standards to keep your personal data strictly on your device.
@@ -325,17 +591,36 @@
 
           <div class="footer-links">
             <div>
-              <h4 class="footer-col-title">Workspace</h4>
+              <h4 class="footer-col-title">PDF Tools</h4>
               <ul class="footer-nav">
-                <li><a href="/editor.html">Open Editor</a></li>
-                <li><a href="#features">Feature Catalog</a></li>
-                <li><a href="#comparison">Security Matrix</a></li>
+                <li><a href="./tools/pdf-editor.html">PDF Editor</a></li>
+                <li><a href="./tools/merge-pdf.html">Merge PDF</a></li>
+                <li><a href="./tools/split-pdf.html">Split PDF</a></li>
+                <li><a href="./tools/compress-pdf.html">Compress PDF</a></li>
+                <li><a href="./tools/pdf-to-image.html">PDF to Image</a></li>
+                <li><a href="./tools/image-to-pdf.html">Image to PDF</a></li>
+                <li><a href="./tools/pdf-to-text.html">PDF to Text</a></li>
+                <li><a href="./tools/redact-pdf.html">Redact PDF</a></li>
+                <li><a href="./tools/pdf-forms.html">Fill PDF Forms</a></li>
+                <li><a href="./tools/ocr-pdf.html">OCR PDF Scanner</a></li>
               </ul>
             </div>
 
             <div>
-              <h4 class="footer-col-title">Architecture</h4>
+              <h4 class="footer-col-title">Workspace</h4>
               <ul class="footer-nav">
+                <li><a href="./editor.html">Open Editor</a></li>
+                <li><a href="#tools">Tool Catalog</a></li>
+                <li><a href="#features">Feature Catalog</a></li>
+                <li><a href="#comparison">Security Matrix</a></li>
+                <li><a href="#faq">FAQ</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="footer-col-title">Privacy & Open Tech</h4>
+              <ul class="footer-nav">
+                <li><a href="./privacy.html">Privacy Policy</a></li>
                 <li><a href="#privacy">Privacy Engine</a></li>
                 <li><a href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noopener noreferrer">PDF.js Engine</a></li>
                 <li><a href="https://pdf-lib.js.org/" target="_blank" rel="noopener noreferrer">pdf-lib Engine</a></li>
@@ -346,11 +631,11 @@
 
         <div class="footer-bottom">
           <p>© 2026 SAVY Workspace. All file processing is performed locally in your browser.</p>
-          <p>Your files stay on your device.</p>
+          <p>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</p>
         </div>
       </div>
     </footer>
 
-    <script type="module" src="/js/app.js"></script>
+    <script type="module" src="./js/app.js"></script>
   </body>
 </html>

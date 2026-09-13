@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF to Image Converter Free — Convert PDF to PNG / JPG | SAVY</title>
+    <meta
+      name="description"
+      content="Convert PDF pages to high-resolution PNG or JPG images directly on your device. Free, private, and no file uploads required. 100% browser-based."
+    />
+    <link rel="canonical" href="https://savypdf.com/tools/pdf-to-image.html" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="PDF to Image Converter Free — Convert PDF to PNG / JPG | SAVY" />
+    <meta
+      property="og:description"
+      content="Convert PDF pages to crisp PNG or JPG images directly in your browser. 100% private and free."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://savypdf.com/tools/pdf-to-image.html" />
+    <meta property="og:image" content="https://savypdf.com/assets/images/og-preview.png" />
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PDF to Image Converter Free — Convert PDF to PNG / JPG | SAVY" />
+    <meta
+      name="twitter:description"
+      content="Convert PDF pages to high-resolution PNG or JPG images directly in your browser. 100% private."
+    />
+    <meta name="twitter:image" content="https://savypdf.com/assets/images/og-preview.png" />
+
+    <meta name="theme-color" content="#2563EB" />
+    <link rel="icon" type="image/svg+xml" href="../assets/images/savy-logo.svg" />
+    <link rel="apple-touch-icon" href="../assets/images/apple-touch-icon.png" />
+    <link rel="manifest" href="../manifest.json" />
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "name": "SAVY PDF to Image Converter",
+          "operatingSystem": "All (Browser-based)",
+          "applicationCategory": "BusinessApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "description": "Free client-side converter that turns PDF pages into crisp high-resolution PNG or JPG images without server transmission."
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://savypdf.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Tools",
+              "item": "https://savypdf.com/#tools"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "PDF to Image",
+              "item": "https://savypdf.com/tools/pdf-to-image.html"
+            }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What image formats are supported for export?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "SAVY exports pages to crisp lossless PNG or compressed JPG formats based on your preference."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I convert all pages or just select ones?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You can choose to render and export the current page, or batch export all pages."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are my files uploaded when converting to image?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. Your PDF is processed locally in your browser and is never uploaded to SAVY servers. Rendering occurs via HTML5 Canvas on your GPU/CPU."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <!-- Site Navigation -->
+    <header class="site-header" id="siteHeader">
+      <div class="container header-inner">
+        <a href="../index.html" class="logo-link" aria-label="SAVY Home">
+          <img src="../assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
+        </a>
+
+        <nav aria-label="Primary Navigation">
+          <ul class="nav-menu">
+            <li><a href="../index.html" class="nav-link">Home</a></li>
+            <li><a href="../index.html#tools" class="nav-link">PDF Tools</a></li>
+            <li><a href="../index.html#features" class="nav-link">Features</a></li>
+            <li><a href="../privacy.html" class="nav-link">Privacy</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-actions">
+          <a href="../editor.html" class="btn btn-primary" id="headerOpenEditorBtn">
+            Open PDF Editor
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <div class="container">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+          <li class="breadcrumb-separator" aria-hidden="true">/</li>
+          <li class="breadcrumb-item"><a href="../index.html#tools">Tools</a></li>
+          <li class="breadcrumb-separator" aria-hidden="true">/</li>
+          <li class="breadcrumb-item" aria-current="page">PDF to Image</li>
+        </ol>
+      </div>
+    </nav>
+
+    <main id="mainContent">
+      <!-- Tool Hero -->
+      <section class="hero-section">
+        <div class="container">
+          <div class="hero-badge">
+            <img src="../assets/icons/shield.svg" alt="" aria-hidden="true" />
+            <span>100% Client-Side • Zero Cloud Storage</span>
+          </div>
+
+          <h1 class="hero-title">
+            Convert PDF to Images (PNG & JPG) Locally
+          </h1>
+
+          <p class="hero-subtitle">
+            Turn PDF pages into high-resolution PNG or JPG pictures right on your device.
+            Your PDF is processed locally in your browser and is never uploaded to SAVY servers.
+          </p>
+
+          <!-- Interactive Upload Zone -->
+          <div class="upload-zone-wrapper">
+            <div
+              class="upload-zone"
+              id="toolUploadZone"
+              data-tool-action="pdf-to-image"
+              role="region"
+              aria-label="Upload PDF to Convert to Images"
+              tabindex="0"
+            >
+              <div class="upload-icon-container">
+                <img src="../assets/icons/image.svg" alt="" aria-hidden="true" />
+              </div>
+
+              <h2 class="upload-title">Drop your PDF file here to convert to images</h2>
+              <p class="upload-subtitle">
+                or click anywhere to select a document from your device
+              </p>
+
+              <div class="upload-actions">
+                <button type="button" class="btn btn-primary" id="btnToolBrowse">
+                  Choose PDF to Convert
+                </button>
+              </div>
+
+              <div class="upload-privacy-note">
+                <img src="../assets/icons/lock.svg" alt="" aria-hidden="true" />
+                <span>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</span>
+              </div>
+
+              <input
+                type="file"
+                id="toolFileInput"
+                class="file-input-hidden"
+                accept="application/pdf,.pdf"
+                aria-label="Upload PDF Document to Convert"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How-to Guide -->
+      <section class="howto-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">Quick Conversion</span>
+            <h2 class="section-title">How to Convert PDF Pages to Images</h2>
+            <p class="section-subtitle">
+              Fast, high-fidelity rendering straight to image files.
+            </p>
+          </div>
+
+          <div class="howto-steps">
+            <div class="step-card">
+              <div class="step-number">1</div>
+              <h3 class="step-title">Select Document</h3>
+              <p class="step-desc">
+                Drop your PDF into the upload area. The workspace renders the pages immediately.
+              </p>
+            </div>
+
+            <div class="step-card">
+              <div class="step-number">2</div>
+              <h3 class="step-title">Choose Options</h3>
+              <p class="step-desc">
+                Select PNG for maximum clarity or JPG for smaller image sizes. Choose current page or all pages.
+              </p>
+            </div>
+
+            <div class="step-card">
+              <div class="step-number">3</div>
+              <h3 class="step-title">Save Images</h3>
+              <p class="step-desc">
+                Download your high-resolution image files directly to your device storage.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features & Benefits -->
+      <section class="benefits-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">Key Advantages</span>
+            <h2 class="section-title">Why Convert PDF to Image with SAVY</h2>
+            <p class="section-subtitle">
+              High resolution output with complete security assurance.
+            </p>
+          </div>
+
+          <div class="benefits-grid">
+            <div class="benefit-card">
+              <div class="benefit-icon">
+                <img src="../assets/icons/shield.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="benefit-title">Zero Server Uploads</h3>
+              <p class="benefit-desc">
+                Images are rendered via HTML5 Canvas inside your browser without any network transmission.
+              </p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="benefit-icon">
+                <img src="../assets/icons/monitor.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="benefit-title">Crisp High-DPI Output</h3>
+              <p class="benefit-desc">
+                Render at retina 2x and 3x device pixel ratios for crystal clear presentations and graphics.
+              </p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="benefit-icon">
+                <img src="../assets/icons/zap.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="benefit-title">Instant Rendering</h3>
+              <p class="benefit-desc">
+                Powered by PDF.js hardware-accelerated canvas rendering for instantaneous conversion.
+              </p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="benefit-icon">
+                <img src="../assets/icons/check.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="benefit-title">Completely Free</h3>
+              <p class="benefit-desc">
+                No credit cards, page limitations, or watermarks stamped onto your images.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Frequently Asked Questions -->
+      <section class="faq-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">FAQ</span>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">
+              Common questions about converting PDFs to image formats.
+            </p>
+          </div>
+
+          <div class="faq-list">
+            <div class="faq-item open">
+              <button type="button" class="faq-item-trigger" aria-expanded="true">
+                <span>Are my files uploaded when converting to image?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>No. Your PDF is processed locally in your browser and is never uploaded to SAVY servers. Rendering occurs via HTML5 Canvas on your GPU/CPU.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-item-trigger" aria-expanded="false">
+                <span>Should I choose PNG or JPG?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>Choose PNG if your PDF contains fine text, diagrams, or line art where you want lossless clarity. Choose JPG if you are converting photograph-heavy documents and want smaller file sizes.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-item-trigger" aria-expanded="false">
+                <span>What resolution are the exported images?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>Images are rendered at native document dimensions multiplied by your display's device pixel ratio, providing clean high-resolution assets.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Related Tools -->
+      <section class="tools-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">Discover More Tools</span>
+            <h2 class="section-title">Explore Other Free PDF Tools</h2>
+            <p class="section-subtitle">
+              Expand your PDF toolkit with these privacy-first web utilities.
+            </p>
+          </div>
+
+          <div class="tools-grid">
+            <a href="./image-to-pdf.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="../assets/icons/file-pdf.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">Image to PDF <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Convert JPG, PNG, and WebP images into clean PDF documents.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./pdf-editor.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="../assets/icons/pen.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">PDF Editor <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Add text, annotations, signatures, and stamps directly in your browser.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./compress-pdf.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="../assets/icons/download.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">Compress PDF <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Reduce document file size to share easily via email.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./pdf-to-text.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="../assets/icons/type.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">PDF to Text <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Extract readable text and document content in seconds.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <a href="../index.html" class="logo-link" aria-label="SAVY Home">
+              <img src="../assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
+            </a>
+            <p class="footer-desc">
+              Free, privacy-first, browser-based PDF workspace. Process PDF documents securely on your device with no uploads or cloud storage.
+            </p>
+          </div>
+
+          <div class="footer-links">
+            <div>
+              <h4 class="footer-col-title">PDF Tools</h4>
+              <ul class="footer-nav">
+                <li><a href="./pdf-editor.html">PDF Editor</a></li>
+                <li><a href="./merge-pdf.html">Merge PDF</a></li>
+                <li><a href="./split-pdf.html">Split PDF</a></li>
+                <li><a href="./compress-pdf.html">Compress PDF</a></li>
+                <li><a href="./redact-pdf.html">Redact PDF</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="footer-col-title">Privacy & Info</h4>
+              <ul class="footer-nav">
+                <li><a href="../privacy.html">Privacy Policy</a></li>
+                <li><a href="../editor.html">Launch Editor</a></li>
+                <li><a href="../index.html#features">Features</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>© 2026 SAVY Workspace. All file processing is performed locally in your browser.</p>
+          <p>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="../js/tool-page.js"></script>
+  </body>
+</html>

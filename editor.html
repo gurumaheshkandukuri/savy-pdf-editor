@@ -8,63 +8,155 @@
       name="description"
       content="High-fidelity browser PDF workspace. View, review, and navigate PDF documents directly in local browser memory without server uploads."
     />
+    <link rel="canonical" href="https://savypdf.com/editor.html" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph Metadata -->
     <meta property="og:title" content="SAVY PDF Editor — Local & Secure Document Workspace" />
     <meta
       property="og:description"
       content="Privacy-first browser PDF editor and viewer. Zero cloud uploads, zero telemetry."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="/editor.html" />
+    <meta property="og:url" content="https://savypdf.com/editor.html" />
+    <meta property="og:image" content="https://savypdf.com/assets/images/og-preview.png" />
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SAVY PDF Editor — Local & Secure Document Workspace" />
+    <meta
+      name="twitter:description"
+      content="Privacy-first browser PDF editor and viewer. Zero cloud uploads, zero telemetry."
+    />
+    <meta name="twitter:image" content="https://savypdf.com/assets/images/og-preview.png" />
+
     <meta name="theme-color" content="#2563EB" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="stylesheet" href="/css/editor.css" />
+    <link rel="icon" type="image/svg+xml" href="./assets/images/savy-logo.svg" />
+    <link rel="apple-touch-icon" href="./assets/images/apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="stylesheet" href="./css/editor.css" />
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "SAVY PDF Editor",
+      "url": "https://savypdf.com/editor.html",
+      "operatingSystem": "All (Browser-based)",
+      "applicationCategory": "BusinessApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "High-fidelity browser PDF workspace. View, review, and navigate PDF documents directly in local browser memory without server uploads."
+    }
+    </script>
 
     <!-- Core Client-Side Engines (Loaded locally into browser sandbox) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.9/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
   </head>
   <body>
     <div class="editor-shell" id="editorAppRoot">
       <!-- Top Navigation Header -->
       <header class="editor-header" id="editorHeader" role="banner">
         <div class="header-left">
-          <a href="/index.html" class="editor-logo" id="headerLogoLink" aria-label="SAVY Return to Home">
-            <img src="/assets/images/savy-logo.svg" alt="SAVY Logo" width="100" height="28" />
+          <a href="./index.html" class="editor-logo" id="headerLogoLink" aria-label="SAVY Return to Home">
+            <img src="./assets/images/savy-logo.svg" alt="SAVY Logo" width="100" height="28" />
           </a>
 
           <!-- Active File Information Area -->
           <div class="file-info-chip" id="fileInfoArea" role="status" aria-label="Current Document Details">
-            <img src="/assets/icons/file-pdf.svg" class="file-info-icon" alt="" aria-hidden="true" />
+            <img src="./assets/icons/file-pdf.svg" class="file-info-icon" alt="" aria-hidden="true" />
             <span class="file-info-name" id="fileName">No document opened</span>
             <span class="file-info-meta" id="fileMeta">—</span>
           </div>
         </div>
 
         <div class="header-center">
-          <div class="privacy-pill" id="privacyShieldBadge">
-            <img src="/assets/icons/shield.svg" alt="" aria-hidden="true" />
-            <span>Files Stay on Your Device</span>
-          </div>
+          <button type="button" class="privacy-pill privacy-pill-interactive" id="privacyShieldBadge" title="Click to view SAVY Privacy & Security Center" aria-label="Privacy status: Processed locally. Click to open Privacy Center.">
+            <img src="./assets/icons/shield.svg" alt="" aria-hidden="true" />
+            <span>Processed locally</span>
+          </button>
         </div>
 
         <div class="header-right">
+          <!-- Undo / Redo Actions -->
+          <button type="button" class="btn-header-icon" id="btnUndo" aria-label="Undo" title="Undo (Ctrl+Z)" disabled>
+            <img src="./assets/icons/undo.svg" width="16" height="16" alt="" aria-hidden="true" />
+          </button>
+          <button type="button" class="btn-header-icon" id="btnRedo" aria-label="Redo" title="Redo (Ctrl+Y)" disabled>
+            <img src="./assets/icons/redo.svg" width="16" height="16" alt="" aria-hidden="true" />
+          </button>
+
+          <div class="header-divider" aria-hidden="true"></div>
+
+          <!-- Search Text (Phase 6) -->
+          <button type="button" class="btn-header btn-header-secondary" id="btnHeaderSearch" aria-label="Search Document" title="Search Text (Ctrl+F)">
+            <img src="./assets/icons/search.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <span>Search</span>
+          </button>
+
+          <!-- Presentation Mode (Phase 6) -->
+          <button type="button" class="btn-header btn-header-secondary" id="btnHeaderPresentation" aria-label="Presentation Mode" title="Presentation Mode (F5)">
+            <img src="./assets/icons/presentation.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <span>Present</span>
+          </button>
+
+          <!-- Document Inspector (Phase 6) -->
+          <button type="button" class="btn-header btn-header-secondary" id="btnHeaderInspector" aria-label="Document Inspector" title="Document Inspector">
+            <img src="./assets/icons/info.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <span>Inspect</span>
+          </button>
+
+          <!-- Toggle Page Organizer Panel -->
+          <button type="button" class="btn-header btn-header-secondary" id="btnToggleOrganizer" aria-label="Toggle Page Organizer" title="Toggle Page Organizer">
+            <img src="./assets/icons/layers.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <span>Pages</span>
+          </button>
+
+          <!-- Open PDF Toolbox (Phase 4) -->
+          <button type="button" class="btn-header btn-header-secondary" id="btnOpenToolbox" aria-label="Open PDF Toolbox" title="Open PDF Toolbox">
+            <img src="./assets/icons/tools.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <span>PDF Tools</span>
+          </button>
+
+          <!-- Open AI PDF Intelligence (Phase 8) -->
+          <button type="button" class="btn-header btn-header-secondary" id="btnOpenAIHub" aria-label="Open AI PDF Intelligence" title="AI PDF Intelligence">
+            <img src="./assets/icons/sparkles.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <span>AI Assistant</span>
+          </button>
+
+          <!-- Keyboard Shortcuts Help (Phase 7) -->
+          <button type="button" class="btn-header btn-header-secondary" id="btnHeaderShortcuts" aria-label="Keyboard Shortcuts" title="Keyboard Shortcuts (?)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"></path></svg>
+            <span>Shortcuts</span>
+          </button>
+
           <!-- Open New File CTA -->
           <button type="button" class="btn-header btn-header-secondary" id="btnOpenFile" aria-label="Open New PDF File">
-            <img src="/assets/icons/upload.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <img src="./assets/icons/upload.svg" width="14" height="14" alt="" aria-hidden="true" />
             <span>Open PDF</span>
           </button>
 
-          <!-- Export Area (Clear Phase 2 Disabled State) -->
+          <!-- Close Active Document CTA (Wipes memory & resets workspace) -->
+          <button type="button" class="btn-header btn-header-secondary" id="btnCloseDocument" aria-label="Close Document" title="Close document and clear session memory" style="display: none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+            <span>Close</span>
+          </button>
+
+          <!-- Export Area (Active in Phase 2) -->
           <button
             type="button"
-            class="btn-header btn-header-primary is-disabled"
+            class="btn-header btn-header-primary"
             id="btnExport"
-            aria-label="Export PDF Document (Phase 2)"
-            title="PDF Export via pdf-lib is planned for Phase 2"
+            aria-label="Export Edited PDF"
+            title="Export and Download Edited PDF"
           >
-            <img src="/assets/icons/download.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <img src="./assets/icons/download.svg" width="14" height="14" alt="" aria-hidden="true" />
             <span>Export</span>
-            <span class="badge-tag">Phase 2</span>
           </button>
         </div>
       </header>
@@ -76,12 +168,95 @@
           <!-- Populated dynamically and accessibly by PDFTools module -->
         </nav>
 
+        <!-- Page Organizer & Thumbnail Sidebar Panel -->
+        <aside class="page-organizer-panel is-open" id="pageOrganizerPanel" aria-label="Page Organizer and Thumbnails">
+          <div class="organizer-header">
+            <div class="organizer-title-row">
+              <div class="organizer-title-wrap">
+                <h3 class="organizer-title">Pages</h3>
+                <span class="organizer-badge" id="organizerPageCountBadge">0</span>
+              </div>
+              <button type="button" class="btn-organizer-close" id="btnCloseOrganizer" aria-label="Close Pages Panel" title="Close Panel">✕</button>
+            </div>
+
+            <!-- Selection status and bulk select -->
+            <div class="organizer-selection-bar">
+              <span class="selection-count-text" id="organizerSelectionText">0 selected</span>
+              <div class="selection-quick-actions">
+                <button type="button" class="btn-link-action" id="btnSelectAllPages">Select All</button>
+                <span class="action-sep">•</span>
+                <button type="button" class="btn-link-action" id="btnClearPageSelection">Clear</button>
+              </div>
+            </div>
+
+            <!-- Organizer Action Bar -->
+            <div class="organizer-toolbar" role="toolbar" aria-label="Page Actions">
+              <div class="org-btn-group">
+                <button type="button" class="btn-org-tool" id="btnMovePageUp" title="Move Selected Up" aria-label="Move Selected Up" disabled>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                </button>
+                <button type="button" class="btn-org-tool" id="btnMovePageDown" title="Move Selected Down" aria-label="Move Selected Down" disabled>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+              </div>
+
+              <div class="org-btn-group">
+                <button type="button" class="btn-org-tool" id="btnRotatePageLeft" title="Rotate Counterclockwise 90°" aria-label="Rotate Counterclockwise 90°" disabled>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+                </button>
+                <button type="button" class="btn-org-tool" id="btnRotatePageRight" title="Rotate Clockwise 90°" aria-label="Rotate Clockwise 90°" disabled>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><polyline points="21 3 21 8 16 8"></polyline></svg>
+                </button>
+              </div>
+
+              <div class="org-btn-group">
+                <button type="button" class="btn-org-tool" id="btnDuplicatePages" title="Duplicate Page" aria-label="Duplicate Page" disabled>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </button>
+                <button type="button" class="btn-org-tool btn-org-tool-danger" id="btnDeletePages" title="Delete Page" aria-label="Delete Page" disabled>
+                  <img src="./assets/icons/trash.svg" width="14" height="14" alt="" />
+                </button>
+              </div>
+
+              <div class="org-btn-group">
+                <button type="button" class="btn-org-tool" id="btnReversePages" title="Reverse Entire Document Order" aria-label="Reverse Entire Document Order">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 16 3 12 7 8"></polyline><line x1="3" y1="12" x2="21" y2="12"></line><polyline points="17 8 21 12 17 16"></polyline></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Extra Document Tools Row -->
+            <div class="organizer-extra-actions">
+              <button type="button" class="btn-org-action" id="btnInsertBlankPage" title="Insert Blank Page">
+                <span>+ Blank</span>
+              </button>
+              <button type="button" class="btn-org-action" id="btnInsertPdfPages" title="Insert Pages from PDF">
+                <span>+ PDF</span>
+              </button>
+              <button type="button" class="btn-org-action" id="btnExtractPages" title="Extract Selected Pages" disabled>
+                <span>Extract</span>
+              </button>
+              <button type="button" class="btn-org-action" id="btnSplitPdf" title="Split PDF into multiple files">
+                <span>Split</span>
+              </button>
+              <button type="button" class="btn-org-action" id="btnMergePdfs" title="Merge multiple PDF files">
+                <span>Merge</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Scrollable Page Thumbnails Container -->
+          <div class="organizer-body" id="thumbnailContainer" role="list" aria-label="Pages list">
+            <!-- Populated dynamically by PageOrganizer -->
+          </div>
+        </aside>
+
         <!-- Main PDF Workspace / Canvas Area -->
         <main class="editor-workspace" id="editorWorkspace" role="main">
           <!-- Workspace Empty State (When no PDF is loaded) -->
           <div class="workspace-empty-state" id="workspaceEmptyState" role="region" aria-label="Document Dropzone">
             <div class="empty-icon-box">
-              <img src="/assets/icons/upload.svg" alt="" aria-hidden="true" />
+              <img src="./assets/icons/upload.svg" alt="" aria-hidden="true" />
             </div>
             <h2 class="empty-title">Ready to Open Document</h2>
             <p class="empty-desc">
@@ -94,8 +269,34 @@
               </button>
             </div>
             <div class="empty-privacy-badge">
-              <img src="/assets/icons/lock.svg" alt="" aria-hidden="true" />
-              <span>Zero cloud storage. Your data never leaves your computer.</span>
+              <img src="./assets/icons/lock.svg" alt="" aria-hidden="true" />
+              <span>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</span>
+            </div>
+          </div>
+
+          <!-- In-Document Search & Replace Overlay (Phase 6 & Text Edit) -->
+          <div id="searchBarOverlay" class="search-bar-overlay" style="display: none;" role="search" aria-label="Find and Replace in document">
+            <div class="search-bar-content">
+              <div class="search-bar-inner">
+                <button type="button" class="btn-search-icon" id="btnToggleReplaceMode" title="Toggle Replace (Ctrl+H)" aria-label="Toggle Replace Mode">▶</button>
+                <img src="./assets/icons/search.svg" width="16" height="16" alt="" class="search-bar-icon" aria-hidden="true" />
+                <input type="text" id="searchInput" class="search-input" placeholder="Find in document... (Enter / Shift+Enter)" aria-label="Search term" />
+                <span id="searchSpinner" class="search-spinner" style="display: none;" aria-label="Searching"></span>
+                <span id="searchMatchCount" class="search-match-count"></span>
+                <button type="button" class="btn-search-icon" id="btnSearchCaseSensitive" title="Match Case (Aa)" aria-label="Match Case">Aa</button>
+                <button type="button" class="btn-search-icon" id="btnSearchPrev" title="Previous match (Shift+Enter, ↑)" aria-label="Previous Match" disabled>▲</button>
+                <button type="button" class="btn-search-icon" id="btnSearchNext" title="Next match (Enter, ↓)" aria-label="Next Match" disabled>▼</button>
+                <button type="button" class="btn-search-icon btn-search-close" id="btnSearchClose" title="Close search (Esc)" aria-label="Close search">✕</button>
+              </div>
+              <div class="search-replace-inner" id="searchReplaceRow" style="display: none;">
+                <input type="text" id="replaceInput" class="search-input replace-input" placeholder="Replace with..." aria-label="Replacement text" />
+                <select id="searchScopeSelect" class="search-scope-select" aria-label="Replacement Scope">
+                  <option value="current">Current Page</option>
+                  <option value="all" selected>All Pages</option>
+                </select>
+                <button type="button" class="btn-replace-action" id="btnSearchReplace" title="Replace Current Match">Replace</button>
+                <button type="button" class="btn-replace-action btn-replace-all" id="btnSearchReplaceAll" title="Replace All Matches">Replace All</button>
+              </div>
             </div>
           </div>
 
@@ -103,6 +304,10 @@
           <div class="pdf-viewport-container" id="pdfViewportContainer">
             <div class="pdf-page-wrapper" id="pdfPageWrapper">
               <canvas id="pdfCanvas" class="pdf-page-canvas"></canvas>
+              <div id="annotationOverlay" class="annotation-overlay" aria-label="Interactive Annotations"></div>
+              <canvas id="drawingCanvas" class="drawing-canvas" aria-hidden="true"></canvas>
+              <div id="searchHighlightOverlay" class="search-highlight-overlay" aria-hidden="true"></div>
+              <div id="textEditLayer" class="text-edit-layer" style="display: none;" aria-label="PDF Text Editing Layer"></div>
             </div>
           </div>
 
@@ -125,7 +330,7 @@
                 aria-label="Previous Page"
                 disabled
               >
-                <img src="/assets/icons/chevron-left.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/chevron-left.svg" alt="" aria-hidden="true" />
               </button>
 
               <div class="page-indicator">
@@ -149,7 +354,7 @@
                 aria-label="Next Page"
                 disabled
               >
-                <img src="/assets/icons/chevron-right.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/chevron-right.svg" alt="" aria-hidden="true" />
               </button>
             </div>
 
@@ -163,7 +368,7 @@
                 id="btnZoomOut"
                 aria-label="Zoom Out"
               >
-                <img src="/assets/icons/zoom-out.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/zoom-out.svg" alt="" aria-hidden="true" />
               </button>
 
               <select id="zoomSelect" class="zoom-select" aria-label="Zoom Level Preset">
@@ -183,7 +388,7 @@
                 id="btnZoomIn"
                 aria-label="Zoom In"
               >
-                <img src="/assets/icons/zoom-in.svg" alt="" aria-hidden="true" />
+                <img src="./assets/icons/zoom-in.svg" alt="" aria-hidden="true" />
               </button>
             </div>
           </aside>
@@ -214,26 +419,143 @@
             </div>
           </div>
 
-          <!-- Active Tool / Roadmap Properties Section -->
-          <div class="sidebar-section">
-            <h3 class="sidebar-title">Active Tool</h3>
-            <div class="phase2-notice-card">
-              <strong id="toolPropTitle">Selection Mode</strong>
-              <p id="toolPropDesc">
-                Click and drag to navigate or select text. Advanced drawing, signatures, and annotation properties will become configurable here in Phase 2.
-              </p>
+          <!-- Active Tool & Selection Properties Section -->
+          <div class="sidebar-section" id="sidebarToolProps">
+            <h3 class="sidebar-title">
+              <span id="toolPropTitle">Selection Mode</span>
+              <button type="button" class="btn-text-danger" id="btnDeleteSelected" title="Delete selected annotation" style="display: none;">Delete</button>
+            </h3>
+            <p class="tool-desc-text" id="toolPropDesc">
+              Click an annotation to select, move, or resize. Press Esc to deselect.
+            </p>
+
+            <!-- Contextual Controls Container -->
+            <div class="tool-controls-container" id="toolControlsContainer">
+              <!-- Color Palette -->
+              <div class="prop-group" id="propGroupColor">
+                <label class="prop-label">Color</label>
+                <div class="color-palette">
+                  <button type="button" class="color-swatch is-active" data-color="#2563EB" style="background:#2563EB" aria-label="Blue"></button>
+                  <button type="button" class="color-swatch" data-color="#000000" style="background:#000000" aria-label="Black"></button>
+                  <button type="button" class="color-swatch" data-color="#DC2626" style="background:#DC2626" aria-label="Red"></button>
+                  <button type="button" class="color-swatch" data-color="#16A34A" style="background:#16A34A" aria-label="Green"></button>
+                  <button type="button" class="color-swatch" data-color="#CA8A04" style="background:#CA8A04" aria-label="Yellow"></button>
+                  <button type="button" class="color-swatch" data-color="#9333EA" style="background:#9333EA" aria-label="Purple"></button>
+                  <input type="color" id="propColorPicker" class="color-picker-input" value="#2563EB" title="Custom color" />
+                </div>
+              </div>
+
+              <!-- Stroke Width Slider -->
+              <div class="prop-group" id="propGroupStroke">
+                <div class="prop-label-row">
+                  <label for="propStrokeWidth" class="prop-label">Thickness</label>
+                  <span class="prop-val-badge" id="propStrokeWidthVal">3px</span>
+                </div>
+                <input type="range" id="propStrokeWidth" class="prop-slider" min="1" max="20" value="3" />
+              </div>
+
+              <!-- Opacity Slider -->
+              <div class="prop-group" id="propGroupOpacity">
+                <div class="prop-label-row">
+                  <label for="propOpacity" class="prop-label">Opacity</label>
+                  <span class="prop-val-badge" id="propOpacityVal">100%</span>
+                </div>
+                <input type="range" id="propOpacity" class="prop-slider" min="10" max="100" value="100" step="5" />
+              </div>
+
+              <!-- Typography Settings (Shown for Text tool & selected text) -->
+              <div class="prop-group" id="propGroupTypography" style="display: none;">
+                <label class="prop-label">Typography</label>
+                <div class="typography-row">
+                  <select id="propFontFamily" class="prop-select" aria-label="Font Family">
+                    <option value="Helvetica">Helvetica (Sans)</option>
+                    <option value="TimesRoman">Times New Roman (Serif)</option>
+                    <option value="Courier">Courier (Monospace)</option>
+                  </select>
+                  <select id="propFontSize" class="prop-select" aria-label="Font Size">
+                    <option value="12">12 pt</option>
+                    <option value="14">14 pt</option>
+                    <option value="16" selected>16 pt</option>
+                    <option value="18">18 pt</option>
+                    <option value="20">20 pt</option>
+                    <option value="24">24 pt</option>
+                    <option value="32">32 pt</option>
+                    <option value="48">48 pt</option>
+                  </select>
+                </div>
+                <div class="text-format-toolbar">
+                  <button type="button" class="btn-format" id="btnBold" title="Bold"><strong>B</strong></button>
+                  <button type="button" class="btn-format" id="btnItalic" title="Italic"><em>I</em></button>
+                  <button type="button" class="btn-format" id="btnUnderline" title="Underline"><u>U</u></button>
+                  <div class="format-divider"></div>
+                  <button type="button" class="btn-format is-active" id="btnAlignLeft" title="Align Left">L</button>
+                  <button type="button" class="btn-format" id="btnAlignCenter" title="Align Center">C</button>
+                  <button type="button" class="btn-format" id="btnAlignRight" title="Align Right">R</button>
+                </div>
+              </div>
+
+              <!-- Shape Fill & Arrow Options -->
+              <div class="prop-group" id="propGroupShape" style="display: none;">
+                <label class="prop-label">Fill Style</label>
+                <div class="fill-options-row">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="propFillTransparent" checked />
+                    <span>Transparent Fill</span>
+                  </label>
+                  <input type="color" id="propFillColor" class="color-picker-input" value="#BFDBFE" title="Fill Color" disabled />
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Local Privacy Assurance Checklist -->
-          <div class="sidebar-section">
-            <h3 class="sidebar-title">Security Status</h3>
+          <!-- Security & Privacy Inspector Section -->
+          <div class="sidebar-section" id="sidebarSecuritySection">
+            <h3 class="sidebar-title">
+              <span>Security & Privacy</span>
+              <button type="button" class="btn-link-action" id="btnOpenPrivacyCenter" title="Open Privacy Center">Center</button>
+            </h3>
+            
+            <div class="sec-inspector-card">
+              <div class="sec-item">
+                <span class="sec-label">Processing</span>
+                <span class="sec-val" id="secPropProcessing"><span class="sec-badge-clean">Local Sandbox</span></span>
+              </div>
+              <div class="sec-item">
+                <div class="sec-label-wrap">
+                  <span class="sec-label">Metadata</span>
+                  <button type="button" class="btn-sec-action" id="btnSecManageMetadata" title="Inspect or clean metadata">Clean</button>
+                </div>
+                <span class="sec-val" id="secPropMetadata">No Document</span>
+              </div>
+              <div class="sec-item">
+                <div class="sec-label-wrap">
+                  <span class="sec-label">Annotations</span>
+                  <button type="button" class="btn-sec-action" id="btnApplyRedactionToolbar" title="Apply pending redactions" style="display: none;">Apply</button>
+                </div>
+                <span class="sec-val" id="secPropAnnotations">None</span>
+              </div>
+              <div class="sec-item">
+                <div class="sec-label-wrap">
+                  <span class="sec-label">Flattening</span>
+                  <button type="button" class="btn-sec-action" id="btnSecFlatten" title="Flatten annotations into base PDF">Flatten</button>
+                </div>
+                <span class="sec-val" id="secPropFlatten">None</span>
+              </div>
+              <div class="sec-item">
+                <div class="sec-label-wrap">
+                  <span class="sec-label">Encryption</span>
+                  <button type="button" class="btn-sec-action" id="btnSecEncryptionInfo" title="Learn about PDF encryption in browsers">Info</button>
+                </div>
+                <span class="sec-val" id="secPropEncryption">None</span>
+              </div>
+            </div>
+
             <div class="privacy-status-box">
-              <img src="/assets/icons/shield.svg" alt="" aria-hidden="true" />
+              <img src="./assets/icons/shield.svg" alt="" aria-hidden="true" />
               <div>
-                <p class="privacy-status-title">Local Browser Sandbox</p>
+                <p class="privacy-status-title">Zero Server Uploads</p>
                 <p class="privacy-status-text">
-                  All rendering is performed by client-side WebAssembly and Canvas. No external network requests are permitted.
+                  Your PDF is processed locally in your browser and is not uploaded to SAVY's servers.
                 </p>
               </div>
             </div>
@@ -241,7 +563,34 @@
         </aside>
       </div>
 
-      <!-- Hidden File Picker Input -->
+      <!-- Drawer Backdrop for Mobile Slide-Out Panels (Phase 7) -->
+      <div class="drawer-backdrop" id="drawerBackdrop" aria-hidden="true" style="display: none;"></div>
+
+      <!-- Mobile Bottom Toolbar (Phase 7) -->
+      <nav class="mobile-bottom-bar" id="mobileBottomBar" aria-label="Mobile Tools" role="navigation">
+        <button type="button" class="btn-mobile-tool active" data-tool="select" aria-label="Select Tool" title="Select (V)">
+          <img src="./assets/icons/mouse-pointer.svg" width="20" height="20" alt="" aria-hidden="true" />
+          <span>Select</span>
+        </button>
+        <button type="button" class="btn-mobile-tool" data-tool="annotate_text" aria-label="Text Tool" title="Text (T)">
+          <img src="./assets/icons/type.svg" width="20" height="20" alt="" aria-hidden="true" />
+          <span>Text</span>
+        </button>
+        <button type="button" class="btn-mobile-tool" data-tool="draw_ink" aria-label="Pen Tool" title="Pen (P)">
+          <img src="./assets/icons/pen.svg" width="20" height="20" alt="" aria-hidden="true" />
+          <span>Pen</span>
+        </button>
+        <button type="button" class="btn-mobile-tool" data-tool="highlight" aria-label="Highlighter" title="Highlight (L)">
+          <img src="./assets/icons/highlighter.svg" width="20" height="20" alt="" aria-hidden="true" />
+          <span>Highlight</span>
+        </button>
+        <button type="button" class="btn-mobile-tool" id="btnMobileMoreTools" aria-label="More PDF Tools" title="More Tools">
+          <img src="./assets/icons/tools.svg" width="20" height="20" alt="" aria-hidden="true" />
+          <span>More</span>
+        </button>
+      </nav>
+
+      <!-- Hidden PDF File Picker Input -->
       <input
         type="file"
         id="fileInputHidden"
@@ -250,11 +599,1885 @@
         aria-label="Hidden PDF File Input"
       />
 
+      <!-- Hidden Image File Picker Input -->
+      <input
+        type="file"
+        id="imageFileInput"
+        style="display: none"
+        accept="image/png,image/jpeg,image/webp"
+        aria-label="Upload Image to Insert"
+      />
+
+      <!-- Digital Signature Modal Dialog -->
+      <div class="modal-backdrop" id="signatureModal" role="dialog" aria-modal="true" aria-labelledby="sigModalTitle" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 id="sigModalTitle" class="modal-title">Create Digital Signature</h3>
+            <button type="button" class="btn-modal-close" id="btnSigClose" aria-label="Close modal">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Draw your signature or initials below using your mouse, trackpad, touch, or stylus.</p>
+            <div class="signature-pad-wrapper">
+              <canvas id="signatureCanvas" class="signature-canvas" width="460" height="180"></canvas>
+              <div class="sig-baseline"></div>
+            </div>
+            <div class="signature-toolbar">
+              <div class="sig-color-group">
+                <button type="button" class="sig-color-btn is-active" data-color="#000000" style="background:#000000" title="Black ink" aria-label="Black ink"></button>
+                <button type="button" class="sig-color-btn" data-color="#1E3A8A" style="background:#1E3A8A" title="Navy blue ink" aria-label="Navy blue ink"></button>
+                <button type="button" class="sig-color-btn" data-color="#2563EB" style="background:#2563EB" title="Blue ink" aria-label="Blue ink"></button>
+              </div>
+              <button type="button" class="btn btn-sm btn-outline" id="btnSigClear">Clear Signature</button>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="btnSigCancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnSigInsert">Insert Signature</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden File Picker for Inserting PDF -->
+      <input
+        type="file"
+        id="insertPdfFileInput"
+        style="display: none"
+        accept="application/pdf,.pdf"
+        aria-label="Upload PDF to Insert"
+      />
+
+      <!-- Hidden File Picker for Merging PDFs -->
+      <input
+        type="file"
+        id="mergeFileInput"
+        style="display: none"
+        multiple
+        accept="application/pdf,.pdf"
+        aria-label="Upload PDFs to Merge"
+      />
+
+      <!-- Insert Blank Page Modal Dialog -->
+      <div class="modal-backdrop" id="insertBlankModal" role="dialog" aria-modal="true" aria-labelledby="insertBlankTitle" style="display: none;">
+        <div class="modal-dialog modal-dialog-sm">
+          <div class="modal-header">
+            <h3 id="insertBlankTitle" class="modal-title">Insert Blank Page</h3>
+            <button type="button" class="btn-modal-close" id="btnCloseInsertBlank" aria-label="Close modal">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label class="form-label" for="insertBlankPosition">Position</label>
+              <select id="insertBlankPosition" class="prop-select full-width">
+                <option value="after" selected>After Current Page</option>
+                <option value="before">Before Current Page</option>
+                <option value="start">At Document Beginning</option>
+                <option value="end">At Document End</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-top: 1rem;">
+              <label class="form-label" for="insertBlankSize">Page Size</label>
+              <select id="insertBlankSize" class="prop-select full-width">
+                <option value="match" selected>Match Document (Current Page)</option>
+                <option value="letter">US Letter (8.5 × 11 in)</option>
+                <option value="a4">A4 (210 × 297 mm)</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="btnCancelInsertBlank">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnConfirmInsertBlank">Insert Page</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split PDF Modal Dialog -->
+      <div class="modal-backdrop" id="splitModal" role="dialog" aria-modal="true" aria-labelledby="splitModalTitle" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 id="splitModalTitle" class="modal-title">Split PDF Document</h3>
+            <button type="button" class="btn-modal-close" id="btnCloseSplitModal" aria-label="Close modal">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Generate separate local PDF files from this document without uploading to any server.</p>
+            <div class="split-options-group">
+              <label class="radio-option">
+                <input type="radio" name="splitMode" value="all" id="splitModeAll" checked />
+                <div class="radio-option-content">
+                  <strong>Split into single-page PDFs</strong>
+                  <span>Every page will be downloaded as a separate individual PDF file.</span>
+                </div>
+              </label>
+
+              <label class="radio-option">
+                <input type="radio" name="splitMode" value="ranges" id="splitModeRanges" />
+                <div class="radio-option-content">
+                  <strong>Split by page ranges</strong>
+                  <span>Specify custom page intervals separated by commas (e.g., <code>1-3, 4-6, 7-10</code>).</span>
+                </div>
+              </label>
+            </div>
+
+            <div class="form-group" id="splitRangeInputGroup" style="display: none; margin-top: 1rem;">
+              <label class="form-label" for="splitRangeInput">Page Ranges</label>
+              <input type="text" id="splitRangeInput" class="form-input" placeholder="e.g. 1-2, 3-4" />
+              <span class="form-hint">Format: 1-3, 4-7, 8 or comma-separated ranges.</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="btnCancelSplit">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnConfirmSplit">Split & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Merge PDFs Modal Dialog -->
+      <div class="modal-backdrop" id="mergeModal" role="dialog" aria-modal="true" aria-labelledby="mergeModalTitle" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 id="mergeModalTitle" class="modal-title">Merge PDF Files</h3>
+            <button type="button" class="btn-modal-close" id="btnCloseMergeModal" aria-label="Close modal">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Select multiple local PDF documents to combine into a single PDF. Files remain strictly on your computer.</p>
+            
+            <div class="merge-dropzone" id="mergeDropzone">
+              <img src="./assets/icons/upload.svg" width="28" height="28" alt="" />
+              <p>Drag and drop PDF files here or click browse</p>
+              <button type="button" class="btn btn-sm btn-outline" id="btnBrowseMergeFiles">Browse PDFs</button>
+            </div>
+
+            <div class="merge-files-list-header">
+              <span>Selected Files (<span id="mergeFileCount">0</span>)</span>
+              <button type="button" class="btn-link-danger" id="btnClearMergeFiles" style="display: none;">Clear All</button>
+            </div>
+
+            <div class="merge-files-list" id="mergeFilesList">
+              <div class="merge-empty-list" id="mergeEmptyList">No files added yet.</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="btnCancelMerge">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnConfirmMerge" disabled>Merge & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden File Inputs for Phase 4 Toolbox -->
+      <input type="file" id="imgToPdfFileInput" accept="image/jpeg,image/png,image/webp" multiple style="display: none;" />
+
+      <!-- PDF Toolbox Hub Modal -->
+      <div class="modal-backdrop savy-modal" id="toolboxModal" role="dialog" aria-modal="true" aria-labelledby="toolboxModalTitle" style="display: none;">
+        <div class="modal-dialog modal-dialog-lg">
+          <div class="modal-header">
+            <div class="toolbox-header-title">
+              <img src="./assets/icons/tools.svg" width="18" height="18" alt="" />
+              <h3 id="toolboxModalTitle" class="modal-title">PDF Toolbox</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnToolboxClose" aria-label="Close modal">✕</button>
+          </div>
+          <div class="modal-body toolbox-modal-body">
+            <p class="modal-subtitle">Fast, privacy-first PDF utilities running 100% locally in your browser.</p>
+
+            <!-- CONVERT SECTION -->
+            <div class="toolbox-section">
+              <div class="toolbox-section-label">CONVERT</div>
+              <div class="toolbox-grid">
+                <div class="toolbox-card" data-toolbox-action="img-to-pdf">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/image.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Images → PDF</h4>
+                    <p>Convert JPG, PNG, and WebP images into a single PDF document.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="pdf-to-img">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/image.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>PDF → Images</h4>
+                    <p>Export pages as PNG or JPG images, or download all pages in a ZIP.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="pdf-to-text">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/type.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>PDF → Text</h4>
+                    <p>Extract selectable text across pages with copy and .txt download.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- OPTIMIZE SECTION -->
+            <div class="toolbox-section">
+              <div class="toolbox-section-label">OPTIMIZE</div>
+              <div class="toolbox-grid">
+                <div class="toolbox-card" data-toolbox-action="compress">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/file-pdf.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Compress PDF</h4>
+                    <p>Reduce document file size with lossless streams or visual optimization.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- DOCUMENT SECTION -->
+            <div class="toolbox-section">
+              <div class="toolbox-section-label">DOCUMENT</div>
+              <div class="toolbox-grid">
+                <div class="toolbox-card" data-toolbox-action="metadata">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/info.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Metadata</h4>
+                    <p>View, edit, or clear PDF title, author, subject, keywords, and producer.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="watermark">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/signature.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Watermark</h4>
+                    <p>Add customizable text watermarks with angle, opacity, and color.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="page-numbers">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/layers.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Page Numbers</h4>
+                    <p>Add custom page numbers with positioning, format, and margins.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="flatten">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/lock.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Flatten PDF</h4>
+                    <p>Burn annotations and drawings into permanent non-editable base graphics.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ADVANCED PRODUCTIVITY SECTION (PHASE 6) -->
+            <div class="toolbox-section">
+              <div class="toolbox-section-label">ADVANCED PRODUCTIVITY</div>
+              <div class="toolbox-grid">
+                <div class="toolbox-card" data-toolbox-action="crop">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/crop.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Crop Pages</h4>
+                    <p>Losslessly adjust visual boundaries using PDF /CropBox dictionary.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="resize">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/fit-page.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Resize & Margins</h4>
+                    <p>Standardize page sizes (A4, Letter, Legal) with proportional scaling.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="headers-footers">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/type.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Headers & Footers</h4>
+                    <p>Add dynamic running heads and footers with page numbers and titles.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="bates">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/file-pdf.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Bates Numbering</h4>
+                    <p>Apply legal sequential numbering (PREFIX-000001) across pages.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="ocr">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/search.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Client-Side OCR</h4>
+                    <p>Extract text from scanned PDF pages using local WebAssembly OCR.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="inspector">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/info.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Document Inspector</h4>
+                    <p>Inspect PDF version, dimensions, embedded AcroForms, and security.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI PDF INTELLIGENCE SECTION (PHASE 8) -->
+            <div class="toolbox-section">
+              <div class="toolbox-section-label">AI PDF INTELLIGENCE (100% LOCAL)</div>
+              <div class="toolbox-grid">
+                <div class="toolbox-card" data-toolbox-action="ai-summary">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/sparkles.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>AI PDF Summary</h4>
+                    <p>Concise overview, page-aware digests, and executive summaries.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="ai-chat">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/message-square.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Ask Your PDF</h4>
+                    <p>Grounded Q&amp;A chat with cited page excerpts and zero hallucinations.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="ai-keypoints">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/list.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Key Points</h4>
+                    <p>Extract salient takeaways, structured bullet points, and facts.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="ai-outline">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/layers.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Document Outline</h4>
+                    <p>Detect structural headings with one-click page navigation.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="ai-smart-actions">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/zap.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <h4>Smart Text Actions</h4>
+                    <p>Summarize, explain, simplify, rewrite, or extract key data.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. Image to PDF Modal -->
+      <div class="modal-backdrop savy-modal" id="imgToPdfModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-md">
+          <div class="modal-header">
+            <h3 class="modal-title">Images → PDF</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Convert one or more images into a single PDF document locally.</p>
+            <div class="merge-dropzone" id="imgToPdfDropzone">
+              <img src="./assets/icons/image.svg" width="28" height="28" alt="" />
+              <p>Drag and drop JPG, PNG, or WebP images here</p>
+              <button type="button" class="btn btn-sm btn-outline" id="btnImgToPdfSelect">Browse Images</button>
+            </div>
+            <div class="img-pdf-list" id="imgToPdfItemsList">
+              <div class="empty-hint">No images selected yet.</div>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="imgToPdfPageSize">Page Size</label>
+                <select id="imgToPdfPageSize" class="prop-select full-width">
+                  <option value="fit" selected>Fit to Image (Original Ratio)</option>
+                  <option value="letter">US Letter (8.5 × 11 in)</option>
+                  <option value="a4">A4 (210 × 297 mm)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="imgToPdfOrientation">Orientation</label>
+                <select id="imgToPdfOrientation" class="prop-select full-width">
+                  <option value="auto" selected>Auto Detect</option>
+                  <option value="portrait">Portrait</option>
+                  <option value="landscape">Landscape</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="imgToPdfMargin">Margin</label>
+                <select id="imgToPdfMargin" class="prop-select full-width">
+                  <option value="0" selected>None (0 pt)</option>
+                  <option value="18">Small (18 pt)</option>
+                  <option value="36">Normal (36 pt)</option>
+                  <option value="54">Large (54 pt)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnImgToPdfConvert">Generate & Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. PDF to Images Modal -->
+      <div class="modal-backdrop savy-modal" id="pdfToImgModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 class="modal-title">PDF → Images</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Convert PDF pages into high-resolution images locally.</p>
+            <div class="split-options-group">
+              <label class="radio-option">
+                <input type="radio" name="pdfToImgScope" value="current" checked />
+                <div class="radio-option-content">
+                  <strong>Current Page Only</strong>
+                  <span>Download page <span id="pdfToImgCurrentNum">1</span> as a single image.</span>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="pdfToImgScope" value="selected" />
+                <div class="radio-option-content">
+                  <strong>Selected Pages in Organizer</strong>
+                  <span>Export only the pages currently selected in the page organizer.</span>
+                </div>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="pdfToImgScope" value="all" />
+                <div class="radio-option-content">
+                  <strong>All Pages (<span id="pdfToImgTotalNum">1</span> pages)</strong>
+                  <span>Renders all pages and downloads them bundled in a standard ZIP archive.</span>
+                </div>
+              </label>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="pdfToImgFormat">Format</label>
+                <select id="pdfToImgFormat" class="prop-select full-width">
+                  <option value="image/png" selected>PNG (Lossless)</option>
+                  <option value="image/jpeg">JPG (Standard)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="pdfToImgScale">Resolution</label>
+                <select id="pdfToImgScale" class="prop-select full-width">
+                  <option value="1.0">1x (72 DPI - Standard)</option>
+                  <option value="1.5" selected>1.5x (108 DPI - Crisp)</option>
+                  <option value="2.0">2x (144 DPI - High Res)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnPdfToImgConvert">Convert & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. PDF to Text Modal -->
+      <div class="modal-backdrop savy-modal" id="pdfToTextModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-md">
+          <div class="modal-header">
+            <h3 class="modal-title">PDF → Text</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Extract selectable text from all pages in this document.</p>
+            <div id="pdfToTextNotice" class="ocr-disclaimer-banner" style="display: none;">
+              <strong>ℹ Note:</strong> No selectable text detected. This document appears to be scanned or image-only. Optical Character Recognition (OCR) is not included in this offline client-side phase.
+            </div>
+            <div class="form-group">
+              <textarea id="pdfToTextPreview" class="form-input text-extract-preview" rows="10" readonly placeholder="Extracting text..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Close</button>
+            <button type="button" class="btn btn-secondary" id="btnPdfToTextCopy">Copy to Clipboard</button>
+            <button type="button" class="btn btn-primary" id="btnPdfToTextDownload">Download TXT</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Compress PDF Modal -->
+      <div class="modal-backdrop savy-modal" id="compressModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 class="modal-title">Compress PDF</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Optimize document size client-side without sending files to any server.</p>
+            <div class="compress-stats-card">
+              <div class="stat-item">
+                <span class="stat-label">Original File Size:</span>
+                <strong class="stat-val" id="compressOrigSize">0 KB</strong>
+              </div>
+            </div>
+            <div class="form-group" style="margin-top: 1rem;">
+              <label class="form-label" for="compressMode">Optimization Mode</label>
+              <select id="compressMode" class="prop-select full-width">
+                <option value="lossless" selected>Lossless Stream Optimization (Preserves selectable text & vector sharpness)</option>
+                <option value="visual">Visual Screen Optimization (Compresses embedded images; rasterizes pages)</option>
+              </select>
+            </div>
+            <div id="compressWarningNote" class="compress-warning" style="display: none;">
+              ⚠️ <strong>Warning:</strong> Visual screen optimization re-encodes pages to compress image data. Selectable text will be converted to high-resolution raster images.
+            </div>
+            <div id="compressResultCard" class="compress-result-card" style="display: none; margin-top: 1rem;">
+              <div class="result-row">
+                <span>Optimized Size: <strong id="compressOutputSize">0 KB</strong></span>
+                <span id="compressReductionBadge" class="badge-success">-0%</span>
+              </div>
+              <p id="compressNote" class="result-note"></p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnCompressExecute">Optimize & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Metadata Modal -->
+      <div class="modal-backdrop savy-modal" id="metadataModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 class="modal-title">PDF Metadata</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">View and edit document properties stored inside the PDF dictionary.</p>
+            <div class="form-group">
+              <label class="form-label" for="metaTitle">Title</label>
+              <input type="text" id="metaTitle" class="form-input" placeholder="Document Title" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="metaAuthor">Author</label>
+              <input type="text" id="metaAuthor" class="form-input" placeholder="Author name" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="metaSubject">Subject</label>
+              <input type="text" id="metaSubject" class="form-input" placeholder="Document subject or summary" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="metaKeywords">Keywords</label>
+              <input type="text" id="metaKeywords" class="form-input" placeholder="Comma-separated keywords" />
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="metaCreator">Creator</label>
+                <input type="text" id="metaCreator" class="form-input" placeholder="Application creator" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="metaProducer">Producer</label>
+                <input type="text" id="metaProducer" class="form-input" placeholder="PDF Producer" />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger-outline" id="btnClearMetadata">Clear All Metadata</button>
+            <button type="button" class="btn btn-primary" id="btnSaveMetadata">Save & Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Watermark Modal -->
+      <div class="modal-backdrop savy-modal" id="watermarkModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 class="modal-title">Watermark PDF</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Burn a customizable text watermark across document pages.</p>
+            <div class="form-group">
+              <label class="form-label" for="watermarkText">Watermark Text</label>
+              <input type="text" id="watermarkText" class="form-input" value="CONFIDENTIAL" />
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="watermarkFontSize">Font Size</label>
+                <select id="watermarkFontSize" class="prop-select full-width">
+                  <option value="24">24 pt</option>
+                  <option value="36">36 pt</option>
+                  <option value="48" selected>48 pt</option>
+                  <option value="64">64 pt</option>
+                  <option value="72">72 pt</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="watermarkOpacity">Opacity</label>
+                <select id="watermarkOpacity" class="prop-select full-width">
+                  <option value="0.15">15% (Subtle)</option>
+                  <option value="0.25" selected>25% (Standard)</option>
+                  <option value="0.5">50% (Visible)</option>
+                  <option value="0.75">75% (Bold)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="watermarkRotation">Angle</label>
+                <select id="watermarkRotation" class="prop-select full-width">
+                  <option value="45" selected>45° (Diagonal)</option>
+                  <option value="0">0° (Horizontal)</option>
+                  <option value="90">90° (Vertical)</option>
+                  <option value="-45">-45° (Reverse)</option>
+                </select>
+              </div>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="watermarkPosition">Position</label>
+                <select id="watermarkPosition" class="prop-select full-width">
+                  <option value="center" selected>Center</option>
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="watermarkColor">Color</label>
+                <input type="color" id="watermarkColor" class="form-input-color" value="#888888" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Apply To</label>
+              <div class="split-options-group">
+                <label class="radio-option">
+                  <input type="radio" name="watermarkScope" value="all" checked />
+                  <div class="radio-option-content">
+                    <strong>All Pages</strong>
+                  </div>
+                </label>
+                <label class="radio-option">
+                  <input type="radio" name="watermarkScope" value="current" />
+                  <div class="radio-option-content">
+                    <strong>Current Page Only</strong>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnApplyWatermark">Apply & Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. Page Numbers Modal -->
+      <div class="modal-backdrop savy-modal" id="pageNumberModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 class="modal-title">Page Numbers</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Burn professional page numbers onto document pages.</p>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-2">
+                <label class="form-label" for="pageNumberFormat">Format</label>
+                <select id="pageNumberFormat" class="prop-select full-width">
+                  <option value="Page {n} of {total}" selected>Page {n} of {total}</option>
+                  <option value="{n} / {total}">{n} / {total}</option>
+                  <option value="{n}">{n} (Number only)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="pageNumberStart">Start #</label>
+                <input type="number" id="pageNumberStart" class="form-input" value="1" min="1" />
+              </div>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="pageNumberPosition">Position</label>
+                <select id="pageNumberPosition" class="prop-select full-width">
+                  <option value="bottom-center" selected>Bottom Center</option>
+                  <option value="bottom-right">Bottom Right</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="top-center">Top Center</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="top-left">Top Left</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="pageNumberFontSize">Font Size</label>
+                <select id="pageNumberFontSize" class="prop-select full-width">
+                  <option value="9">9 pt</option>
+                  <option value="10" selected>10 pt</option>
+                  <option value="12">12 pt</option>
+                  <option value="14">14 pt</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="pageNumberMargin">Margin</label>
+                <select id="pageNumberMargin" class="prop-select full-width">
+                  <option value="18">18 pt</option>
+                  <option value="25" selected>25 pt</option>
+                  <option value="36">36 pt</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="checkbox-option">
+                <input type="checkbox" id="pageNumberSkipFirst" />
+                <span>Skip First Page (Don't number cover page)</span>
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnApplyPageNumbers">Apply & Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. Flatten PDF Modal -->
+      <div class="modal-backdrop savy-modal" id="flattenModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 class="modal-title">Flatten PDF</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Permanently burn all overlay annotations, text, freehand drawings, shapes, and signatures into the base PDF content stream.</p>
+            <div class="flatten-info-card">
+              <div class="flatten-info-row">
+                <span>Active Annotations to Flatten:</span>
+                <strong id="flattenAnnotCount">0</strong>
+              </div>
+              <p class="flatten-note">
+                Once flattened, annotations become permanent vector graphics in the PDF and cannot be moved, resized, or deleted as separate overlay objects.
+              </p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecuteFlatten">Flatten & Reload in Editor</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 6: Presentation Mode Container -->
+      <div id="presentationContainer" class="presentation-container" style="display: none;" role="region" aria-label="Fullscreen Presentation View">
+        <canvas id="presentationCanvas" class="presentation-canvas"></canvas>
+        <div id="presentationHud" class="presentation-hud">
+          <button type="button" class="btn-hud" id="btnPresentationPrev" title="Previous Slide (Left Arrow, PageUp)" aria-label="Previous Slide">◀</button>
+          <span id="presentationCounter" class="hud-counter">1 / 1</span>
+          <button type="button" class="btn-hud" id="btnPresentationNext" title="Next Slide (Right Arrow, Space, PageDown)" aria-label="Next Slide">▶</button>
+          <div class="hud-divider"></div>
+          <button type="button" class="btn-hud" id="btnPresentationFit" title="Toggle Fit Page / Fit Width">Fit</button>
+          <button type="button" class="btn-hud btn-hud-exit" id="btnPresentationExit" title="Exit Presentation (Esc)" aria-label="Exit Presentation">✕ Exit</button>
+        </div>
+      </div>
+
+      <!-- Phase 6: Crop Pages Modal -->
+      <div class="modal-backdrop savy-modal" id="cropModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/crop.svg" width="20" height="20" alt="" aria-hidden="true" />
+              <h3 class="modal-title">Crop Pages</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnCropClose">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Losslessly adjust visual page boundaries using the standard PDF /CropBox dictionary. Vector graphics and underlying text are 100% preserved.</p>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="cropPageRange">Apply To</label>
+                <select id="cropPageRange" class="prop-select full-width">
+                  <option value="current" selected>Current Page</option>
+                  <option value="all">All Pages</option>
+                  <option value="custom">Custom Page Range</option>
+                </select>
+              </div>
+            </div>
+            <div class="toolbox-form-row" id="cropCustomRangeRow">
+              <div class="form-group flex-1">
+                <input type="text" id="cropCustomRange" class="form-input full-width" placeholder="e.g. 1-3, 5" style="display: none;" />
+              </div>
+            </div>
+            <div class="crop-margins-grid">
+              <span class="crop-grid-title" style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.8125rem;">Crop Inset Margins (Points):</span>
+              <div class="toolbox-form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label" for="cropTop">Top (pt)</label>
+                  <input type="number" id="cropTop" class="form-input" value="36" min="0" />
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label" for="cropBottom">Bottom (pt)</label>
+                  <input type="number" id="cropBottom" class="form-input" value="36" min="0" />
+                </div>
+              </div>
+              <div class="toolbox-form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label" for="cropLeft">Left (pt)</label>
+                  <input type="number" id="cropLeft" class="form-input" value="36" min="0" />
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label" for="cropRight">Right (pt)</label>
+                  <input type="number" id="cropRight" class="form-input" value="36" min="0" />
+                </div>
+              </div>
+            </div>
+            <div class="disclosure-assurance" style="margin-top: 14px;">
+              <strong>Engine Transparency Notice:</strong> Visual crop sets the standard PDF /CropBox. Underlying content outside the crop box is visually hidden from view but not erased. For sensitive data removal, use Redact.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel" onclick="document.getElementById('cropModal').style.display='none'">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnCropApply">Apply Crop & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 6: Page Resize & Margins Modal -->
+      <div class="modal-backdrop savy-modal" id="pageSizeModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/fit-page.svg" width="20" height="20" alt="" aria-hidden="true" />
+              <h3 class="modal-title">Page Resize & Margins</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnResizeClose">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Standardize page dimensions with proportional content scaling and configurable margins.</p>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="resizePreset">Standard Paper Size</label>
+                <select id="resizePreset" class="prop-select full-width">
+                  <option value="a4" selected>A4 (595 × 842 pt)</option>
+                  <option value="letter">Letter (612 × 792 pt)</option>
+                  <option value="legal">Legal (612 × 1008 pt)</option>
+                  <option value="custom">Custom Dimensions</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="resizeOrientation">Orientation</label>
+                <select id="resizeOrientation" class="prop-select full-width">
+                  <option value="portrait" selected>Portrait</option>
+                  <option value="landscape">Landscape</option>
+                  <option value="auto">Auto (Preserve)</option>
+                </select>
+              </div>
+            </div>
+            <div class="toolbox-form-row" id="resizeCustomDims" style="display: none;">
+              <div class="form-group flex-1">
+                <label class="form-label" for="resizeCustomW">Width (pt)</label>
+                <input type="number" id="resizeCustomW" class="form-input" value="612" min="100" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="resizeCustomH">Height (pt)</label>
+                <input type="number" id="resizeCustomH" class="form-input" value="792" min="100" />
+              </div>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="resizeMargin">Page Margins</label>
+                <select id="resizeMargin" class="prop-select full-width">
+                  <option value="0">None (0 pt)</option>
+                  <option value="18">Narrow (0.25" / 18 pt)</option>
+                  <option value="36" selected>Standard (0.5" / 36 pt)</option>
+                  <option value="54">Wide (0.75" / 54 pt)</option>
+                  <option value="72">Extra Wide (1.0" / 72 pt)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="resizePageRange">Pages</label>
+                <select id="resizePageRange" class="prop-select full-width">
+                  <option value="all" selected>All Pages</option>
+                  <option value="current">Current Page</option>
+                  <option value="custom">Custom Range</option>
+                </select>
+              </div>
+            </div>
+            <div class="toolbox-form-row">
+              <input type="text" id="resizeCustomRange" class="form-input full-width" placeholder="e.g. 1-3, 5" style="display: none;" />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel" onclick="document.getElementById('pageSizeModal').style.display='none'">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnResizeApply">Resize & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 6: Headers & Footers Modal -->
+      <div class="modal-backdrop savy-modal" id="headerFooterModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-lg">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/type.svg" width="20" height="20" alt="" aria-hidden="true" />
+              <h3 class="modal-title">Headers & Footers</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnHfClose">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Add running heads and footers with dynamic tags: <code>{page}</code>, <code>{total}</code>, <code>{filename}</code>, <code>{date}</code>.</p>
+            <div class="hf-section">
+              <div class="toolbox-section-label">HEADER (TOP OF PAGE)</div>
+              <div class="toolbox-form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label" for="hfHeaderLeft">Left Header</label>
+                  <input type="text" id="hfHeaderLeft" class="form-input" placeholder="e.g. {filename}" />
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label" for="hfHeaderCenter">Center Header</label>
+                  <input type="text" id="hfHeaderCenter" class="form-input" placeholder="e.g. Confidential" />
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label" for="hfHeaderRight">Right Header</label>
+                  <input type="text" id="hfHeaderRight" class="form-input" placeholder="e.g. {date}" />
+                </div>
+              </div>
+            </div>
+            <div class="hf-section" style="margin-top: 14px;">
+              <div class="toolbox-section-label">FOOTER (BOTTOM OF PAGE)</div>
+              <div class="toolbox-form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label" for="hfFooterLeft">Left Footer</label>
+                  <input type="text" id="hfFooterLeft" class="form-input" placeholder="e.g. SAVY PDF" />
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label" for="hfFooterCenter">Center Footer</label>
+                  <input type="text" id="hfFooterCenter" class="form-input" placeholder="Page {page} of {total}" value="Page {page} of {total}" />
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label" for="hfFooterRight">Right Footer</label>
+                  <input type="text" id="hfFooterRight" class="form-input" placeholder="e.g. Internal Use" />
+                </div>
+              </div>
+            </div>
+            <div class="toolbox-form-row" style="margin-top: 14px;">
+              <div class="form-group flex-1">
+                <label class="form-label" for="hfFontFamily">Font</label>
+                <select id="hfFontFamily" class="prop-select full-width">
+                  <option value="Helvetica" selected>Helvetica</option>
+                  <option value="TimesRoman">Times New Roman</option>
+                  <option value="Courier">Courier</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="hfFontSize">Size</label>
+                <select id="hfFontSize" class="prop-select full-width">
+                  <option value="8">8 pt</option>
+                  <option value="9" selected>9 pt</option>
+                  <option value="10">10 pt</option>
+                  <option value="12">12 pt</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="hfColor">Color</label>
+                <input type="color" id="hfColor" class="color-picker-input" value="#555555" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="hfMargin">Margin (pt)</label>
+                <input type="number" id="hfMargin" class="form-input" value="36" min="10" />
+              </div>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="hfPageRange">Apply To Pages</label>
+                <select id="hfPageRange" class="prop-select full-width">
+                  <option value="all" selected>All Pages</option>
+                  <option value="current">Current Page</option>
+                  <option value="custom">Custom Range</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">&nbsp;</label>
+                <input type="text" id="hfCustomRange" class="form-input full-width" placeholder="e.g. 1-3, 5" style="display: none;" />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel" onclick="document.getElementById('headerFooterModal').style.display='none'">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnHfApply">Apply & Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 6: Bates Numbering Modal -->
+      <div class="modal-backdrop savy-modal" id="batesModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/file-pdf.svg" width="20" height="20" alt="" aria-hidden="true" />
+              <h3 class="modal-title">Legal Bates Numbering</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnBatesClose">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Apply sequential identification numbering commonly required in legal proceedings and discovery.</p>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="batesPrefix">Prefix</label>
+                <input type="text" id="batesPrefix" class="form-input" value="SAVY-" placeholder="e.g. CONF-" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="batesStart">Start #</label>
+                <input type="number" id="batesStart" class="form-input" value="1" min="1" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="batesPadding">Digits</label>
+                <select id="batesPadding" class="prop-select full-width">
+                  <option value="4">4 (0001)</option>
+                  <option value="6" selected>6 (000001)</option>
+                  <option value="8">8 (00000001)</option>
+                </select>
+              </div>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="batesSuffix">Suffix</label>
+                <input type="text" id="batesSuffix" class="form-input" placeholder="e.g. -X" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="batesPosition">Position</label>
+                <select id="batesPosition" class="prop-select full-width">
+                  <option value="bottom-right" selected>Bottom Right</option>
+                  <option value="bottom-center">Bottom Center</option>
+                  <option value="bottom-left">Bottom Left</option>
+                  <option value="top-right">Top Right</option>
+                  <option value="top-center">Top Center</option>
+                  <option value="top-left">Top Left</option>
+                </select>
+              </div>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="batesFontSize">Font Size</label>
+                <select id="batesFontSize" class="prop-select full-width">
+                  <option value="9">9 pt</option>
+                  <option value="10" selected>10 pt (Bold)</option>
+                  <option value="12">12 pt (Bold)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="batesMargin">Margin (pt)</label>
+                <input type="number" id="batesMargin" class="form-input" value="36" min="10" />
+              </div>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="batesPageRange">Pages</label>
+                <select id="batesPageRange" class="prop-select full-width">
+                  <option value="all" selected>All Pages</option>
+                  <option value="current">Current Page</option>
+                  <option value="custom">Custom Range</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">&nbsp;</label>
+                <input type="text" id="batesCustomRange" class="form-input full-width" placeholder="e.g. 1-3, 5" style="display: none;" />
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel" onclick="document.getElementById('batesModal').style.display='none'">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnBatesApply">Apply & Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 6: Stamps Modal -->
+      <div class="modal-backdrop savy-modal" id="stampModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/stamp.svg" width="20" height="20" alt="" aria-hidden="true" />
+              <h3 class="modal-title">Document Stamps</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnStampClose">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Choose a pre-built legal status stamp or customize text, angle, and opacity.</p>
+            <div class="stamp-presets-grid">
+              <button type="button" class="stamp-preset-btn stamp-approved" data-stamp-type="approved" data-stamp-text="APPROVED" data-stamp-color="#16a34a">
+                <span class="stamp-pill">APPROVED</span>
+              </button>
+              <button type="button" class="stamp-preset-btn stamp-rejected" data-stamp-type="rejected" data-stamp-text="REJECTED" data-stamp-color="#dc2626">
+                <span class="stamp-pill">REJECTED</span>
+              </button>
+              <button type="button" class="stamp-preset-btn stamp-confidential" data-stamp-type="confidential" data-stamp-text="CONFIDENTIAL" data-stamp-color="#b91c1c">
+                <span class="stamp-pill">CONFIDENTIAL</span>
+              </button>
+              <button type="button" class="stamp-preset-btn stamp-draft" data-stamp-type="draft" data-stamp-text="DRAFT" data-stamp-color="#d97706">
+                <span class="stamp-pill">DRAFT</span>
+              </button>
+              <button type="button" class="stamp-preset-btn stamp-reviewed" data-stamp-type="reviewed" data-stamp-text="REVIEWED" data-stamp-color="#2563eb">
+                <span class="stamp-pill">REVIEWED</span>
+              </button>
+            </div>
+
+            <div class="toolbox-section-label" style="margin-top: 18px;">CUSTOM STAMP</div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-2">
+                <label class="form-label" for="stampCustomText">Stamp Text</label>
+                <input type="text" id="stampCustomText" class="form-input" placeholder="e.g. COMPLETED" value="VERIFIED" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="stampCustomColor">Color</label>
+                <input type="color" id="stampCustomColor" class="color-picker-input" value="#16a34a" />
+              </div>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="stampCustomRotation">Rotation</label>
+                <select id="stampCustomRotation" class="prop-select full-width">
+                  <option value="-15">-15° (Angled)</option>
+                  <option value="-10" selected>-10°</option>
+                  <option value="0">0° (Flat)</option>
+                  <option value="10">+10°</option>
+                  <option value="15">+15°</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="stampCustomOpacity">Opacity</label>
+                <select id="stampCustomOpacity" class="prop-select full-width">
+                  <option value="1.0">100%</option>
+                  <option value="0.85" selected>85%</option>
+                  <option value="0.70">70%</option>
+                  <option value="0.50">50%</option>
+                </select>
+              </div>
+              <div class="form-group flex-1" style="display: flex; align-items: flex-end; padding-bottom: 6px;">
+                <label class="checkbox-label" style="font-size: 0.8125rem; display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" id="stampCustomDate" checked />
+                  <span>Include Date</span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel" onclick="document.getElementById('stampModal').style.display='none'">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnStampInsertCustom">Place Custom Stamp</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 6: Form Field Builder Modal -->
+      <div class="modal-backdrop savy-modal" id="formBuilderModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/form.svg" width="20" height="20" alt="" aria-hidden="true" />
+              <h3 class="modal-title">AcroForm Field Builder</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnFormClose">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Insert fillable PDF form fields. Fields are compiled into native ISO 32000 AcroForms upon export.</p>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="formFieldType">Field Type</label>
+                <select id="formFieldType" class="prop-select full-width">
+                  <option value="text" selected>Text Field (Single/Multi-line)</option>
+                  <option value="checkbox">Checkbox</option>
+                  <option value="dropdown">Dropdown List</option>
+                  <option value="radio">Radio Button</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="formFieldName">Field Name</label>
+                <input type="text" id="formFieldName" class="form-input" placeholder="e.g. full_name" />
+              </div>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="formDefaultVal">Default Value</label>
+                <input type="text" id="formDefaultVal" class="form-input" placeholder="Optional pre-filled text" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="formPlaceholder">Tooltip / Placeholder</label>
+                <input type="text" id="formPlaceholder" class="form-input" placeholder="Help text for field" />
+              </div>
+            </div>
+            <div class="form-group" id="formOptionsGroup" style="display: none; margin-top: 10px;">
+              <label class="form-label" for="formOptionsInput">Options (One per line)</label>
+              <textarea id="formOptionsInput" class="form-input full-width" rows="3" placeholder="Option 1&#10;Option 2&#10;Option 3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel" onclick="document.getElementById('formBuilderModal').style.display='none'">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnFormInsert">Insert Field on Page</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 6: Client-Side OCR Modal -->
+      <div class="modal-backdrop savy-modal" id="ocrModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-lg">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/search.svg" width="20" height="20" alt="" aria-hidden="true" />
+              <h3 class="modal-title">Client-Side Optical Character Recognition (OCR)</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnOcrClose">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="ocr-disclaimer-card">
+              <strong>Engine Transparency Notice:</strong>
+              <p>Client-side OCR runs in browser WebAssembly using Tesseract.js. Recognition quality and speed may vary depending on scan resolution, orientation, and hardware.</p>
+              <p class="privacy-notice-inline" style="margin-top: 4px; font-weight: 500;"><em>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</em></p>
+            </div>
+
+            <div class="toolbox-form-row" style="margin-top: 14px;">
+              <div class="form-group flex-1">
+                <label class="form-label" for="ocrLanguage">OCR Language</label>
+                <select id="ocrLanguage" class="prop-select full-width">
+                  <option value="eng" selected>English (eng)</option>
+                  <option value="spa">Spanish (spa)</option>
+                  <option value="fra">French (fra)</option>
+                  <option value="deu">German (deu)</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="ocrPageRange">Page Range</label>
+                <select id="ocrPageRange" class="prop-select full-width">
+                  <option value="current" selected>Current Page Only</option>
+                  <option value="all">All Pages</option>
+                  <option value="custom">Custom Page Range</option>
+                </select>
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">&nbsp;</label>
+                <input type="text" id="ocrCustomRange" class="form-input full-width" placeholder="e.g. 1-3, 5" style="display: none;" />
+              </div>
+            </div>
+
+            <div id="ocrProgressBar" class="ocr-progress-container" style="display: none; margin-top: 14px;">
+              <div class="ocr-progress-bar">
+                <div id="ocrProgressFill" class="ocr-progress-fill" style="width: 0%;"></div>
+              </div>
+              <div id="ocrProgressText" class="ocr-progress-text">Initializing OCR worker...</div>
+            </div>
+
+            <div id="ocrResultContainer" class="ocr-result-container" style="display: none; margin-top: 14px;">
+              <label class="form-label">Extracted OCR Text Preview</label>
+              <textarea id="ocrResultText" class="form-input full-width ocr-textarea" rows="8" readonly></textarea>
+              <div class="ocr-result-actions" style="margin-top: 8px; display: flex; gap: 8px;">
+                <button type="button" class="btn btn-outline" id="btnOcrCopy">Copy Text</button>
+                <button type="button" class="btn btn-secondary" id="btnOcrDownload">Download .TXT</button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="btnOcrCancel" disabled>Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnOcrStart">Start Recognition</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 6: Document Inspector Modal -->
+      <div class="modal-backdrop savy-modal" id="docInspectorModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-lg">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/info.svg" width="20" height="20" alt="" aria-hidden="true" />
+              <h3 class="modal-title">Document Inspector</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnInspectorClose">✕</button>
+          </div>
+          <div class="modal-body" id="docInspectorContent">
+            <div class="inspector-loading">Inspecting document metadata and structure...</div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('docInspectorModal').style.display='none'">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 5: Privacy Center Modal -->
+      <div class="modal-backdrop savy-modal" id="privacyCenterModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-lg">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/shield.svg" width="22" height="22" alt="" aria-hidden="true" />
+              <h3 class="modal-title">SAVY Privacy & Security Center</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnPrivacyCenterClose">✕</button>
+          </div>
+
+          <div class="privacy-modal-nav">
+            <button type="button" class="privacy-tab-btn active" data-tab="tab-privacy-arch">
+              Local Architecture
+            </button>
+            <button type="button" class="privacy-tab-btn" data-tab="tab-privacy-lifecycle">
+              Data & Memory Lifecycle
+            </button>
+            <button type="button" class="privacy-tab-btn" data-tab="tab-privacy-network">
+              CDNs & Network Transparency
+            </button>
+            <button type="button" class="privacy-tab-btn" data-tab="tab-privacy-ai">
+              AI Privacy & Models
+            </button>
+          </div>
+
+          <div class="modal-body privacy-modal-body">
+            <!-- Tab 1: Architecture -->
+            <div class="privacy-tab-pane active" id="tab-privacy-arch">
+              <div class="privacy-banner">
+                <div class="privacy-banner-badge">Guaranteed Principle</div>
+                <h4 class="privacy-banner-title">Your PDF is processed locally in your browser and is not uploaded to SAVY's servers.</h4>
+                <p class="privacy-banner-text">
+                  SAVY runs entirely client-side inside your browser sandbox. Unlike traditional online PDF tools that upload documents to remote cloud queues, your files, annotations, drawings, and signatures are held in volatile browser RAM.
+                </p>
+              </div>
+
+              <div class="privacy-grid">
+                <div class="privacy-grid-card">
+                  <div class="privacy-card-header">
+                    <span class="privacy-card-icon">⚡</span>
+                    <strong>Zero Document Uploads</strong>
+                  </div>
+                  <p>All parsing, page operations, annotations, and PDF exports are compiled in WebAssembly and JavaScript in your browser memory.</p>
+                </div>
+                <div class="privacy-grid-card">
+                  <div class="privacy-card-header">
+                    <span class="privacy-card-icon">🔒</span>
+                    <strong>Zero Cloud Storage</strong>
+                  </div>
+                  <p>SAVY has no Amazon S3, Google Cloud Storage, or Azure Blob buckets. Documents cease to exist in memory the moment you close the tab.</p>
+                </div>
+                <div class="privacy-grid-card">
+                  <div class="privacy-card-header">
+                    <span class="privacy-card-icon">🛡️</span>
+                    <strong>Zero Backend Processing</strong>
+                  </div>
+                  <p>There are no Python, Node.js, or Go backend processing servers. All computation executes locally on your CPU/GPU hardware.</p>
+                </div>
+                <div class="privacy-grid-card">
+                  <div class="privacy-card-header">
+                    <span class="privacy-card-icon">🚫</span>
+                    <strong>Zero Tracking / Telemetry</strong>
+                  </div>
+                  <p>No Google Analytics, Meta Pixel, Mixpanel, or PostHog tracking scripts. We do not track document contents or user behavior.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 2: Lifecycle -->
+            <div class="privacy-tab-pane" id="tab-privacy-lifecycle">
+              <div class="lifecycle-steps">
+                <div class="lifecycle-step">
+                  <div class="lifecycle-step-num">1</div>
+                  <div class="lifecycle-step-content">
+                    <h5>Local File Ingestion</h5>
+                    <p>When you select or drop a PDF, the file bytes are read via the standard HTML5 <code>FileReader</code> API directly into an <code>ArrayBuffer</code> in volatile browser memory.</p>
+                  </div>
+                </div>
+                <div class="lifecycle-step">
+                  <div class="lifecycle-step-num">2</div>
+                  <div class="lifecycle-step-content">
+                    <h5>Browser Sandbox Manipulation</h5>
+                    <p>All page modifications, annotations, signatures, and stamps are rendered to in-memory HTML5 canvases and compiled via pure JavaScript (pdf-lib).</p>
+                  </div>
+                </div>
+                <div class="lifecycle-step">
+                  <div class="lifecycle-step-num">3</div>
+                  <div class="lifecycle-step-content">
+                    <h5>Direct Local Download</h5>
+                    <p>The compiled PDF is instantiated as a local browser <code>Blob</code> and triggered via a transient <code>blob:</code> Object URL. The Object URL is tracked and explicitly revoked after download.</p>
+                  </div>
+                </div>
+                <div class="lifecycle-step">
+                  <div class="lifecycle-step-num">4</div>
+                  <div class="lifecycle-step-content">
+                    <h5>Instant Session Purge</h5>
+                    <p>Clicking "Close Document" or navigating away instantly purges all ArrayBuffers, canvas contexts, annotation models, and Object URLs from memory.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 3: Network Transparency -->
+            <div class="privacy-tab-pane" id="tab-privacy-network">
+              <div class="disclosure-box">
+                <h4 class="disclosure-title">Accurate Network Transparency</h4>
+                <p>SAVY does not claim "zero network requests" globally because third-party JavaScript libraries are loaded via CDN upon initial page load:</p>
+                <ul class="disclosure-list">
+                  <li><strong>Mozilla PDF.js (v3.11.174):</strong> Loaded from Cloudflare CDN (cdnjs.cloudflare.com) to render PDF pages locally.</li>
+                  <li><strong>pdf-lib (v1.17.1):</strong> Loaded from Cloudflare CDN (cdnjs.cloudflare.com) for client-side PDF document manipulation.</li>
+                </ul>
+                <div class="disclosure-assurance">
+                  <strong>Critical Privacy Distinction:</strong>
+                  CDN requests are purely static <code>GET</code> requests for JavaScript libraries. <em>No document data, filenames, image contents, signatures, or user inputs are EVER included in any network request.</em>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 4: AI Privacy & Models (Phase 8) -->
+            <div class="privacy-tab-pane" id="tab-privacy-ai">
+              <div class="privacy-banner">
+                <div class="privacy-banner-badge">Guaranteed AI Principle</div>
+                <h4 class="privacy-banner-title">AI processing runs locally in your browser when supported. Your PDF is never uploaded to SAVY servers.</h4>
+                <p class="privacy-banner-text">
+                  SAVY's AI intelligence features operate 100% on your local device. We never silently transmit PDF text, document contents, or questions to external cloud AI APIs or paid backend endpoints.
+                </p>
+              </div>
+
+              <div class="privacy-grid">
+                <div class="privacy-grid-card">
+                  <div class="privacy-card-header">
+                    <span class="privacy-card-icon">🧠</span>
+                    <strong>Local Extractive NLP & BM25</strong>
+                  </div>
+                  <p>Summarization, Key Points, and Grounded Q&amp;A use pure in-memory sentence graph centrality (TextRank) and BM25 relevance scoring. Zero external server dependencies.</p>
+                </div>
+                <div class="privacy-grid-card">
+                  <div class="privacy-card-header">
+                    <span class="privacy-card-icon">⚡</span>
+                    <strong>Browser-Native AI Capabilities</strong>
+                  </div>
+                  <p>When supported by modern browsers (e.g., Chrome Built-in AI via <code>window.ai</code> or WebGPU), models run purely on local device silicon with zero network transmission.</p>
+                </div>
+                <div class="privacy-grid-card">
+                  <div class="privacy-card-header">
+                    <span class="privacy-card-icon">🚫</span>
+                    <strong>Zero Hallucinations Guarantee</strong>
+                  </div>
+                  <p>"Ask Your PDF" answers are strictly grounded in extracted document content. If information is absent from the PDF, SAVY clearly indicates it was not found rather than inventing an answer.</p>
+                </div>
+                <div class="privacy-grid-card">
+                  <div class="privacy-card-header">
+                    <span class="privacy-card-icon">🔒</span>
+                    <strong>Opt-In & Non-Blocking</strong>
+                  </div>
+                  <p>AI processing only runs when explicitly invoked by you. You can cancel ongoing analysis at any time, and document text is never cached across sessions.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer privacy-modal-footer">
+            <a href="./privacy.html" target="_blank" class="btn btn-outline" rel="noopener noreferrer">
+              Open Full Privacy Policy ↗
+            </a>
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('privacyCenterModal').style.display='none'">
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 5: Redaction Mode Selection Modal -->
+      <div class="modal-backdrop savy-modal" id="applyRedactionModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/eye-off.svg" width="20" height="20" alt="" aria-hidden="true" />
+              <h3 class="modal-title">Apply Document Redactions</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnCancelApplyRedactionCross">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">
+              Ready to burn <strong id="applyRedactCount">0</strong> draft redaction area(s) into your document. Choose your preferred redaction mode:
+            </p>
+
+            <div class="redaction-modes-list">
+              <label class="redaction-mode-card">
+                <input type="radio" name="redactionMode" value="sanitized" checked />
+                <div class="redaction-mode-info">
+                  <div class="mode-title-row">
+                    <strong>Sanitized Redaction (Page Rasterization)</strong>
+                    <span class="badge-recommended">Recommended</span>
+                  </div>
+                  <p class="mode-desc">
+                    Renders redacted pages onto a high-DPI image before re-compiling the PDF. This <strong>completely eliminates the underlying text content stream and font glyphs</strong>. Underlying words cannot be selected, searched, or extracted by any PDF inspection tool.
+                  </p>
+                </div>
+              </label>
+
+              <label class="redaction-mode-card">
+                <input type="radio" name="redactionMode" value="visual" />
+                <div class="redaction-mode-info">
+                  <div class="mode-title-row">
+                    <strong>Permanent Visual Redaction</strong>
+                    <span class="badge-fast">Vector Mode</span>
+                  </div>
+                  <p class="mode-desc">
+                    Burns solid opaque black vector rectangles into the PDF stream. The visual display is completely obscured.
+                  </p>
+                  <p class="mode-warning">
+                    ⚠️ <em>Notice: In vector mode, underlying text glyphs may still be indexed or extractable by programmatic scrapers. For sensitive text, choose Sanitized Redaction.</em>
+                  </p>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="btnCancelApplyRedaction">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnConfirmApplyRedaction">Apply & Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 5: PDF Encryption Limitation Disclosure Modal -->
+      <div class="modal-backdrop savy-modal" id="encryptionInfoModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <img src="./assets/icons/lock.svg" width="20" height="20" alt="" aria-hidden="true" />
+              <h3 class="modal-title">PDF Password Protection & Encryption</h3>
+            </div>
+            <button type="button" class="btn-modal-close" onclick="document.getElementById('encryptionInfoModal').style.display='none'">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="encryption-limitation-banner">
+              <strong>Engine Notice:</strong>
+              <p>True PDF encryption requires an additional compatible client-side PDF encryption implementation.</p>
+            </div>
+            <p class="modal-subtitle" style="margin-top: 14px;">
+              PDF password protection is governed by the ISO 32000 specification and requires writing encrypted binary objects using standard cryptographic handlers (AES-128, AES-256, or RC4).
+            </p>
+            <p class="modal-subtitle">
+              The client-side PDF manipulation engine (<code>pdf-lib</code>) does not natively support writing encrypted PDF structures.
+            </p>
+            <div class="disclosure-assurance" style="margin-top: 14px;">
+              <strong>SAVY Commitment to Honesty:</strong>
+              SAVY strictly refuses to simulate password protection with insecure client-side wrappers or pseudo-locks. We only provide genuine, verifiable security features.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="document.getElementById('encryptionInfoModal').style.display='none'">
+              Understood
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 8: AI PDF Intelligence Modal -->
+      <div class="modal-backdrop savy-modal" id="aiAssistantModal" role="dialog" aria-modal="true" aria-labelledby="aiAssistantModalTitle" style="display: none;">
+        <div class="modal-dialog modal-dialog-ai">
+          <div class="modal-header">
+            <div class="ai-modal-header-title">
+              <img src="./assets/icons/sparkles.svg" width="20" height="20" alt="" />
+              <h3 class="modal-title" id="aiAssistantModalTitle">SAVY AI PDF Intelligence</h3>
+              <span class="ai-header-badge">⚡ 100% In-Browser</span>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnAIClose" aria-label="Close AI Assistant">✕</button>
+          </div>
+
+          <!-- Tab Navigation -->
+          <div class="ai-modal-nav">
+            <button type="button" class="ai-tab-btn active" data-tab="tab-ai-summary">
+              <img src="./assets/icons/sparkles.svg" width="14" height="14" alt="" />
+              <span>Summary</span>
+            </button>
+            <button type="button" class="ai-tab-btn" data-tab="tab-ai-chat">
+              <img src="./assets/icons/message-square.svg" width="14" height="14" alt="" />
+              <span>Ask Your PDF</span>
+            </button>
+            <button type="button" class="ai-tab-btn" data-tab="tab-ai-keypoints">
+              <img src="./assets/icons/list.svg" width="14" height="14" alt="" />
+              <span>Key Points</span>
+            </button>
+            <button type="button" class="ai-tab-btn" data-tab="tab-ai-outline">
+              <img src="./assets/icons/layers.svg" width="14" height="14" alt="" />
+              <span>Outline</span>
+            </button>
+            <button type="button" class="ai-tab-btn" data-tab="tab-ai-smart-actions">
+              <img src="./assets/icons/zap.svg" width="14" height="14" alt="" />
+              <span>Smart Actions</span>
+            </button>
+            <button type="button" class="ai-tab-btn" data-tab="tab-ai-search">
+              <img src="./assets/icons/search.svg" width="14" height="14" alt="" />
+              <span>Ranked Search</span>
+            </button>
+            <button type="button" class="ai-tab-btn" data-tab="tab-ai-privacy">
+              <img src="./assets/icons/shield.svg" width="14" height="14" alt="" />
+              <span>Capabilities & Privacy</span>
+            </button>
+          </div>
+
+          <div class="modal-body ai-modal-body">
+            <!-- Non-Blocking Progress Bar -->
+            <div class="ai-progress-container" id="aiProgressContainer" style="display: none;">
+              <div class="ai-progress-header">
+                <span id="aiProgressLabel">Analyzing document...</span>
+                <button type="button" class="btn-ai-cancel" id="btnAICancel">Cancel</button>
+              </div>
+              <div class="ai-progress-track">
+                <div class="ai-progress-bar" id="aiProgressBar"></div>
+              </div>
+            </div>
+
+            <!-- Tab 1: AI PDF Summary -->
+            <div class="ai-tab-pane active" id="tab-ai-summary">
+              <div class="toolbox-form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label" for="aiSummaryScope">Document Scope</label>
+                  <select id="aiSummaryScope" class="prop-select full-width">
+                    <option value="all" selected>Full Document (All Pages)</option>
+                    <option value="current">Current Page Only</option>
+                  </select>
+                </div>
+                <div class="form-group flex-1">
+                  <label class="form-label" for="aiSummaryLength">Summary Length</label>
+                  <select id="aiSummaryLength" class="prop-select full-width">
+                    <option value="concise">Concise Overview (2 Sentences)</option>
+                    <option value="balanced" selected>Balanced Digest (4 Sentences)</option>
+                    <option value="executive">Executive Deep-Dive (8 Sentences)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-actions-row">
+                <button type="button" class="btn btn-primary" id="btnGenerateSummary">
+                  <img src="./assets/icons/sparkles.svg" width="14" height="14" alt="" />
+                  Generate Summary
+                </button>
+                <button type="button" class="btn btn-outline" id="btnCopySummary">
+                  Copy Summary
+                </button>
+              </div>
+
+              <div id="aiSummaryOutput">
+                <div class="empty-hint">Click "Generate Summary" to produce a client-side document overview.</div>
+              </div>
+              <div class="ai-summary-meta" id="aiSummaryMeta"></div>
+            </div>
+
+            <!-- Tab 2: Ask Your PDF (Grounded Q&A Chat) -->
+            <div class="ai-tab-pane" id="tab-ai-chat">
+              <div class="ai-chat-thread" id="aiChatMessages">
+                <div class="ai-chat-welcome">
+                  <img src="./assets/icons/sparkles.svg" width="28" height="28" alt="" />
+                  <h4>Ask Your PDF</h4>
+                  <p>Ask questions about the active document. Answers are strictly grounded in extracted PDF text with exact page citations and zero hallucinations.</p>
+                </div>
+              </div>
+
+              <div class="ai-chat-input-bar">
+                <input type="text" id="aiChatInput" class="ai-chat-input" placeholder="Ask a question about this document... (Press Enter)" />
+                <button type="button" class="btn btn-primary" id="btnSendChat">Ask</button>
+                <button type="button" class="btn btn-outline" id="btnClearChat" title="Clear conversation">Clear</button>
+              </div>
+            </div>
+
+            <!-- Tab 3: Key Points -->
+            <div class="ai-tab-pane" id="tab-ai-keypoints">
+              <div class="toolbox-form-row">
+                <div class="form-group flex-1">
+                  <label class="form-label" for="aiKeyPointsCount">Number of Points</label>
+                  <select id="aiKeyPointsCount" class="prop-select full-width">
+                    <option value="3">3 Key Points</option>
+                    <option value="5" selected>5 Key Points</option>
+                    <option value="8">8 Key Points</option>
+                    <option value="10">10 Key Points</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-actions-row">
+                <button type="button" class="btn btn-primary" id="btnGenerateKeyPoints">
+                  <img src="./assets/icons/list.svg" width="14" height="14" alt="" />
+                  Extract Key Points
+                </button>
+                <button type="button" class="btn btn-outline" id="btnCopyKeyPoints">
+                  Copy Points
+                </button>
+              </div>
+
+              <div id="aiKeyPointsOutput">
+                <div class="empty-hint">Click "Extract Key Points" to extract salient takeaways from your PDF.</div>
+              </div>
+            </div>
+
+            <!-- Tab 4: Document Outline -->
+            <div class="ai-tab-pane" id="tab-ai-outline">
+              <p class="modal-subtitle">Automatically detects structural headings and numbered sections across all pages with jump-to-page navigation.</p>
+              
+              <div class="form-actions-row">
+                <button type="button" class="btn btn-primary" id="btnGenerateOutline">
+                  <img src="./assets/icons/layers.svg" width="14" height="14" alt="" />
+                  Detect Document Outline
+                </button>
+              </div>
+
+              <div id="aiOutlineOutput">
+                <div class="empty-hint">Click "Detect Document Outline" to analyze heading hierarchy.</div>
+              </div>
+            </div>
+
+            <!-- Tab 5: Smart Text Actions -->
+            <div class="ai-tab-pane" id="tab-ai-smart-actions">
+              <div class="form-group">
+                <div class="flex justify-between items-center" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                  <label class="form-label" for="aiSmartTextInput" style="margin: 0;">Target Text</label>
+                  <button type="button" class="btn btn-sm btn-outline" id="btnGrabSelectedText">
+                    Grab Selected Text from PDF
+                  </button>
+                </div>
+                <textarea id="aiSmartTextInput" class="prop-textarea" rows="3" placeholder="Select text in the PDF viewer or type/paste text here..."></textarea>
+              </div>
+
+              <div class="ai-smart-actions-grid">
+                <button type="button" class="ai-smart-btn" data-smart-action="summarize">
+                  <span>⚡ Summarize</span>
+                </button>
+                <button type="button" class="ai-smart-btn" data-smart-action="explain">
+                  <span>💡 Explain</span>
+                </button>
+                <button type="button" class="ai-smart-btn" data-smart-action="simplify">
+                  <span>📖 Simplify</span>
+                </button>
+                <button type="button" class="ai-smart-btn" data-smart-action="rewrite">
+                  <span>✍️ Rewrite</span>
+                </button>
+                <button type="button" class="ai-smart-btn" data-smart-action="extract_info">
+                  <span>🔍 Key Entities</span>
+                </button>
+              </div>
+
+              <div id="aiSmartActionOutput">
+                <div class="empty-hint">Select a smart action above to process the target text.</div>
+              </div>
+              <div class="form-actions-row" style="margin-top: 0.5rem;">
+                <button type="button" class="btn btn-outline" id="btnCopySmartAction">Copy Result</button>
+              </div>
+            </div>
+
+            <!-- Tab 6: Ranked Search -->
+            <div class="ai-tab-pane" id="tab-ai-search">
+              <p class="modal-subtitle">Local Context &amp; Relevance Ranked Search using standard BM25 ranking across PDF passages.</p>
+              
+              <div class="ai-chat-input-bar">
+                <input type="text" id="aiRankedSearchInput" class="ai-chat-input" placeholder="Enter keywords to search with relevance ranking..." />
+                <button type="button" class="btn btn-primary" id="btnRunRankedSearch">Search</button>
+              </div>
+
+              <div id="aiRankedSearchResults">
+                <div class="empty-hint">Enter a query to rank passages across pages.</div>
+              </div>
+            </div>
+
+            <!-- Tab 7: Privacy & Capabilities -->
+            <div class="ai-tab-pane" id="tab-ai-privacy">
+              <div class="privacy-banner">
+                <div class="privacy-banner-badge">Guaranteed Principle</div>
+                <h4 class="privacy-banner-title">AI processing runs locally in your browser when supported. Your PDF is never uploaded to SAVY servers.</h4>
+                <p class="privacy-banner-text">
+                  SAVY AI features operate entirely on your device using client-side algorithms in volatile memory. Document content, extracted text, and query prompts are never transmitted to external cloud AI APIs or server queues.
+                </p>
+              </div>
+
+              <div class="ai-capabilities-grid">
+                <div class="ai-cap-card">
+                  <div class="ai-cap-label">Hardware WebGPU</div>
+                  <div class="ai-cap-value" id="aiCapWebGPU">Checking...</div>
+                </div>
+                <div class="ai-cap-card">
+                  <div class="ai-cap-label">Browser Built-in AI</div>
+                  <div class="ai-cap-value" id="aiCapBuiltInAI">Checking...</div>
+                </div>
+                <div class="ai-cap-card">
+                  <div class="ai-cap-label">WebAssembly Core</div>
+                  <div class="ai-cap-value" id="aiCapWasm">Checking...</div>
+                </div>
+                <div class="ai-cap-card">
+                  <div class="ai-cap-label">Active Engine</div>
+                  <div class="ai-cap-value" id="aiCapEngine">Checking...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phase 7: Keyboard Shortcuts Modal -->
+      <div class="modal-backdrop savy-modal" id="shortcutsModal" role="dialog" aria-modal="true" aria-labelledby="shortcutsModalTitle" style="display: none;">
+        <div class="modal-dialog modal-dialog-shortcuts">
+          <div class="modal-header">
+            <div class="privacy-modal-header-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M6 12h.01M10 12h.01M14 12h.01M18 12h.01M8 16h8"></path></svg>
+              <h3 class="modal-title" id="shortcutsModalTitle">Keyboard Shortcuts</h3>
+            </div>
+            <button type="button" class="btn-modal-close" id="btnCloseShortcuts" aria-label="Close shortcuts dialog">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="shortcuts-grid">
+              <div class="shortcut-group">
+                <h4 class="shortcut-group-title">Navigation & Viewing</h4>
+                <div class="shortcut-row"><span class="shortcut-desc">Find text in document</span><div class="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>F</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Find & replace text</span><div class="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>H</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Presentation mode</span><div class="shortcut-keys"><kbd>F5</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Next page</span><div class="shortcut-keys"><kbd>→</kbd> / <kbd>PgDn</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Previous page</span><div class="shortcut-keys"><kbd>←</kbd> / <kbd>PgUp</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Zoom in</span><div class="shortcut-keys"><kbd>+</kbd> / <kbd>=</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Zoom out</span><div class="shortcut-keys"><kbd>-</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Reset zoom</span><div class="shortcut-keys"><kbd>0</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Close modal / Deselect</span><div class="shortcut-keys"><kbd>Esc</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Shortcuts cheat sheet</span><div class="shortcut-keys"><kbd>?</kbd></div></div>
+              </div>
+              <div class="shortcut-group">
+                <h4 class="shortcut-group-title">Tools & Editing</h4>
+                <div class="shortcut-row"><span class="shortcut-desc">Select pointer</span><div class="shortcut-keys"><kbd>V</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Hand pan tool</span><div class="shortcut-keys"><kbd>H</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Visual text replacement</span><div class="shortcut-keys"><kbd>E</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Add new text</span><div class="shortcut-keys"><kbd>T</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Freehand pen</span><div class="shortcut-keys"><kbd>P</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Highlighter</span><div class="shortcut-keys"><kbd>L</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Rectangle / Circle / Arrow</span><div class="shortcut-keys"><kbd>R</kbd> / <kbd>C</kbd> / <kbd>A</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Insert image</span><div class="shortcut-keys"><kbd>I</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Digital signature</span><div class="shortcut-keys"><kbd>S</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Status stamp</span><div class="shortcut-keys"><kbd>M</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Form field</span><div class="shortcut-keys"><kbd>F</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Redact tool</span><div class="shortcut-keys"><kbd>X</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Undo / Redo</span><div class="shortcut-keys"><kbd>Ctrl+Z</kbd> / <kbd>Ctrl+Y</kbd></div></div>
+                <div class="shortcut-row"><span class="shortcut-desc">Delete selected</span><div class="shortcut-keys"><kbd>Del</kbd></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="btnCloseShortcutsFooter">Got it</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Floating Toast Notifications -->
       <div class="toast-container" id="toastContainer" aria-live="polite"></div>
     </div>
 
     <!-- Application Controller -->
-    <script type="module" src="/js/editor.js"></script>
+    <script type="module" src="./js/editor.js"></script>
   </body>
 </html>

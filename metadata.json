@@ -2,7 +2,5 @@
   "name": "SAVY",
   "description": "Free, privacy-first, browser-based, all-in-one PDF workspace. Process PDF documents securely on your device with no cloud uploads.",
   "requestFramePermissions": [],
-  "majorCapabilities": [
-    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
-  ]
+  "majorCapabilities": []
 }

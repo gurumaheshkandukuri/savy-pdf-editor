@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1329"/>
+      <stop offset="50%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+
+  <!-- Subtle grid pattern overlay -->
+  <g stroke="#334155" stroke-width="1" opacity="0.15">
+    <line x1="100" y1="0" x2="100" y2="630"/>
+    <line x1="300" y1="0" x2="300" y2="630"/>
+    <line x1="500" y1="0" x2="500" y2="630"/>
+    <line x1="700" y1="0" x2="700" y2="630"/>
+    <line x1="900" y1="0" x2="900" y2="630"/>
+    <line x1="1100" y1="0" x2="1100" y2="630"/>
+    <line x1="0" y1="100" x2="1200" y2="100"/>
+    <line x1="0" y1="250" x2="1200" y2="250"/>
+    <line x1="0" y1="400" x2="1200" y2="400"/>
+    <line x1="0" y1="550" x2="1200" y2="550"/>
+  </g>
+
+  <!-- Glow circle in background -->
+  <circle cx="950" cy="180" r="280" fill="#2563eb" opacity="0.12" filter="blur(60px)"/>
+  <circle cx="200" cy="480" r="240" fill="#7c3aed" opacity="0.1" filter="blur(60px)"/>
+
+  <!-- Main Content Container -->
+  <g transform="translate(80, 75)">
+    <!-- Header: Logo & Badge -->
+    <g transform="translate(0, 0)">
+      <!-- SAVY Mark Icon -->
+      <rect x="0" y="0" width="56" height="56" rx="14" fill="url(#primaryGrad)" filter="url(#shadow)"/>
+      <path d="M18 17H38C39 17 40 18 40 19V25L29 30L40 35V41C40 42 39 43 38 43H18" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="29" cy="30" r="3" fill="#60a5fa"/>
+
+      <!-- Logo Text -->
+      <text x="74" y="40" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="36" font-weight="900" letter-spacing="-1" fill="#ffffff">SAVY</text>
+
+      <!-- Pill Badge -->
+      <rect x="200" y="10" width="310" height="36" rx="18" fill="rgba(37, 99, 235, 0.2)" stroke="rgba(96, 165, 250, 0.4)" stroke-width="1.5"/>
+      <circle cx="220" cy="28" r="5" fill="#10b981"/>
+      <text x="234" y="33" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#93c5fd" letter-spacing="0.5">100% CLIENT-SIDE • ZERO UPLOADS</text>
+    </g>
+
+    <!-- Main Title -->
+    <text x="0" y="140" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="800" fill="#ffffff" letter-spacing="-1.5">
+      The Free, Privacy-First
+    </text>
+    <text x="0" y="200" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="800" fill="url(#accentGrad)" letter-spacing="-1.5">
+      Browser PDF Workspace
+    </text>
+
+    <!-- Subtitle / Value Prop -->
+    <text x="0" y="260" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="400" fill="#94a3b8" letter-spacing="-0.2">
+      View, edit, merge, split, compress, sign, redact, and convert PDF documents
+    </text>
+    <text x="0" y="295" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="400" fill="#94a3b8" letter-spacing="-0.2">
+      completely in local browser memory. No servers. No accounts. Free forever.
+    </text>
+
+    <!-- 6 Feature Badges -->
+    <g transform="translate(0, 350)">
+      <!-- Card 1 -->
+      <rect x="0" y="0" width="160" height="64" rx="10" fill="rgba(30, 41, 59, 0.8)" stroke="#334155" stroke-width="1.5"/>
+      <text x="20" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#60a5fa">CORE EDITOR</text>
+      <text x="20" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="700" fill="#f8fafc">Edit &amp; Draw</text>
+
+      <!-- Card 2 -->
+      <rect x="175" y="0" width="160" height="64" rx="10" fill="rgba(30, 41, 59, 0.8)" stroke="#334155" stroke-width="1.5"/>
+      <text x="195" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#60a5fa">DOCUMENT</text>
+      <text x="195" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="700" fill="#f8fafc">Merge &amp; Split</text>
+
+      <!-- Card 3 -->
+      <rect x="350" y="0" width="160" height="64" rx="10" fill="rgba(30, 41, 59, 0.8)" stroke="#334155" stroke-width="1.5"/>
+      <text x="370" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#60a5fa">OPTIMIZE</text>
+      <text x="370" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="700" fill="#f8fafc">Compress PDF</text>
+
+      <!-- Card 4 -->
+      <rect x="525" y="0" width="160" height="64" rx="10" fill="rgba(30, 41, 59, 0.8)" stroke="#334155" stroke-width="1.5"/>
+      <text x="545" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#60a5fa">SECURITY</text>
+      <text x="545" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="700" fill="#f8fafc">Dual Redaction</text>
+
+      <!-- Card 5 -->
+      <rect x="700" y="0" width="160" height="64" rx="10" fill="rgba(30, 41, 59, 0.8)" stroke="#334155" stroke-width="1.5"/>
+      <text x="720" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#60a5fa">CONVERT</text>
+      <text x="720" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="700" fill="#f8fafc">Images &amp; OCR</text>
+
+      <!-- Card 6 -->
+      <rect x="875" y="0" width="165" height="64" rx="10" fill="rgba(30, 41, 59, 0.8)" stroke="#334155" stroke-width="1.5"/>
+      <text x="895" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="600" fill="#a855f7">LOCAL AI</text>
+      <text x="895" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="15" font-weight="700" fill="#f8fafc">Ask Your PDF</text>
+    </g>
+
+    <!-- Bottom Guarantee Bar -->
+    <g transform="translate(0, 445)">
+      <line x1="0" y1="0" x2="1040" y2="0" stroke="#334155" stroke-width="1"/>
+      <text x="0" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="600" fill="#64748b">
+        "Your PDF is processed locally in your browser and is never uploaded to SAVY servers."
+      </text>
+      <text x="960" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="700" fill="#38bdf8">
+        savy.app
+      </text>
+    </g>
+  </g>
+</svg>

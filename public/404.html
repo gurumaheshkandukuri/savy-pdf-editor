@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found — SAVY</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href="./assets/images/savy-logo.svg" />
+    <style>
+      :root {
+        --color-primary: #2563eb;
+        --color-primary-hover: #1d4ed8;
+        --color-text: #0f172a;
+        --color-text-muted: #64748b;
+        --color-bg: #f8fafc;
+        --color-card: #ffffff;
+        --color-border: #e2e8f0;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1.5rem;
+      }
+      .card {
+        background: var(--color-card);
+        border: 1px solid var(--color-border);
+        border-radius: 12px;
+        padding: 2.5rem;
+        max-width: 480px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      }
+      .logo {
+        height: 36px;
+        margin-bottom: 1.5rem;
+      }
+      h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+      }
+      p {
+        color: var(--color-text-muted);
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        font-size: 0.95rem;
+      }
+      .btn-primary {
+        background-color: var(--color-primary);
+        color: #ffffff;
+      }
+      .btn-primary:hover {
+        background-color: var(--color-primary-hover);
+      }
+      .btn-secondary {
+        background-color: #f1f5f9;
+        color: var(--color-text);
+        border: 1px solid var(--color-border);
+      }
+      .btn-secondary:hover {
+        background-color: #e2e8f0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img src="./assets/images/savy-logo.svg" alt="SAVY Logo" class="logo" />
+      <h1>Page Not Found</h1>
+      <p>The page you requested could not be found or has moved. Return to the SAVY workspace to continue viewing and editing your PDF files.</p>
+      <div class="actions">
+        <a href="/editor.html" class="btn btn-primary">Open PDF Editor</a>
+        <a href="/" class="btn btn-secondary">Go to Home</a>
+      </div>
+    </div>
+  </body>
+</html>

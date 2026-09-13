@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Free OCR PDF Online — Recognize Text from Scans Locally | SAVY</title>
+    <meta
+      name="description"
+      content="Recognize and extract text from scanned PDF documents and images using local WebAssembly Tesseract OCR. No cloud uploads, 100% private and free."
+    />
+    <link rel="canonical" href="https://savypdf.com/tools/ocr-pdf.html" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Free OCR PDF Online — Recognize Text from Scans Locally | SAVY" />
+    <meta
+      property="og:description"
+      content="Recognize text from scanned PDF documents right in your browser. 100% private WebAssembly OCR with zero server uploads."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://savypdf.com/tools/ocr-pdf.html" />
+    <meta property="og:image" content="https://savypdf.com/assets/images/og-preview.png" />
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Free OCR PDF Online — Recognize Text from Scans Locally | SAVY" />
+    <meta
+      name="twitter:description"
+      content="Extract text from scanned PDFs locally in your browser using WebAssembly OCR. 100% private."
+    />
+    <meta name="twitter:image" content="https://savypdf.com/assets/images/og-preview.png" />
+
+    <meta name="theme-color" content="#2563EB" />
+    <link rel="icon" type="image/svg+xml" href="../assets/images/savy-logo.svg" />
+    <link rel="apple-touch-icon" href="../assets/images/apple-touch-icon.png" />
+    <link rel="manifest" href="../manifest.json" />
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "name": "SAVY OCR PDF Scanner",
+          "operatingSystem": "All (Browser-based)",
+          "applicationCategory": "BusinessApplication",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "description": "Free client-side optical character recognition scanner that extracts editable text from scanned PDFs and photos directly in browser memory."
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://savypdf.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Tools",
+              "item": "https://savypdf.com/#tools"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "OCR PDF",
+              "item": "https://savypdf.com/tools/ocr-pdf.html"
+            }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How does SAVY perform OCR locally without uploading files?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "SAVY lazy-loads Tesseract.js compiled into WebAssembly. The OCR neural network runs directly inside your browser using your local CPU, processing scanned image pixels without sending anything to a server."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Are my scanned documents uploaded to the cloud?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "No. Your PDF is processed locally in your browser and is never uploaded to SAVY servers. All text recognition happens entirely within your computer memory."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What kinds of scans work best with OCR?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "High-contrast scans with at least 150-300 DPI, good lighting, and straight document orientation yield the highest recognition accuracy."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <!-- Site Navigation -->
+    <header class="site-header" id="siteHeader">
+      <div class="container header-inner">
+        <a href="../index.html" class="logo-link" aria-label="SAVY Home">
+          <img src="../assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
+        </a>
+
+        <nav aria-label="Primary Navigation">
+          <ul class="nav-menu">
+            <li><a href="../index.html" class="nav-link">Home</a></li>
+            <li><a href="../index.html#tools" class="nav-link">PDF Tools</a></li>
+            <li><a href="../index.html#features" class="nav-link">Features</a></li>
+            <li><a href="../privacy.html" class="nav-link">Privacy</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-actions">
+          <a href="../editor.html" class="btn btn-primary" id="headerOpenEditorBtn">
+            Open PDF Editor
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <div class="container">
+        <ol class="breadcrumb-list">
+          <li class="breadcrumb-item"><a href="../index.html">Home</a></li>
+          <li class="breadcrumb-separator" aria-hidden="true">/</li>
+          <li class="breadcrumb-item"><a href="../index.html#tools">Tools</a></li>
+          <li class="breadcrumb-separator" aria-hidden="true">/</li>
+          <li class="breadcrumb-item" aria-current="page">OCR PDF</li>
+        </ol>
+      </div>
+    </nav>
+
+    <main id="mainContent">
+      <!-- Tool Hero -->
+      <section class="hero-section">
+        <div class="container">
+          <div class="hero-badge">
+            <img src="../assets/icons/shield.svg" alt="" aria-hidden="true" />
+            <span>100% Client-Side • Zero Cloud Storage</span>
+          </div>
+
+          <h1 class="hero-title">
+            Free OCR PDF Scanner — Extract Text from Scans Privately
+          </h1>
+
+          <p class="hero-subtitle">
+            Extract text from scanned PDFs and receipts using local WebAssembly OCR.
+            Your PDF is processed locally in your browser and is never uploaded to SAVY servers.
+          </p>
+
+          <!-- Interactive Upload Zone -->
+          <div class="upload-zone-wrapper">
+            <div
+              class="upload-zone"
+              id="toolUploadZone"
+              data-tool-action="ocr"
+              role="region"
+              aria-label="Upload Scanned PDF for OCR"
+              tabindex="0"
+            >
+              <div class="upload-icon-container">
+                <img src="../assets/icons/search.svg" alt="" aria-hidden="true" />
+              </div>
+
+              <h2 class="upload-title">Drop your scanned PDF file here for OCR</h2>
+              <p class="upload-subtitle">
+                or click anywhere to select a document from your device
+              </p>
+
+              <div class="upload-actions">
+                <button type="button" class="btn btn-primary" id="btnToolBrowse">
+                  Choose Scanned PDF
+                </button>
+              </div>
+
+              <div class="upload-privacy-note">
+                <img src="../assets/icons/lock.svg" alt="" aria-hidden="true" />
+                <span>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</span>
+              </div>
+
+              <input
+                type="file"
+                id="toolFileInput"
+                class="file-input-hidden"
+                accept="application/pdf,.pdf"
+                aria-label="Upload Scanned PDF for OCR"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- How-to Guide -->
+      <section class="howto-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">OCR Workflow</span>
+            <h2 class="section-title">How to OCR Scanned PDFs Locally</h2>
+            <p class="section-subtitle">
+              Convert paper scans into selectable, searchable digital text in your browser.
+            </p>
+          </div>
+
+          <div class="howto-steps">
+            <div class="step-card">
+              <div class="step-number">1</div>
+              <h3 class="step-title">Load Scan</h3>
+              <p class="step-desc">
+                Select your scanned PDF. The pages render immediately in local memory.
+              </p>
+            </div>
+
+            <div class="step-card">
+              <div class="step-number">2</div>
+              <h3 class="step-title">Run Local OCR</h3>
+              <p class="step-desc">
+                Click "Run OCR". Tesseract WebAssembly inspects pixel shapes directly on your machine.
+              </p>
+            </div>
+
+            <div class="step-card">
+              <div class="step-number">3</div>
+              <h3 class="step-title">Copy & Export</h3>
+              <p class="step-desc">
+                Review the recognized text with confidence metrics, then copy or export to text or PDF.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features & Benefits -->
+      <section class="benefits-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">Key Features</span>
+            <h2 class="section-title">Why Run OCR with SAVY</h2>
+            <p class="section-subtitle">
+              Intelligent recognition with uncompromising confidentiality.
+            </p>
+          </div>
+
+          <div class="benefits-grid">
+            <div class="benefit-card">
+              <div class="benefit-icon">
+                <img src="../assets/icons/shield.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="benefit-title">Zero Server Uploads</h3>
+              <p class="benefit-desc">
+                Paper records, personal receipts, and bank statements are processed purely in local WebAssembly.
+              </p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="benefit-icon">
+                <img src="../assets/icons/cpu.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="benefit-title">WebAssembly Engine</h3>
+              <p class="benefit-desc">
+                Powered by client-side Tesseract.js running in a non-blocking browser Web Worker.
+              </p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="benefit-icon">
+                <img src="../assets/icons/copy.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="benefit-title">One-Click Copy</h3>
+              <p class="benefit-desc">
+                Instantly grab recognized text paragraphs to paste into your documents or notes.
+              </p>
+            </div>
+
+            <div class="benefit-card">
+              <div class="benefit-icon">
+                <img src="../assets/icons/check.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="benefit-title">100% Free Forever</h3>
+              <p class="benefit-desc">
+                No subscription walls, credit cards, or scanning limits.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Frequently Asked Questions -->
+      <section class="faq-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">FAQ</span>
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <p class="section-subtitle">
+              Answers regarding client-side optical character recognition.
+            </p>
+          </div>
+
+          <div class="faq-list">
+            <div class="faq-item open">
+              <button type="button" class="faq-item-trigger" aria-expanded="true">
+                <span>How does SAVY perform OCR locally without uploading files?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>SAVY lazy-loads Tesseract.js compiled into WebAssembly. The OCR neural network runs directly inside your browser using your local CPU, processing scanned image pixels without sending anything to a server.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-item-trigger" aria-expanded="false">
+                <span>Are my scanned documents uploaded to the cloud?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>No. Your PDF is processed locally in your browser and is never uploaded to SAVY servers. All text recognition happens entirely within your computer memory.</p>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button type="button" class="faq-item-trigger" aria-expanded="false">
+                <span>What kinds of scans work best with OCR?</span>
+                <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+              <div class="faq-answer">
+                <p>High-contrast scans with at least 150-300 DPI, good lighting, and straight document orientation yield the highest recognition accuracy.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Related Tools -->
+      <section class="tools-section">
+        <div class="container">
+          <div class="section-header">
+            <span class="section-tag">Discover More Tools</span>
+            <h2 class="section-title">Explore Other Free PDF Tools</h2>
+            <p class="section-subtitle">
+              Expand your PDF workflow with these client-side utilities.
+            </p>
+          </div>
+
+          <div class="tools-grid">
+            <a href="./pdf-to-text.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="../assets/icons/type.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">PDF to Text <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Extract readable text from standard digital PDF documents.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./pdf-editor.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="../assets/icons/pen.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">PDF Editor <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Add text, annotations, signatures, and stamps directly in your browser.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./redact-pdf.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="../assets/icons/eye-off.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">Redact PDF <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Permanently black out sensitive data and confidential personal information.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+
+            <a href="./compress-pdf.html" class="tool-card">
+              <div class="tool-card-icon">
+                <img src="../assets/icons/download.svg" alt="" aria-hidden="true" />
+              </div>
+              <h3 class="tool-card-title">Compress PDF <span class="arrow">→</span></h3>
+              <p class="tool-card-desc">Reduce document file size to share easily via email.</p>
+              <span class="tool-badge-pill">Free & Local</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer-top">
+          <div class="footer-brand">
+            <a href="../index.html" class="logo-link" aria-label="SAVY Home">
+              <img src="../assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
+            </a>
+            <p class="footer-desc">
+              Free, privacy-first, browser-based PDF workspace. Process PDF documents securely on your device with no uploads or cloud storage.
+            </p>
+          </div>
+
+          <div class="footer-links">
+            <div>
+              <h4 class="footer-col-title">PDF Tools</h4>
+              <ul class="footer-nav">
+                <li><a href="./pdf-editor.html">PDF Editor</a></li>
+                <li><a href="./merge-pdf.html">Merge PDF</a></li>
+                <li><a href="./split-pdf.html">Split PDF</a></li>
+                <li><a href="./compress-pdf.html">Compress PDF</a></li>
+                <li><a href="./redact-pdf.html">Redact PDF</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="footer-col-title">Privacy & Info</h4>
+              <ul class="footer-nav">
+                <li><a href="../privacy.html">Privacy Policy</a></li>
+                <li><a href="../editor.html">Launch Editor</a></li>
+                <li><a href="../index.html#features">Features</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>© 2026 SAVY Workspace. All file processing is performed locally in your browser.</p>
+          <p>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="../js/tool-page.js"></script>
+  </body>
+</html>

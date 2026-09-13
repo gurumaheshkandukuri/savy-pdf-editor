@@ -1,0 +1,13 @@
+/editor                /editor.html              200
+/privacy               /privacy.html             200
+/tools/pdf-editor      /tools/pdf-editor.html    200
+/tools/merge-pdf       /tools/merge-pdf.html     200
+/tools/split-pdf       /tools/split-pdf.html     200
+/tools/compress-pdf    /tools/compress-pdf.html  200
+/tools/pdf-to-image    /tools/pdf-to-image.html  200
+/tools/image-to-pdf    /tools/image-to-pdf.html  200
+/tools/pdf-to-text     /tools/pdf-to-text.html   200
+/tools/redact-pdf      /tools/redact-pdf.html    200
+/tools/pdf-forms       /tools/pdf-forms.html     200
+/tools/ocr-pdf         /tools/ocr-pdf.html       200
+/*                     /index.html               200

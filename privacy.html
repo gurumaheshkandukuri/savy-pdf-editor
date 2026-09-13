@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy & Architecture — SAVY PDF Workspace</title>
+    <meta
+      name="description"
+      content="Learn how SAVY processes your PDF files locally in your browser with zero document uploads, zero tracking cookies, and zero cloud storage."
+    />
+    <link rel="canonical" href="https://savypdf.com/privacy.html" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph Metadata -->
+    <meta property="og:title" content="Privacy Policy & Architecture — SAVY PDF Workspace" />
+    <meta
+      property="og:description"
+      content="Transparent technical disclosure of SAVY's zero-cloud local PDF processing architecture."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://savypdf.com/privacy.html" />
+    <meta property="og:image" content="https://savypdf.com/assets/images/og-preview.png" />
+
+    <!-- Twitter Card Metadata -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Privacy Policy & Architecture — SAVY PDF Workspace" />
+    <meta
+      name="twitter:description"
+      content="Learn how SAVY processes your PDF files locally in your browser with zero server uploads."
+    />
+    <meta name="twitter:image" content="https://savypdf.com/assets/images/og-preview.png" />
+
+    <meta name="theme-color" content="#2563EB" />
+    <link rel="icon" type="image/svg+xml" href="./assets/images/savy-logo.svg" />
+    <link rel="apple-touch-icon" href="./assets/images/apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://savypdf.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Privacy Policy",
+          "item": "https://savypdf.com/privacy.html"
+        }
+      ]
+    }
+    </script>
+    <style>
+      .privacy-page-container {
+        max-width: 840px;
+        margin: 0 auto;
+        padding: 3rem 1.5rem 5rem;
+      }
+      .privacy-page-header {
+        margin-bottom: 2.5rem;
+        border-bottom: 1px solid var(--color-border);
+        padding-bottom: 1.5rem;
+      }
+      .privacy-badge-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(37, 99, 235, 0.08);
+        color: var(--color-primary);
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+      .privacy-section {
+        margin-bottom: 2.5rem;
+      }
+      .privacy-section h2 {
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: var(--color-text-primary);
+        margin-bottom: 0.75rem;
+      }
+      .privacy-section p {
+        font-size: 0.9375rem;
+        color: var(--color-text-secondary);
+        line-height: 1.65;
+        margin-bottom: 0.75rem;
+      }
+      .privacy-callout-box {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin: 1.25rem 0;
+      }
+      .privacy-callout-box p {
+        color: #166534;
+        margin-bottom: 0;
+        font-weight: 500;
+      }
+      .privacy-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+        font-size: 0.875rem;
+      }
+      .privacy-table th, .privacy-table td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--color-border);
+      }
+      .privacy-table th {
+        background: var(--color-surface-hover);
+        color: var(--color-text-primary);
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Site Navigation -->
+    <header class="site-header" id="siteHeader">
+      <div class="container header-inner">
+        <a href="./index.html" class="logo-link" id="navLogoLink" aria-label="SAVY Home">
+          <img src="./assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
+        </a>
+
+        <nav aria-label="Primary Navigation">
+          <ul class="nav-menu">
+            <li><a href="./index.html" class="nav-link">Home</a></li>
+            <li><a href="./editor.html" class="nav-link">Editor</a></li>
+            <li><a href="./privacy.html" class="nav-link active">Privacy</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-actions">
+          <a href="./editor.html" class="btn btn-primary" id="headerOpenEditorBtn">
+            Open PDF Editor
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <main class="privacy-page-container">
+      <div class="privacy-page-header">
+        <div class="privacy-badge-pill">
+          <img src="./assets/icons/shield.svg" width="16" height="16" alt="" />
+          <span>Privacy & Security Architecture</span>
+        </div>
+        <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--color-text-primary); margin-bottom: 0.5rem;">
+          SAVY Privacy Guarantee
+        </h1>
+        <p style="font-size: 1.0625rem; color: var(--color-text-secondary);">
+          Transparent technical disclosure regarding how your files are processed locally in your browser.
+        </p>
+      </div>
+
+      <div class="privacy-callout-box">
+        <p>
+          <strong>Official Privacy Commitment:</strong><br />
+          "Your PDF is processed locally in your browser and is never uploaded to SAVY servers."
+        </p>
+      </div>
+
+      <section class="privacy-section">
+        <h2>1. How Local PDF Processing Works</h2>
+        <p>
+          Traditional PDF tools upload your sensitive documents, financial records, contracts, and personal IDs to their remote servers for cloud processing.
+        </p>
+        <p>
+          SAVY is engineered differently. Using modern WebAssembly, HTML5 Canvas, and client-side JavaScript engines (Mozilla's PDF.js and pdf-lib), all PDF parsing, page rendering, annotation burning, merging, splitting, watermarking, and redaction execute <strong>entirely within your computer's browser memory</strong>.
+        </p>
+      </section>
+
+      <section class="privacy-section">
+        <h2>2. Data Transmission to SAVY Servers</h2>
+        <p>
+          SAVY does not operate a document processing backend, cloud storage buckets, or remote analysis databases.
+        </p>
+        <ul style="margin-left: 1.5rem; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+          <li>Your PDF files are <strong>never</strong> transmitted to a SAVY server.</li>
+          <li>Your signatures, annotations, and drawn strokes are <strong>never</strong> transmitted.</li>
+          <li>Your extracted text and metadata are <strong>never</strong> transmitted.</li>
+          <li>All exported documents are compiled in RAM and downloaded directly to your local file system.</li>
+        </ul>
+      </section>
+
+      <section class="privacy-section">
+        <h2>3. Network Requests & Content Delivery Networks (CDNs)</h2>
+        <p>
+          While your document contents never leave your device, your browser makes standard HTTPS requests to public Content Delivery Networks (CDNs) to download the open-source client libraries necessary to run the workspace:
+        </p>
+        <table class="privacy-table">
+          <thead>
+            <tr>
+              <th>Library / Asset</th>
+              <th>Source / CDN</th>
+              <th>Purpose</th>
+              <th>Data Sent</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>PDF.js (v3.11.174)</strong> (Mozilla)</td>
+              <td>cdnjs.cloudflare.com</td>
+              <td>Client-side PDF document parsing, text extraction, and canvas rendering</td>
+              <td>None (Static library code downloaded only)</td>
+            </tr>
+            <tr>
+              <td><strong>PDF.js Worker</strong> (Mozilla)</td>
+              <td>cdnjs.cloudflare.com</td>
+              <td>Web Worker thread for non-blocking PDF page rendering</td>
+              <td>None (Static worker code downloaded only)</td>
+            </tr>
+            <tr>
+              <td><strong>PDF.js CMaps</strong> (Mozilla)</td>
+              <td>cdn.jsdelivr.net</td>
+              <td>Character glyph font mappings for non-Latin and CJK PDFs</td>
+              <td>None (Static CMap files downloaded as needed)</td>
+            </tr>
+            <tr>
+              <td><strong>pdf-lib (v1.17.1)</strong></td>
+              <td>cdnjs.cloudflare.com</td>
+              <td>Client-side PDF page assembly, merging, splitting, metadata, forms, and export</td>
+              <td>None (Static library code downloaded only)</td>
+            </tr>
+            <tr>
+              <td><strong>Tesseract.js (v5.1.0)</strong></td>
+              <td>cdn.jsdelivr.net</td>
+              <td>Optional, lazy-loaded client-side OCR engine running in WebAssembly (only loaded if user requests OCR)</td>
+              <td>None (Wasm binary & language training data downloaded to device)</td>
+            </tr>
+            <tr>
+              <td><strong>Application Shell Assets</strong></td>
+              <td>SAVY Static Host</td>
+              <td>Static HTML, CSS, JavaScript modules, SVG icons, and manifest</td>
+              <td>None (Standard HTTP GET requests for static files)</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          These requests download client software to your browser. Your PDF documents and contents are <strong>never</strong> attached to or sent with any of these requests.
+        </p>
+      </section>
+
+      <section class="privacy-section">
+        <h2>4. Browser Storage & Memory Lifecycle</h2>
+        <p>
+          SAVY uses browser storage minimally and strictly for functional execution:
+        </p>
+        <ul style="margin-left: 1.5rem; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+          <li><strong>Landing Page Handoff (IndexedDB):</strong> When you drop a PDF on the landing page, it is temporarily held in local browser memory (IndexedDB database <code>SAVY_LOCAL_STORE</code>) to hand off to the editor tab. The handoff record is <strong>automatically deleted immediately upon retrieval</strong> by the editor.</li>
+          <li><strong>No LocalStorage of PDFs:</strong> SAVY does not store PDF binaries or personal document data in persistent <code>localStorage</code> or <code>sessionStorage</code>.</li>
+          <li><strong>Object URLs:</strong> All temporary browser memory Blob URLs are tracked and revoked upon document switch, export completion, or document closure.</li>
+          <li><strong>Document Reset:</strong> Using the "Close Document" button cancels background render tasks and purges active document models from memory.</li>
+        </ul>
+      </section>
+
+      <section class="privacy-section">
+        <h2>5. Cookies, Analytics & Telemetry</h2>
+        <p>
+          Codebase audit confirms:
+        </p>
+        <ul style="margin-left: 1.5rem; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+          <li><strong>Zero Tracking Cookies:</strong> SAVY sets no tracking, advertising, or profiling cookies.</li>
+          <li><strong>Zero Third-Party Analytics:</strong> No Google Analytics, Facebook Pixels, or telemetry scripts run in the application.</li>
+          <li><strong>Zero User Profiling:</strong> We do not know who you are, what documents you view, or what edits you make.</li>
+        </ul>
+      </section>
+
+      <section class="privacy-section">
+        <h2>6. Document Security Capabilities & Limitations</h2>
+        <p>
+          To maintain transparency, SAVY clearly outlines what our client-side architecture can and cannot do:
+        </p>
+        <ul style="margin-left: 1.5rem; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+          <li><strong>Visual Redaction:</strong> Burns solid opaque black boxes over selected coordinates. Note: underlying vector text in complex PDFs may remain extractable by text search unless Sanitized Redaction is used.</li>
+          <li><strong>Sanitized Redaction:</strong> Rasterizes redacted pages onto high-DPI canvas to permanently destroy underlying text tokens from the PDF stream.</li>
+          <li><strong>PDF Encryption / Passwords:</strong> Standard client-side <code>pdf-lib</code> does not support native PDF password encryption. True PDF encryption requires an additional compatible client-side PDF encryption implementation. SAVY will never pretend to encrypt files.</li>
+          <li><strong>Client-Side AI:</strong> AI summary, Q&A, key points, and outline detection run in local browser memory via TextRank, BM25, and local heuristic parsing. When hardware acceleration or Chrome's Built-in Prompt API (<code>window.ai</code>) is available, it executes purely on local device silicon. User PDFs are never sent to external AI servers.</li>
+        </ul>
+      </section>
+
+      <section class="privacy-section">
+        <h2>7. Open Governance & Source Code</h2>
+        <p>
+          SAVY is built on open web standards. If you have questions about our local processing architecture or privacy disclosures, please review the project repository.
+        </p>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer" id="siteFooter">
+      <div class="container">
+        <div class="footer-bottom" style="text-align: center;">
+          <p>© 2026 SAVY Workspace. All file processing is performed locally in your browser.</p>
+          <p>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

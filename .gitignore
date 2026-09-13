@@ -6,3 +6,9 @@ coverage/
 *.log
 .env*
 !.env.example
+scratch/
+.gemini/
+*.tmp
+.cache/
+.vscode/
+.idea/

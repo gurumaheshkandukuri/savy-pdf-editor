@@ -45,7 +45,7 @@ async function storePendingDocument(file) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function initLanding() {
   const uploadZone = document.getElementById('landingUploadZone');
   const fileInput = document.getElementById('landingFileInput');
   const btnBrowse = document.getElementById('btnLandingBrowse');
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     await storePendingDocument(file);
 
     // Redirect to the editor
-    window.location.href = '/editor.html';
+    window.location.href = './editor.html';
   }
 
   // Click on dropzone or browse button
@@ -123,4 +123,25 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-});
+
+  // FAQ Accordion interactivity
+  document.querySelectorAll('.faq-item-trigger').forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      const item = trigger.closest('.faq-item');
+      if (item) {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item.open').forEach((openItem) => {
+          if (openItem !== item) openItem.classList.remove('open');
+        });
+        item.classList.toggle('open', !isOpen);
+        trigger.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+      }
+    });
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initLanding);
+} else {
+  initLanding();
+}

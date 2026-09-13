@@ -1,0 +1,37 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/editor", "destination": "/editor.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/tools/pdf-editor", "destination": "/tools/pdf-editor.html" },
+    { "source": "/tools/merge-pdf", "destination": "/tools/merge-pdf.html" },
+    { "source": "/tools/split-pdf", "destination": "/tools/split-pdf.html" },
+    { "source": "/tools/compress-pdf", "destination": "/tools/compress-pdf.html" },
+    { "source": "/tools/pdf-to-image", "destination": "/tools/pdf-to-image.html" },
+    { "source": "/tools/image-to-pdf", "destination": "/tools/image-to-pdf.html" },
+    { "source": "/tools/pdf-to-text", "destination": "/tools/pdf-to-text.html" },
+    { "source": "/tools/redact-pdf", "destination": "/tools/redact-pdf.html" },
+    { "source": "/tools/pdf-forms", "destination": "/tools/pdf-forms.html" },
+    { "source": "/tools/ocr-pdf", "destination": "/tools/ocr-pdf.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
+}
