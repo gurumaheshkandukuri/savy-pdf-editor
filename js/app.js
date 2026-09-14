@@ -49,20 +49,43 @@ function initLanding() {
   const uploadZone = document.getElementById('landingUploadZone');
   const fileInput = document.getElementById('landingFileInput');
   const btnBrowse = document.getElementById('btnLandingBrowse');
+  const inlineError = document.getElementById('landingInlineError');
+  const loadingState = document.getElementById('landingLoadingState');
+
+  function showError(msg) {
+    if (inlineError) {
+      inlineError.textContent = msg;
+      inlineError.style.display = 'flex';
+    }
+    if (loadingState) loadingState.style.display = 'none';
+    uploadZone?.setAttribute('aria-invalid', 'true');
+  }
+
+  function clearError() {
+    if (inlineError) {
+      inlineError.textContent = '';
+      inlineError.style.display = 'none';
+    }
+    uploadZone?.removeAttribute('aria-invalid');
+  }
 
   async function handleSelectedFile(file) {
     if (!file) return;
 
     if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-      alert('SAVY currently accepts PDF documents (.pdf) only.');
+      showError('Please select a valid PDF file (.pdf). Other formats are not supported for direct editing.');
       return;
     }
+
+    clearError();
+    if (loadingState) loadingState.style.display = 'flex';
+    if (btnBrowse) btnBrowse.disabled = true;
 
     // Save to local IndexedDB for the editor session
     await storePendingDocument(file);
 
-    // Redirect to the editor
-    window.location.href = './editor.html';
+    // Redirect to the editor clean URL
+    window.location.href = '/editor';
   }
 
   // Click on dropzone or browse button

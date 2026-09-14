@@ -181,54 +181,202 @@ export function hexToRgb01(hex) {
 }
 
 /**
+ * Safely rasterizes an image blob to standard PNG or JPEG Uint8Array bytes
+ * via the browser's native C++ image decoding pipeline.
+ * @param {Blob} blob
+ * @param {'image/png'|'image/jpeg'} targetFormat
+ * @returns {Promise<{ bytes: Uint8Array, format: 'jpg'|'png', width: number, height: number }>}
+ */
+async function rasterizeImageToSafeBytes(blob, targetFormat = 'image/png') {
+  let imgBitmap;
+  try {
+    imgBitmap = await createImageBitmap(blob);
+  } catch {
+    imgBitmap = await new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(blob);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        resolve(img);
+      };
+      img.onerror = (err) => {
+        URL.revokeObjectURL(url);
+        reject(new Error('Browser failed to decode image: ' + (err?.message || 'Unsupported format')));
+      };
+      img.src = url;
+    });
+  }
+
+  const width = imgBitmap.naturalWidth || imgBitmap.width;
+  const height = imgBitmap.naturalHeight || imgBitmap.height;
+
+  let canvas;
+  if (typeof OffscreenCanvas !== 'undefined') {
+    canvas = new OffscreenCanvas(width, height);
+  } else {
+    canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+  }
+
+  const ctx = canvas.getContext('2d');
+  if (targetFormat === 'image/jpeg') {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+  }
+  ctx.drawImage(imgBitmap, 0, 0);
+
+  if (typeof imgBitmap.close === 'function') {
+    imgBitmap.close();
+  }
+
+  let outBlob;
+  if (canvas.convertToBlob) {
+    outBlob = await canvas.convertToBlob({
+      type: targetFormat,
+      quality: targetFormat === 'image/jpeg' ? 0.95 : undefined,
+    });
+  } else {
+    outBlob = await new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error('Canvas toBlob failed'))),
+        targetFormat,
+        targetFormat === 'image/jpeg' ? 0.95 : undefined
+      );
+    });
+  }
+
+  const arrayBuffer = await outBlob.arrayBuffer();
+  return {
+    bytes: new Uint8Array(arrayBuffer),
+    format: targetFormat === 'image/jpeg' ? 'jpg' : 'png',
+    width,
+    height,
+  };
+}
+
+/**
+ * Safely embeds any supported image into a pdf-lib PDFDocument instance.
+ * Automatically validates magic bytes (SOI for JPEG, PNG header for PNG) and
+ * falls back to browser Canvas rasterization (supporting WebP, BMP, GIF, etc.)
+ * so that pdf-lib NEVER throws "SOI not found in JPEG" or unhandled format errors.
+ * 
+ * @param {import('pdf-lib').PDFDocument} pdfDoc
+ * @param {File|Blob|ArrayBuffer|Uint8Array|string|{file: File}} imageInput
+ * @returns {Promise<import('pdf-lib').PDFImage>}
+ */
+export async function embedImageIntoPdf(pdfDoc, imageInput) {
+  const file = imageInput && imageInput.file ? imageInput.file : imageInput;
+
+  let bytes;
+  let mimeType = '';
+
+  if (typeof file === 'string') {
+    if (file.startsWith('data:')) {
+      const match = file.match(/^data:([^;]+);base64,/);
+      if (match) {
+        mimeType = match[1];
+        const binary = atob(file.slice(match[0].length));
+        bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      } else {
+        const commaIdx = file.indexOf(',');
+        const binary = atob(file.slice(commaIdx + 1));
+        bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      }
+    } else {
+      const res = await fetch(file);
+      const buf = await res.arrayBuffer();
+      bytes = new Uint8Array(buf);
+      mimeType = res.headers.get('content-type') || '';
+    }
+  } else if (file instanceof ArrayBuffer) {
+    bytes = new Uint8Array(file);
+  } else if (ArrayBuffer.isView(file)) {
+    bytes = new Uint8Array(file.buffer, file.byteOffset, file.byteLength);
+  } else if (file instanceof Blob) {
+    mimeType = file.type || '';
+    const buf = await file.arrayBuffer();
+    bytes = new Uint8Array(buf);
+  } else {
+    throw new Error('Unsupported image input: ' + Object.prototype.toString.call(file));
+  }
+
+  // 1. Check for genuine JPEG SOI marker (0xFF, 0xD8)
+  const isRealJpeg = bytes.length >= 2 && bytes[0] === 0xFF && bytes[1] === 0xD8;
+  if (isRealJpeg) {
+    try {
+      return await pdfDoc.embedJpg(bytes);
+    } catch (jpegErr) {
+      console.warn('pdfDoc.embedJpg failed on SOI-matching JPEG, falling back to canvas rasterization:', jpegErr);
+    }
+  }
+
+  // 2. Check for genuine PNG magic bytes (\x89PNG\r\n\x1a\n)
+  const isRealPng = bytes.length >= 8 &&
+    bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47 &&
+    bytes[4] === 0x0D && bytes[5] === 0x0A && bytes[6] === 0x1A && bytes[7] === 0x0A;
+  if (isRealPng) {
+    try {
+      return await pdfDoc.embedPng(bytes);
+    } catch (pngErr) {
+      console.warn('pdfDoc.embedPng failed on PNG-matching image, falling back to canvas rasterization:', pngErr);
+    }
+  }
+
+  // 3. Robust Browser Rasterization (WebP, GIF, BMP, SVG, AVIF, corrupted headers, progressive JPEG, etc.)
+  const blob = file instanceof Blob ? file : new Blob([bytes], { type: mimeType || 'image/png' });
+  const raster = await rasterizeImageToSafeBytes(blob, 'image/png');
+
+  try {
+    return await pdfDoc.embedPng(raster.bytes);
+  } catch (pngErr2) {
+    console.warn('Rasterized PNG embed failed, retrying with JPEG:', pngErr2);
+    const jpegRaster = await rasterizeImageToSafeBytes(blob, 'image/jpeg');
+    return await pdfDoc.embedJpg(jpegRaster.bytes);
+  }
+}
+
+/**
  * Ensures image is converted to JPEG or PNG buffer supported by pdf-lib.
- * Specifically decodes WebP or other formats via canvas into PNG.
  * @param {File|Blob} file
  * @returns {Promise<{ buffer: ArrayBuffer, format: 'jpg'|'png', width?: number, height?: number }>}
  */
 export async function ensureCompatibleImage(file) {
-  const isJpeg = file.type === 'image/jpeg' || (file.name && file.name.match(/\.jpe?g$/i));
-  const isPng = file.type === 'image/png' || (file.name && file.name.match(/\.png$/i));
-
-  if (isJpeg) {
-    const buffer = await file.arrayBuffer();
-    return { buffer, format: 'jpg' };
+  const actualFile = file && file.file ? file.file : file;
+  let bytes;
+  if (actualFile instanceof Blob) {
+    bytes = new Uint8Array(await actualFile.arrayBuffer());
+  } else if (actualFile instanceof ArrayBuffer) {
+    bytes = new Uint8Array(actualFile);
+  } else if (ArrayBuffer.isView(actualFile)) {
+    bytes = new Uint8Array(actualFile.buffer, actualFile.byteOffset, actualFile.byteLength);
+  } else {
+    const blob = new Blob([actualFile]);
+    bytes = new Uint8Array(await blob.arrayBuffer());
   }
-  if (isPng) {
-    const buffer = await file.arrayBuffer();
-    return { buffer, format: 'png' };
+
+  // Genuine JPEG check: MUST start with 0xFF, 0xD8
+  if (bytes.length >= 2 && bytes[0] === 0xFF && bytes[1] === 0xD8) {
+    return { buffer: bytes.buffer, format: 'jpg' };
   }
 
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth || img.width;
-      canvas.height = img.naturalHeight || img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      canvas.toBlob(async (blob) => {
-        if (!blob) {
-          reject(new Error('Failed to convert image to PNG format'));
-          return;
-        }
-        const buffer = await blob.arrayBuffer();
-        resolve({
-          buffer,
-          format: 'png',
-          width: canvas.width,
-          height: canvas.height,
-        });
-      }, 'image/png');
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('Failed to load image for conversion'));
-    };
-    img.src = url;
-  });
+  // Genuine PNG check
+  if (bytes.length >= 8 &&
+    bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47 &&
+    bytes[4] === 0x0D && bytes[5] === 0x0A && bytes[6] === 0x1A && bytes[7] === 0x0A) {
+    return { buffer: bytes.buffer, format: 'png' };
+  }
+
+  const blob = actualFile instanceof Blob ? actualFile : new Blob([bytes]);
+  const raster = await rasterizeImageToSafeBytes(blob, 'image/png');
+  return {
+    buffer: raster.bytes.buffer,
+    format: 'png',
+    width: raster.width,
+    height: raster.height,
+  };
 }
 
 // =======================================================
@@ -245,13 +393,7 @@ export async function convertImagesToPdf(imageFiles, options = {}) {
   } = options;
 
   for (const file of imageFiles) {
-    const { buffer, format } = await ensureCompatibleImage(file);
-    let embeddedImg;
-    if (format === 'jpg') {
-      embeddedImg = await pdfDoc.embedJpg(buffer);
-    } else {
-      embeddedImg = await pdfDoc.embedPng(buffer);
-    }
+    const embeddedImg = await embedImageIntoPdf(pdfDoc, file);
 
     const imgWidth = embeddedImg.width;
     const imgHeight = embeddedImg.height;
@@ -1821,7 +1963,7 @@ export class PDFToolbox {
       const url = URL.createObjectURL(file);
 
       item.innerHTML = `
-        <img class="img-pdf-thumb" src="${url}" alt="" />
+        <img class="img-pdf-thumb" src="${url}" alt="Thumbnail of ${file.name.replace(/"/g, '&quot;')}" />
         <div class="img-pdf-info">
           <div class="img-pdf-name">${file.name}</div>
           <div class="img-pdf-meta">${Math.round(file.size / 1024)} KB</div>

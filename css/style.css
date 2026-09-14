@@ -407,7 +407,7 @@ button {
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 1.5rem;
 }
 
@@ -492,7 +492,8 @@ button {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: var(--shadow-sm);
 }
 
@@ -981,26 +982,218 @@ button {
 }
 
 /* --------------------------------------------------------------------------
-   Responsive Media Queries
+   Upload Zone Inline Feedback & Loading States
+   -------------------------------------------------------------------------- */
+.upload-inline-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 1rem 0;
+  width: 100%;
+  max-width: 480px;
+}
+
+.upload-loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin: 1rem 0;
+  width: 100%;
+  max-width: 480px;
+}
+
+.upload-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2.5px solid rgba(37, 99, 235, 0.25);
+  border-top-color: #2563eb;
+  border-radius: 50%;
+  animation: savy-spin 0.7s linear infinite;
+}
+
+@keyframes savy-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   Requirement 11 — Mobile Sticky CTA
+   -------------------------------------------------------------------------- */
+.mobile-sticky-cta {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-sticky-cta {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 90;
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .mobile-sticky-cta-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 48px;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-primary);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.25);
+    transition: background-color 0.2s ease, transform 0.1s ease;
+  }
+
+  .mobile-sticky-cta-btn:active {
+    background-color: var(--color-primary-hover);
+    transform: scale(0.99);
+  }
+
+  .mobile-sticky-cta-btn:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Media Queries & Breakpoints (Requirement 10)
+   Tested: 320px, 360px, 375px, 390px, 414px, 768px, 1024px, 1280px, 1440px
    -------------------------------------------------------------------------- */
 @media (max-width: 768px) {
+  body {
+    padding-bottom: 72px; /* Prevent sticky CTA from overlapping footer */
+  }
+
   .nav-menu {
     display: none;
   }
 
+  .header-inner {
+    height: 3.5rem;
+  }
+
   .hero-section {
-    padding: 3.5rem 0 2.5rem;
+    padding: 2.5rem 0 2rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.75rem, 7vw, 2.5rem);
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 2rem;
+  }
+
+  .hero-cta-group .btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .upload-zone {
     padding: 2rem 1.25rem;
+    border-radius: var(--radius-md);
+  }
+
+  .upload-title {
+    font-size: 1.25rem;
+  }
+
+  .upload-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .tools-category-heading {
+    font-size: 0.875rem;
+  }
+
+  .tools-grid {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
   }
 
   .footer-links {
+    grid-template-columns: 1fr;
     gap: 2rem;
   }
 
   .comparison-table-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
+
+@media (max-width: 390px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .hero-title {
+    font-size: 1.625rem;
+  }
+
+  .hero-badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .upload-actions .btn {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 320px) {
+  .hero-title {
+    font-size: 1.45rem;
+  }
+
+  .logo-link img {
+    width: 100px;
+    height: auto;
+  }
+
+  #headerOpenEditorBtn {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+}
+

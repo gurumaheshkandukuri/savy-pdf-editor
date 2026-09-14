@@ -14,7 +14,7 @@ import { AnnotationManager } from './annotation-manager.js';
 import { HistoryManager } from './history-manager.js';
 import { DocumentModel } from './document-model.js';
 import { PageOrganizer } from './page-organizer.js';
-import { PDFToolbox } from './pdf-toolbox.js';
+import { PDFToolbox, convertImagesToPdf, embedImageIntoPdf } from './pdf-toolbox.js';
 import { SecurityManager } from './security-manager.js';
 import { RedactionManager } from './redaction-manager.js';
 import { SearchManager } from './search-manager.js';
@@ -1392,14 +1392,23 @@ class EditorApp {
 
   async checkInitialPayload() {
     const payload = await getPendingDocument();
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialAction = urlParams.get('action') || urlParams.get('tool');
+
     if (payload && payload.file) {
-      this.loadFile(payload.file, payload.name);
-    } else {
-      const urlParams = new URLSearchParams(window.location.search);
-      const initialAction = urlParams.get('action') || urlParams.get('tool');
-      if (initialAction) {
-        this.handleInitialToolAction(initialAction);
+      const isImage = (payload.file.type && payload.file.type.startsWith('image/')) ||
+        /\.(jpe?g|png|webp|gif|bmp|svg)$/i.test(payload.name || payload.file.name || '');
+
+      if (isImage || initialAction === 'images-to-pdf' || initialAction === 'image-to-pdf') {
+        if (this.pdfToolbox) {
+          this.pdfToolbox.openImgToPdf();
+          this.pdfToolbox.addImagesToPdfList([payload.file]);
+        }
+      } else {
+        this.loadFile(payload.file, payload.name);
       }
+    } else if (initialAction) {
+      this.handleInitialToolAction(initialAction);
     }
   }
 
@@ -2330,6 +2339,8 @@ function initEditorApp() {
   if (!window.EditorAppInstance) {
     window.EditorAppInstance = new EditorApp();
     window.editorApp = window.EditorAppInstance;
+    window.convertImagesToPdf = convertImagesToPdf;
+    window.embedImageIntoPdf = embedImageIntoPdf;
   }
 }
 

@@ -54,12 +54,57 @@ function initToolPage() {
   const toolAction = uploadZone?.getAttribute('data-tool-action') || '';
   const acceptImages = uploadZone?.getAttribute('data-accept-images') === 'true';
 
+  function showError(msg) {
+    let errEl = document.getElementById('toolInlineError');
+    if (!errEl && uploadZone) {
+      errEl = document.createElement('div');
+      errEl.id = 'toolInlineError';
+      errEl.className = 'upload-inline-error';
+      errEl.setAttribute('role', 'alert');
+      errEl.setAttribute('aria-live', 'polite');
+      uploadZone.appendChild(errEl);
+    }
+    if (errEl) {
+      errEl.textContent = msg;
+      errEl.style.display = 'flex';
+    }
+    uploadZone?.setAttribute('aria-invalid', 'true');
+    const loadingEl = document.getElementById('toolLoadingState');
+    if (loadingEl) loadingEl.style.display = 'none';
+  }
+
+  function clearError() {
+    const errEl = document.getElementById('toolInlineError');
+    if (errEl) {
+      errEl.textContent = '';
+      errEl.style.display = 'none';
+    }
+    uploadZone?.removeAttribute('aria-invalid');
+  }
+
+  function showLoading(msg = 'Preparing document in local memory...') {
+    let loadingEl = document.getElementById('toolLoadingState');
+    if (!loadingEl && uploadZone) {
+      loadingEl = document.createElement('div');
+      loadingEl.id = 'toolLoadingState';
+      loadingEl.className = 'upload-loading-state';
+      loadingEl.setAttribute('role', 'status');
+      loadingEl.setAttribute('aria-live', 'polite');
+      loadingEl.innerHTML = `<div class="upload-spinner"></div><span>${msg}</span>`;
+      uploadZone.appendChild(loadingEl);
+    }
+    if (loadingEl) {
+      loadingEl.style.display = 'flex';
+    }
+    if (btnBrowse) btnBrowse.disabled = true;
+  }
+
   async function handleSelectedFile(file) {
     if (!file) return;
 
     if (!acceptImages) {
       if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
-        alert('SAVY currently accepts PDF documents (.pdf) for this tool.');
+        showError('Please select a valid PDF file (.pdf) for this tool.');
         return;
       }
     } else {
@@ -67,17 +112,20 @@ function initToolPage() {
       const validExts = ['.jpg', '.jpeg', '.png', '.webp'];
       const isImg = validTypes.includes(file.type) || validExts.some(ext => file.name.toLowerCase().endsWith(ext));
       if (!isImg) {
-        alert('Please select an image file (JPG, PNG, or WebP).');
+        showError('Please select a supported image file (JPG, PNG, or WebP).');
         return;
       }
     }
 
+    clearError();
+    showLoading();
+
     // Save to local IndexedDB for editor session
     await storePendingDocument(file);
 
-    // Redirect to editor with pre-activated tool action
+    // Redirect to editor with pre-activated tool action via clean URL
     const query = toolAction ? `?action=${encodeURIComponent(toolAction)}` : '';
-    window.location.href = `../editor.html${query}`;
+    window.location.href = `/editor${query}`;
   }
 
   // Click browse triggers hidden input

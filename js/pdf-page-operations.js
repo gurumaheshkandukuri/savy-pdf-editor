@@ -208,10 +208,26 @@ export class PDFPageOperations {
 
           if (isPng) {
             const bytes = this.dataUrlToUint8Array(dataUrl);
-            embeddedImg = await pdfDoc.embedPng(bytes);
+            try {
+              embeddedImg = await pdfDoc.embedPng(bytes);
+            } catch {
+              const pngBytes = await this.convertToPngBytes(dataUrl);
+              embeddedImg = await pdfDoc.embedPng(pngBytes);
+            }
           } else if (isJpg) {
             const bytes = this.dataUrlToUint8Array(dataUrl);
-            embeddedImg = await pdfDoc.embedJpg(bytes);
+            const isRealJpeg = bytes.length >= 2 && bytes[0] === 0xff && bytes[1] === 0xd8;
+            if (isRealJpeg) {
+              try {
+                embeddedImg = await pdfDoc.embedJpg(bytes);
+              } catch {
+                const pngBytes = await this.convertToPngBytes(dataUrl);
+                embeddedImg = await pdfDoc.embedPng(pngBytes);
+              }
+            } else {
+              const pngBytes = await this.convertToPngBytes(dataUrl);
+              embeddedImg = await pdfDoc.embedPng(pngBytes);
+            }
           } else {
             const pngBytes = await this.convertToPngBytes(dataUrl);
             embeddedImg = await pdfDoc.embedPng(pngBytes);

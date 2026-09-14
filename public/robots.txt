@@ -1,9 +1,5 @@
 User-agent: *
 Allow: /
-Allow: /index.html
-Allow: /editor.html
-Allow: /privacy.html
-Allow: /tools/
-Disallow: /editor.html?*
 
-Sitemap: https://savypdf.com/sitemap.xml
+Sitemap: https://savy-pdf-editor.pages.dev/sitemap.xml
+

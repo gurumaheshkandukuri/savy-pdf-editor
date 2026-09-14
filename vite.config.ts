@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: './',
+    base: '/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
@@ -18,6 +18,7 @@ export default defineConfig(() => {
           main: path.resolve(__dirname, 'index.html'),
           editor: path.resolve(__dirname, 'editor.html'),
           privacy: path.resolve(__dirname, 'privacy.html'),
+          terms: path.resolve(__dirname, 'terms.html'),
           pdfEditor: path.resolve(__dirname, 'tools/pdf-editor.html'),
           mergePdf: path.resolve(__dirname, 'tools/merge-pdf.html'),
           splitPdf: path.resolve(__dirname, 'tools/split-pdf.html'),

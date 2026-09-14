@@ -3,37 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SAVY — Free Online PDF Editor & Privacy-First Browser Workspace</title>
+    <title>SAVY — Free Online PDF Editor | Privacy-First PDF Tools</title>
     <meta
       name="description"
       content="Free, privacy-first browser PDF workspace. Edit, merge, split, compress, sign, and convert PDF documents locally in your browser with zero cloud storage and no server uploads."
     />
-    <link rel="canonical" href="https://savypdf.com/" />
+    <link rel="canonical" href="https://savy-pdf-editor.pages.dev/" />
     <meta name="robots" content="index, follow" />
 
     <!-- Open Graph Metadata -->
-    <meta property="og:title" content="SAVY — Free Online PDF Editor & Privacy-First Browser Workspace" />
+    <meta property="og:title" content="SAVY — Free Online PDF Editor | Privacy-First PDF Tools" />
     <meta
       property="og:description"
       content="Free, privacy-first browser PDF editor. Edit, merge, split, compress, and sign PDF files locally with zero uploads and no accounts."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://savypdf.com/" />
-    <meta property="og:image" content="https://savypdf.com/assets/images/og-preview.png" />
+    <meta property="og:url" content="https://savy-pdf-editor.pages.dev/" />
+    <meta property="og:image" content="https://savy-pdf-editor.pages.dev/assets/images/og-image.png" />
 
     <!-- Twitter Card Metadata -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="SAVY — Free Online PDF Editor & Privacy-First Browser Workspace" />
+    <meta name="twitter:title" content="SAVY — Free Online PDF Editor | Privacy-First PDF Tools" />
     <meta
       name="twitter:description"
       content="Edit, merge, split, compress, and sign PDF documents in your browser. 100% private with no server uploads."
     />
-    <meta name="twitter:image" content="https://savypdf.com/assets/images/og-preview.png" />
+    <meta name="twitter:image" content="https://savy-pdf-editor.pages.dev/assets/images/og-image.png" />
 
     <meta name="theme-color" content="#2563EB" />
-    <link rel="icon" type="image/svg+xml" href="./assets/images/savy-logo.svg" />
-    <link rel="apple-touch-icon" href="./assets/images/apple-touch-icon.png" />
-    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
     <link rel="stylesheet" href="./css/style.css" />
 
     <!-- Schema.org Structured Data -->
@@ -44,7 +46,7 @@
         {
           "@type": "WebApplication",
           "name": "SAVY PDF Workspace",
-          "url": "https://savypdf.com/",
+          "url": "https://savy-pdf-editor.pages.dev/",
           "operatingSystem": "All (Browser-based)",
           "applicationCategory": "BusinessApplication",
           "offers": {
@@ -107,8 +109,8 @@
     <!-- Top Site Navigation -->
     <header class="site-header" id="siteHeader">
       <div class="container header-inner">
-        <a href="./index.html" class="logo-link" id="navLogoLink" aria-label="SAVY Home">
-          <img src="./assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
+        <a href="/" class="logo-link" id="navLogoLink" aria-label="SAVY Home">
+          <img src="/assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
         </a>
 
         <nav aria-label="Primary Navigation">
@@ -122,7 +124,7 @@
         </nav>
 
         <div class="header-actions">
-          <a href="./editor.html" class="btn btn-primary" id="headerOpenEditorBtn">
+          <a href="/editor" class="btn btn-primary" id="headerOpenEditorBtn">
             Open PDF Editor
           </a>
         </div>
@@ -148,11 +150,11 @@
           </p>
 
           <div class="hero-cta-group">
-            <a href="./editor.html" class="btn btn-primary btn-lg" id="heroPrimaryCta">
-              Launch PDF Editor
+            <a href="/editor" class="btn btn-primary btn-lg" id="heroPrimaryCta">
+              Edit a PDF Free
             </a>
-            <a href="#privacy" class="btn btn-outline btn-lg" id="heroLearnMoreBtn">
-              How Privacy Works
+            <a href="#tools" class="btn btn-outline btn-lg" id="heroLearnMoreBtn">
+              Explore PDF Tools
             </a>
           </div>
 
@@ -178,6 +180,15 @@
                 <button type="button" class="btn btn-outline" id="btnLandingBrowse">
                   Browse Device Files
                 </button>
+              </div>
+
+              <!-- Inline Accessible Error State -->
+              <div id="landingInlineError" class="upload-inline-error" role="alert" aria-live="polite" style="display: none;"></div>
+
+              <!-- Active Local Loading State -->
+              <div id="landingLoadingState" class="upload-loading-state" role="status" aria-live="polite" style="display: none;">
+                <div class="upload-spinner"></div>
+                <span>Preparing document in local memory...</span>
               </div>
 
               <div class="upload-privacy-note" id="uploadPrivacyLabel">
@@ -749,8 +760,8 @@
       <div class="container">
         <div class="footer-top">
           <div class="footer-brand">
-            <a href="./index.html" class="logo-link" aria-label="SAVY Home">
-              <img src="./assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
+            <a href="/" class="logo-link" aria-label="SAVY Home">
+              <img src="/assets/images/savy-logo.svg" alt="SAVY Logo" width="120" height="30" />
             </a>
             <p class="footer-desc">
               Free, privacy-first, browser-based PDF workspace. Engineered with modern client-side standards to keep your personal data strictly on your device.
@@ -761,23 +772,23 @@
             <div>
               <h4 class="footer-col-title">PDF Tools</h4>
               <ul class="footer-nav">
-                <li><a href="./tools/pdf-editor.html">PDF Editor</a></li>
-                <li><a href="./tools/merge-pdf.html">Merge PDF</a></li>
-                <li><a href="./tools/split-pdf.html">Split PDF</a></li>
-                <li><a href="./tools/compress-pdf.html">Compress PDF</a></li>
-                <li><a href="./tools/pdf-to-image.html">PDF to Image</a></li>
-                <li><a href="./tools/image-to-pdf.html">Image to PDF</a></li>
-                <li><a href="./tools/pdf-to-text.html">PDF to Text</a></li>
-                <li><a href="./tools/redact-pdf.html">Redact PDF</a></li>
-                <li><a href="./tools/pdf-forms.html">Fill PDF Forms</a></li>
-                <li><a href="./tools/ocr-pdf.html">OCR PDF Scanner</a></li>
+                <li><a href="/tools/pdf-editor">PDF Editor</a></li>
+                <li><a href="/tools/merge-pdf">Merge PDF</a></li>
+                <li><a href="/tools/split-pdf">Split PDF</a></li>
+                <li><a href="/tools/compress-pdf">Compress PDF</a></li>
+                <li><a href="/tools/pdf-to-image">PDF to Image</a></li>
+                <li><a href="/tools/image-to-pdf">Image to PDF</a></li>
+                <li><a href="/tools/pdf-to-text">PDF to Text</a></li>
+                <li><a href="/tools/redact-pdf">Redact PDF</a></li>
+                <li><a href="/tools/pdf-forms">Fill PDF Forms</a></li>
+                <li><a href="/tools/ocr-pdf">OCR PDF Scanner</a></li>
               </ul>
             </div>
 
             <div>
               <h4 class="footer-col-title">Workspace</h4>
               <ul class="footer-nav">
-                <li><a href="./editor.html">Open Editor</a></li>
+                <li><a href="/editor">Open Editor</a></li>
                 <li><a href="#tools">Tool Catalog</a></li>
                 <li><a href="#features">Feature Catalog</a></li>
                 <li><a href="#comparison">Security Matrix</a></li>
@@ -788,7 +799,8 @@
             <div>
               <h4 class="footer-col-title">Privacy & Open Tech</h4>
               <ul class="footer-nav">
-                <li><a href="./privacy.html">Privacy Policy</a></li>
+                <li><a href="/privacy">Privacy Policy</a></li>
+                <li><a href="/terms">Terms &amp; Conditions</a></li>
                 <li><a href="#privacy">Privacy Engine</a></li>
                 <li><a href="https://mozilla.github.io/pdf.js/" target="_blank" rel="noopener noreferrer">PDF.js Engine</a></li>
                 <li><a href="https://pdf-lib.js.org/" target="_blank" rel="noopener noreferrer">pdf-lib Engine</a></li>
@@ -798,11 +810,22 @@
         </div>
 
         <div class="footer-bottom">
-          <p>© 2026 SAVY Workspace. All file processing is performed locally in your browser.</p>
+          <p>&copy; 2026 SAVY Workspace. All file processing is performed locally in your browser.</p>
           <p>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</p>
         </div>
       </div>
     </footer>
+
+    <!-- Mobile Sticky CTA (Requirement 11) -->
+    <aside class="mobile-sticky-cta" id="mobileStickyCta" aria-label="Quick Action">
+      <a href="/editor" class="mobile-sticky-cta-btn" id="mobileStickyCtaLink">
+        <svg class="mobile-sticky-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+        </svg>
+        <span>Edit PDF Free</span>
+      </a>
+    </aside>
 
     <script type="module" src="./js/app.js"></script>
   </body>

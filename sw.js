@@ -9,7 +9,7 @@
  * cached, transmitted, or stored remotely by this service worker.
  */
 
-const CACHE_NAME = 'savy-shell-v3';
+const CACHE_NAME = 'savy-shell-v7';
 
 // Dynamic base path detection for subdirectory hosting (e.g., GitHub Pages)
 const BASE_PATH = self.location.pathname.replace(/\/[^/]*$/, '');
@@ -19,6 +19,7 @@ const RAW_SHELL_ASSETS = [
   '/index.html',
   '/editor.html',
   '/privacy.html',
+  '/terms.html',
   '/tools/pdf-editor.html',
   '/tools/merge-pdf.html',
   '/tools/split-pdf.html',
@@ -30,7 +31,18 @@ const RAW_SHELL_ASSETS = [
   '/tools/pdf-forms.html',
   '/tools/ocr-pdf.html',
   '/404.html',
+  '/robots.txt',
+  '/sitemap.xml',
   '/manifest.json',
+  '/favicon.ico',
+  '/favicon-32x32.png',
+  '/favicon-16x16.png',
+  '/apple-touch-icon.png',
+  '/savy-app-icon-192.png',
+  '/savy-app-icon-512.png',
+  '/savy-icon-48.png',
+  '/assets/images/og-preview.png',
+  '/assets/images/og-image.png',
   '/assets/images/savy-logo.svg',
   '/assets/images/privacy-badge.svg',
   '/assets/icons/shield.svg',
@@ -68,7 +80,26 @@ const RAW_SHELL_ASSETS = [
   '/assets/icons/sparkles.svg',
   '/assets/icons/message-square.svg',
   '/assets/icons/zap.svg',
-  '/assets/icons/list.svg'
+  '/assets/icons/list.svg',
+  '/assets/icons/scissors.svg',
+  '/assets/icons/layout.svg',
+  '/assets/icons/globe.svg',
+  '/assets/icons/file-text.svg',
+  '/assets/icons/camera.svg',
+  '/assets/icons/rotate-cw.svg',
+  '/assets/icons/split.svg',
+  '/assets/icons/edit-3.svg',
+  '/assets/icons/tool.svg',
+  '/assets/icons/wrench.svg',
+  '/assets/icons/monitor.svg',
+  '/assets/icons/eye.svg',
+  '/assets/icons/copy.svg',
+  '/assets/icons/cpu.svg',
+  '/assets/icons/hash.svg',
+  '/assets/icons/table.svg',
+  '/assets/icons/archive.svg',
+  '/assets/icons/code.svg',
+  '/assets/icons/git-compare.svg'
 ];
 
 const APP_SHELL = RAW_SHELL_ASSETS.map((asset) => {
