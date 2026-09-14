@@ -13,10 +13,11 @@ if (typeof window !== 'undefined' && window.pdfjsLib) {
 }
 
 export class PDFViewer {
-  constructor({ canvas, viewportContainer, onPageChange, onDocumentLoaded, onZoomChange, onError }) {
+  constructor({ canvas, viewportContainer, textLayer, onPageChange, onDocumentLoaded, onZoomChange, onError }) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
     this.viewportContainer = viewportContainer;
+    this.textLayer = textLayer || (typeof document !== 'undefined' ? document.getElementById('pdfTextLayer') : null);
     this.onPageChange = onPageChange || (() => {});
     this.onDocumentLoaded = onDocumentLoaded || (() => {});
     this.onZoomChange = onZoomChange || (() => {});
@@ -27,10 +28,45 @@ export class PDFViewer {
     this.totalPages = 0;
     this.scale = 1.0;
     this.renderTask = null;
+    this.textLayerRenderTask = null;
     this.currentFile = null;
     this.docMetadata = null;
     this.isRendering = false;
     this.documentModel = null;
+
+    this.setupResolutionWatcher();
+  }
+
+  setupResolutionWatcher() {
+    if (typeof window === 'undefined') return;
+
+    let mediaQuery = null;
+    const updatePixelRatio = () => {
+      if (mediaQuery) {
+        mediaQuery.removeEventListener('change', updatePixelRatio);
+      }
+      const dpr = window.devicePixelRatio || 1;
+      mediaQuery = window.matchMedia(`(resolution: ${dpr}dppx)`);
+      mediaQuery.addEventListener('change', updatePixelRatio);
+
+      if ((this.pdfDoc || this.documentModel) && !this.isRendering) {
+        this.renderPage(this.currentPage);
+      }
+    };
+
+    const dpr = window.devicePixelRatio || 1;
+    mediaQuery = window.matchMedia(`(resolution: ${dpr}dppx)`);
+    mediaQuery.addEventListener('change', updatePixelRatio);
+
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if ((this.pdfDoc || this.documentModel) && !this.isRendering) {
+          this.renderPage(this.currentPage);
+        }
+      }, 200);
+    });
   }
 
   setDocumentModel(model) {
@@ -141,10 +177,14 @@ export class PDFViewer {
       return;
     }
 
-    // Cancel in-flight render task if active
+    // Cancel in-flight render tasks if active
     if (this.renderTask) {
       this.renderTask.cancel();
       this.renderTask = null;
+    }
+    if (this.textLayerRenderTask) {
+      this.textLayerRenderTask.cancel();
+      this.textLayerRenderTask = null;
     }
 
     this.isRendering = true;
@@ -166,13 +206,23 @@ export class PDFViewer {
         }
 
         this.currentPageSize = { width: unscaledW, height: unscaledH };
-        const viewportW = unscaledW * this.scale;
-        const viewportH = unscaledH * this.scale;
+        const cssWidth = Math.round(unscaledW * this.scale);
+        const cssHeight = Math.round(unscaledH * this.scale);
 
-        this.canvas.width = Math.floor(viewportW * pixelRatio);
-        this.canvas.height = Math.floor(viewportH * pixelRatio);
-        this.canvas.style.width = `${Math.floor(viewportW)}px`;
-        this.canvas.style.height = `${Math.floor(viewportH)}px`;
+        this.canvas.width = Math.round(cssWidth * pixelRatio);
+        this.canvas.height = Math.round(cssHeight * pixelRatio);
+        this.canvas.style.width = `${cssWidth}px`;
+        this.canvas.style.height = `${cssHeight}px`;
+
+        if (this.canvas.parentElement && this.canvas.parentElement.classList.contains('pdf-page-wrapper')) {
+          this.canvas.parentElement.style.width = `${cssWidth}px`;
+          this.canvas.parentElement.style.height = `${cssHeight}px`;
+        }
+
+        if (this.textLayer) {
+          this.textLayer.innerHTML = '';
+          this.textLayer.style.display = 'none';
+        }
 
         this.ctx.save();
         this.ctx.fillStyle = '#FFFFFF';
@@ -205,28 +255,75 @@ export class PDFViewer {
       const userRotation = pageRecord?.rotation || 0;
       const totalRotation = ((page.rotate || 0) + userRotation) % 360;
 
+      // 1. Natural page viewport at scale 1.0 (unscaled points)
       const unscaledViewport = page.getViewport({ scale: 1.0, rotation: totalRotation });
       this.currentPageSize = { width: unscaledViewport.width, height: unscaledViewport.height };
 
-      const viewport = page.getViewport({ scale: this.scale, rotation: totalRotation });
+      // 2. CSS display viewport at current zoom scale
+      const cssViewport = page.getViewport({ scale: this.scale, rotation: totalRotation });
+      const cssWidth = Math.round(cssViewport.width);
+      const cssHeight = Math.round(cssViewport.height);
 
-      // Canvas internal resolution (scaled for crisp high-DPI retina display)
-      this.canvas.width = Math.floor(viewport.width * pixelRatio);
-      this.canvas.height = Math.floor(viewport.height * pixelRatio);
+      // 3. Native backing resolution viewport (scaled by devicePixelRatio for high-DPI retina sharpness)
+      const renderScale = this.scale * pixelRatio;
+      const renderViewport = page.getViewport({ scale: renderScale, rotation: totalRotation });
 
-      // Canvas CSS layout size
-      this.canvas.style.width = `${Math.floor(viewport.width)}px`;
-      this.canvas.style.height = `${Math.floor(viewport.height)}px`;
+      this.canvas.width = Math.round(renderViewport.width);
+      this.canvas.height = Math.round(renderViewport.height);
+
+      this.canvas.style.width = `${cssWidth}px`;
+      this.canvas.style.height = `${cssHeight}px`;
+
+      if (this.canvas.parentElement && this.canvas.parentElement.classList.contains('pdf-page-wrapper')) {
+        this.canvas.parentElement.style.width = `${cssWidth}px`;
+        this.canvas.parentElement.style.height = `${cssHeight}px`;
+      }
+
+      // 4. Update Text Layer container dimensions & CSS scale factor
+      if (this.textLayer) {
+        this.textLayer.innerHTML = '';
+        this.textLayer.style.display = '';
+        this.textLayer.style.width = `${cssWidth}px`;
+        this.textLayer.style.height = `${cssHeight}px`;
+        this.textLayer.style.setProperty('--scale-factor', cssViewport.scale);
+      }
 
       const renderContext = {
         canvasContext: this.ctx,
-        viewport: viewport,
-        transform: pixelRatio !== 1 ? [pixelRatio, 0, 0, pixelRatio, 0, 0] : null,
+        viewport: renderViewport,
       };
 
       this.renderTask = page.render(renderContext);
+
+      // 5. Render Text Layer concurrently using official PDF.js renderTextLayer API
+      let textLayerPromise = null;
+      if (this.textLayer && window.pdfjsLib && typeof window.pdfjsLib.renderTextLayer === 'function') {
+        textLayerPromise = (async () => {
+          try {
+            const textContent = await page.getTextContent();
+            if (!this.isRendering) return;
+            this.textLayerRenderTask = window.pdfjsLib.renderTextLayer({
+              textContentSource: textContent,
+              container: this.textLayer,
+              viewport: cssViewport,
+            });
+            await this.textLayerRenderTask.promise;
+            this.textLayerRenderTask = null;
+          } catch (textErr) {
+            if (textErr?.name !== 'RenderingCancelledException') {
+              console.warn('Text layer render error:', textErr);
+            }
+          }
+        })();
+      }
+
       await this.renderTask.promise;
       this.renderTask = null;
+
+      if (textLayerPromise) {
+        await textLayerPromise;
+      }
+
       this.isRendering = false;
 
       this.onPageChange(this.currentPage, this.totalPages, pageRecord);
@@ -265,8 +362,14 @@ export class PDFViewer {
   async fitWidth() {
     if (!this.pdfDoc && !this.documentModel) return;
     const pageSize = this.getPageSize();
-    const availableWidth = this.viewportContainer.clientWidth - 48; // padding allowance
-    if (availableWidth > 0 && pageSize.width > 0) {
+    const scrollArea = this.viewportContainer || document.getElementById('workspaceScrollArea');
+    if (!scrollArea || pageSize.width <= 0) return;
+
+    const style = window.getComputedStyle(scrollArea);
+    const padLeft = parseFloat(style.paddingLeft) || 0;
+    const padRight = parseFloat(style.paddingRight) || 0;
+    const availableWidth = scrollArea.clientWidth - padLeft - padRight;
+    if (availableWidth > 0) {
       const targetScale = availableWidth / pageSize.width;
       this.setZoom(targetScale);
     }
@@ -275,8 +378,14 @@ export class PDFViewer {
   async fitPage() {
     if (!this.pdfDoc && !this.documentModel) return;
     const pageSize = this.getPageSize();
-    const availableWidth = this.viewportContainer.clientWidth - 48;
-    const availableHeight = this.viewportContainer.clientHeight - 80;
+    const scrollArea = this.viewportContainer || document.getElementById('workspaceScrollArea');
+    if (!scrollArea || pageSize.width <= 0 || pageSize.height <= 0) return;
+
+    const style = window.getComputedStyle(scrollArea);
+    const padH = (parseFloat(style.paddingLeft) || 0) + (parseFloat(style.paddingRight) || 0);
+    const padV = (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingBottom) || 0);
+    const availableWidth = scrollArea.clientWidth - padH;
+    const availableHeight = scrollArea.clientHeight - padV;
     if (availableWidth > 0 && availableHeight > 0) {
       const scaleW = availableWidth / pageSize.width;
       const scaleH = availableHeight / pageSize.height;
@@ -285,21 +394,21 @@ export class PDFViewer {
     }
   }
 
-  nextPage() {
+  async nextPage() {
     if (this.currentPage < this.totalPages) {
-      this.renderPage(this.currentPage + 1);
+      return await this.renderPage(this.currentPage + 1);
     }
   }
 
-  prevPage() {
+  async prevPage() {
     if (this.currentPage > 1) {
-      this.renderPage(this.currentPage - 1);
+      return await this.renderPage(this.currentPage - 1);
     }
   }
 
-  goToPage(pageNum) {
+  async goToPage(pageNum) {
     const target = Math.max(1, Math.min(pageNum, this.totalPages));
-    this.renderPage(target);
+    return await this.renderPage(target);
   }
 
   hasDocument() {
@@ -325,6 +434,12 @@ export class PDFViewer {
       } catch (e) {}
       this.renderTask = null;
     }
+    if (this.textLayerRenderTask) {
+      try {
+        this.textLayerRenderTask.cancel();
+      } catch (e) {}
+      this.textLayerRenderTask = null;
+    }
     if (this.pdfDoc && typeof this.pdfDoc.destroy === 'function') {
       try {
         this.pdfDoc.destroy();
@@ -336,6 +451,11 @@ export class PDFViewer {
     this.docMetadata = null;
     this.currentPage = 1;
     this.totalPages = 0;
+    if (this.textLayer) {
+      this.textLayer.innerHTML = '';
+      this.textLayer.style.width = '0px';
+      this.textLayer.style.height = '0px';
+    }
     if (this.canvas) {
       const ctx = this.canvas.getContext('2d');
       if (ctx) ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);

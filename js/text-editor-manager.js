@@ -1,11 +1,11 @@
 /**
- * SAVY PDF Workspace — Visual PDF Text Editor Module (text-editor-manager.js)
+ * SAVY PDF Workspace — PDF Text Editor Module (text-editor-manager.js)
  * Enables visual PDF existing-text detection, selection, inline editing,
- * and solid background-masked text replacement.
+ * and true underlying PDF content stream text replacement.
  *
  * Technical Classification:
- * VISUAL PDF TEXT REPLACEMENT — Original PDF text remains underneath a solid
- * background mask in the exported file, while replacement text is drawn over it.
+ * TRUE PDF TEXT REPLACEMENT — Original PDF text operators are directly rewritten
+ * and purged from the PDF content streams upon export.
  *
  * Privacy Guarantee:
  * "Your PDF is processed locally in your browser and is never uploaded to SAVY servers."
@@ -89,7 +89,7 @@ export class TextEditorManager {
     if (this.isActive) {
       this.textEditLayer.style.display = 'block';
       this.renderCurrentPage();
-      this.onToast('Visual Text Replacement active: Click existing text to mask and replace.');
+      this.onToast('Text Editor active: Click existing text to edit and replace in-place.');
     } else {
       this.cancelInlineEdit();
       this.deselectRun();

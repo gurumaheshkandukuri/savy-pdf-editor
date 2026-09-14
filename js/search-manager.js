@@ -168,7 +168,12 @@ export class SearchManager {
       this.searchReplaceRow.style.display = this.isReplaceMode ? 'flex' : 'none';
     }
     if (this.btnToggleReplace) {
-      this.btnToggleReplace.textContent = this.isReplaceMode ? '▼' : '▶';
+      const iconSpan = this.btnToggleReplace.querySelector('#replaceToggleIcon');
+      if (iconSpan) {
+        iconSpan.textContent = this.isReplaceMode ? '▼' : '▶';
+      } else {
+        this.btnToggleReplace.textContent = this.isReplaceMode ? '▼' : '▶';
+      }
       this.btnToggleReplace.classList.toggle('active', this.isReplaceMode);
     }
     if (this.isReplaceMode && this.replaceInput) {
@@ -420,6 +425,7 @@ export class SearchManager {
               startIndex: matchPos,
               endIndex: matchEnd,
               bounds,
+              matchedText: pageData.fullText.substring(matchPos, matchEnd),
               textSnippet: pageData.fullText.substring(Math.max(0, matchPos - 20), Math.min(pageData.fullText.length, matchEnd + 20)),
             });
           }

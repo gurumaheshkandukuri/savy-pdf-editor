@@ -243,108 +243,276 @@
         </div>
       </section>
 
-      <!-- PDF Tools Directory -->
+            <!-- PDF Tools Directory -->
       <section class="tools-section" id="tools">
         <div class="container">
           <div class="section-header">
-            <span class="section-tag">Explore PDF Tools</span>
-            <h2 class="section-title">Free, Private Client-Side PDF Tools</h2>
+            <span class="section-tag">Explore All 24 PDF Tools</span>
+            <h2 class="section-title">Free, Private Client-Side PDF Tools & Converters</h2>
             <p class="section-subtitle">
               Every tool executes 100% locally in your browser. No files are uploaded to any server.
             </p>
           </div>
 
-          <div class="tools-grid">
-            <a href="./tools/pdf-editor.html" class="tool-card">
-              <div class="tool-card-icon">
-                <img src="./assets/icons/pen.svg" alt="" aria-hidden="true" />
-              </div>
-              <h3 class="tool-card-title">PDF Editor <span class="arrow">→</span></h3>
-              <p class="tool-card-desc">Add text, annotations, freehand drawings, signatures, and stamps directly in your browser.</p>
-              <span class="tool-badge-pill">Free & Local</span>
-            </a>
+          <!-- 1. PDF ORGANIZATION -->
+          <div class="tools-category-group">
+            <h3 class="tools-category-heading">1. PDF ORGANIZATION</h3>
+            <div class="tools-grid">
+              <a href="./editor.html?action=merge" class="tool-card" data-tool="merge" aria-label="Merge PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/layers.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Merge PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Combine multiple separate PDF files into a single unified document in seconds.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
 
-            <a href="./tools/merge-pdf.html" class="tool-card">
-              <div class="tool-card-icon">
-                <img src="./assets/icons/layers.svg" alt="" aria-hidden="true" />
-              </div>
-              <h3 class="tool-card-title">Merge PDF <span class="arrow">→</span></h3>
-              <p class="tool-card-desc">Combine multiple separate PDF files into a single unified document in seconds.</p>
-              <span class="tool-badge-pill">Free & Local</span>
-            </a>
+              <a href="./editor.html?action=split" class="tool-card" data-tool="split" aria-label="Split PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/scissors.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Split PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Extract specific pages or break a PDF into individual files with custom page ranges.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
 
-            <a href="./tools/split-pdf.html" class="tool-card">
-              <div class="tool-card-icon">
-                <img src="./assets/icons/crop.svg" alt="" aria-hidden="true" />
-              </div>
-              <h3 class="tool-card-title">Split PDF <span class="arrow">→</span></h3>
-              <p class="tool-card-desc">Extract specific pages or break a PDF into individual files with custom page ranges.</p>
-              <span class="tool-badge-pill">Free & Local</span>
-            </a>
+              <a href="./editor.html?action=organize" class="tool-card" data-tool="organize" aria-label="Organize PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/layout.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Organize PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Reorder, duplicate, delete, and insert blank or imported pages with drag-and-drop.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
 
-            <a href="./tools/compress-pdf.html" class="tool-card">
-              <div class="tool-card-icon">
-                <img src="./assets/icons/download.svg" alt="" aria-hidden="true" />
-              </div>
-              <h3 class="tool-card-title">Compress PDF <span class="arrow">→</span></h3>
-              <p class="tool-card-desc">Reduce document file size to share easily via email without sacrificing readability.</p>
-              <span class="tool-badge-pill">Free & Local</span>
-            </a>
+              <a href="./editor.html?action=rotate" class="tool-card" data-tool="rotate" aria-label="Rotate PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/rotate-cw.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Rotate PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Permanently rotate portrait or landscape pages by 90°, 180°, or 270°.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
 
-            <a href="./tools/pdf-to-image.html" class="tool-card">
-              <div class="tool-card-icon">
-                <img src="./assets/icons/image.svg" alt="" aria-hidden="true" />
-              </div>
-              <h3 class="tool-card-title">PDF to Image <span class="arrow">→</span></h3>
-              <p class="tool-card-desc">Convert PDF pages into high-resolution PNG or JPG images directly on your device.</p>
-              <span class="tool-badge-pill">Free & Local</span>
-            </a>
+              <a href="./editor.html?action=crop" class="tool-card" data-tool="crop" aria-label="Crop PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/crop.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Crop PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Trim page margins or set custom crop boxes for specific or all pages.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
 
-            <a href="./tools/image-to-pdf.html" class="tool-card">
-              <div class="tool-card-icon">
-                <img src="./assets/icons/file-pdf.svg" alt="" aria-hidden="true" />
-              </div>
-              <h3 class="tool-card-title">Image to PDF <span class="arrow">→</span></h3>
-              <p class="tool-card-desc">Convert JPG, PNG, and WebP images into standard PDF documents in your browser.</p>
-              <span class="tool-badge-pill">Free & Local</span>
-            </a>
+              <a href="./editor.html?action=page-numbering" class="tool-card" data-tool="page-numbering" aria-label="Page Numbers">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/hash.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Page Numbers <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Add customizable header or footer page numbers with flexible formatting.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
 
-            <a href="./tools/pdf-to-text.html" class="tool-card">
-              <div class="tool-card-icon">
-                <img src="./assets/icons/type.svg" alt="" aria-hidden="true" />
-              </div>
-              <h3 class="tool-card-title">PDF to Text <span class="arrow">→</span></h3>
-              <p class="tool-card-desc">Extract readable text and document content instantly with one-click copy and export.</p>
-              <span class="tool-badge-pill">Free & Local</span>
-            </a>
-
-            <a href="./tools/redact-pdf.html" class="tool-card">
-              <div class="tool-card-icon">
-                <img src="./assets/icons/eye-off.svg" alt="" aria-hidden="true" />
-              </div>
-              <h3 class="tool-card-title">Redact PDF <span class="arrow">→</span></h3>
-              <p class="tool-card-desc">Permanently black out sensitive data and confidential numbers with sanitized redaction.</p>
-              <span class="tool-badge-pill">Free & Local</span>
-            </a>
-
-            <a href="./tools/pdf-forms.html" class="tool-card">
-              <div class="tool-card-icon">
-                <img src="./assets/icons/check.svg" alt="" aria-hidden="true" />
-              </div>
-              <h3 class="tool-card-title">Fill PDF Forms <span class="arrow">→</span></h3>
-              <p class="tool-card-desc">Fill out interactive PDF forms, checkboxes, and text inputs securely with zero cloud storage.</p>
-              <span class="tool-badge-pill">Free & Local</span>
-            </a>
-
-            <a href="./tools/ocr-pdf.html" class="tool-card">
-              <div class="tool-card-icon">
-                <img src="./assets/icons/search.svg" alt="" aria-hidden="true" />
-              </div>
-              <h3 class="tool-card-title">OCR PDF Scanner <span class="arrow">→</span></h3>
-              <p class="tool-card-desc">Recognize text from paper scans and images using local WebAssembly Tesseract OCR.</p>
-              <span class="tool-badge-pill">Free & Local</span>
-            </a>
+              <a href="./editor.html?action=watermark" class="tool-card" data-tool="watermark" aria-label="Watermark PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/stamp.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Watermark PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Apply custom text watermarks across document pages with opacity and angle controls.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+            </div>
           </div>
+
+          <!-- 2. CONVERT FROM PDF -->
+          <div class="tools-category-group">
+            <h3 class="tools-category-heading">2. CONVERT FROM PDF</h3>
+            <div class="tools-grid">
+              <a href="./editor.html?action=pdf-to-word" class="tool-card" data-tool="pdf-to-word" aria-label="PDF to Word">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/file-text.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">PDF → Word <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Convert PDF documents to genuine editable OpenXML (.docx) Word files locally.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=pdf-to-excel" class="tool-card" data-tool="pdf-to-excel" aria-label="PDF to Excel">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/table.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">PDF → Excel <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Extract tabular data from PDF pages into OpenXML (.xlsx) spreadsheets.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=pdf-to-pptx" class="tool-card" data-tool="pdf-to-pptx" aria-label="PDF to PowerPoint">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/presentation.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">PDF → PowerPoint <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Generate OpenXML (.pptx) presentation slides from PDF page content.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=pdf-to-images" class="tool-card" data-tool="pdf-to-images" aria-label="PDF to JPG">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/image.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">PDF → JPG <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Render and export PDF pages as high-resolution JPG or PNG images.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=pdf-to-text" class="tool-card" data-tool="pdf-to-text" aria-label="PDF to TXT">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/type.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">PDF → TXT <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Extract raw readable text content instantly with one-click export.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=pdf-to-markdown" class="tool-card" data-tool="pdf-to-markdown" aria-label="PDF to Markdown">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/file-text.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">PDF → Markdown <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Convert PDF text and structure into clean, formatted Markdown (.md).</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=pdf-to-pdfa" class="tool-card" data-tool="pdf-to-pdfa" aria-label="PDF to PDF/A">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/archive.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">PDF → PDF/A <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Prepare PDF documents with XMP archival metadata for long-term preservation.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- 3. CONVERT TO PDF -->
+          <div class="tools-category-group">
+            <h3 class="tools-category-heading">3. CONVERT TO PDF</h3>
+            <div class="tools-grid">
+              <a href="./editor.html?action=images-to-pdf" class="tool-card" data-tool="images-to-pdf" aria-label="JPG to PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/image.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">JPG → PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Convert JPG, PNG, and WebP images into standard, multi-page PDF files.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=html-to-pdf" class="tool-card" data-tool="html-to-pdf" aria-label="HTML to PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/code.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">HTML → PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Convert HTML snippets and web pages to clean PDF documents entirely in browser.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+            </div>
+          </div>
+
+          <!-- 4. SCANNING & OCR -->
+          <div class="tools-category-group">
+            <h3 class="tools-category-heading">4. SCANNING & OCR</h3>
+            <div class="tools-grid">
+              <a href="./editor.html?action=ocr" class="tool-card" data-tool="ocr" aria-label="OCR PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/search.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">OCR PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Extract text from scanned PDF documents using client-side WebAssembly OCR.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=scan-to-pdf" class="tool-card" data-tool="scan-to-pdf" aria-label="Scan to PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/camera.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Scan → PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Capture documents with your device camera and apply clean photocopy filters.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- 5. SECURITY -->
+          <div class="tools-category-group">
+            <h3 class="tools-category-heading">5. SECURITY</h3>
+            <div class="tools-grid">
+              <a href="./editor.html?action=redact" class="tool-card" data-tool="redact" aria-label="Redact PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/eye-off.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Redact PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Permanently blackout and sanitize sensitive text, numbers, and clauses.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- 6. ADVANCED -->
+          <div class="tools-category-group">
+            <h3 class="tools-category-heading">6. ADVANCED</h3>
+            <div class="tools-grid">
+              <a href="./editor.html?action=compress" class="tool-card" data-tool="compress" aria-label="Compress PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/download.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Compress PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Reduce document file size with selectable JPEG optimization levels.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=compare-pdf" class="tool-card" data-tool="compare-pdf" aria-label="Compare PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/git-compare.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Compare PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Compare two PDF documents side-by-side with visual text diff highlighting.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=forms" class="tool-card" data-tool="forms" aria-label="PDF Forms">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/check.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">PDF Forms <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Inspect, fill, and flatten AcroForm interactive form fields locally.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+
+              <a href="./editor.html?action=repair-pdf" class="tool-card" data-tool="repair-pdf" aria-label="Repair PDF">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/wrench.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Repair PDF <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Rebuild corrupted PDF cross-reference tables and sanitize broken streams.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- 7. IMAGE/DOCUMENT -->
+          <div class="tools-category-group">
+            <h3 class="tools-category-heading">7. IMAGE/DOCUMENT</h3>
+            <div class="tools-grid">
+              <a href="./editor.html?action=image-to-word" class="tool-card" data-tool="image-to-word" aria-label="Image to Word">
+                <div class="tool-card-icon">
+                  <img src="./assets/icons/file-text.svg" alt="" aria-hidden="true" />
+                </div>
+                <h4 class="tool-card-title">Image → Word <span class="arrow">→</span></h4>
+                <p class="tool-card-desc">Convert scanned photos and diagrams into an OpenXML (.docx) Word document.</p>
+                <span class="tool-badge-pill">Free & Local</span>
+              </a>
+            </div>
+          </div>
+
         </div>
       </section>
 

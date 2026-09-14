@@ -99,6 +99,12 @@
             <span>Search</span>
           </button>
 
+          <!-- Find & Replace -->
+          <button type="button" class="btn-header btn-header-secondary" id="btnHeaderFindReplace" aria-label="Find & Replace" title="Find & Replace (Ctrl+H)">
+            <img src="./assets/icons/search.svg" width="14" height="14" alt="" aria-hidden="true" />
+            <span>Find & Replace</span>
+          </button>
+
           <!-- Presentation Mode (Phase 6) -->
           <button type="button" class="btn-header btn-header-secondary" id="btnHeaderPresentation" aria-label="Presentation Mode" title="Presentation Mode (F5)">
             <img src="./assets/icons/presentation.svg" width="14" height="14" alt="" aria-hidden="true" />
@@ -253,70 +259,78 @@
 
         <!-- Main PDF Workspace / Canvas Area -->
         <main class="editor-workspace" id="editorWorkspace" role="main">
-          <!-- Workspace Empty State (When no PDF is loaded) -->
-          <div class="workspace-empty-state" id="workspaceEmptyState" role="region" aria-label="Document Dropzone">
-            <div class="empty-icon-box">
-              <img src="./assets/icons/upload.svg" alt="" aria-hidden="true" />
-            </div>
-            <h2 class="empty-title">Ready to Open Document</h2>
-            <p class="empty-desc">
-              Drag and drop your PDF file directly into this workspace, or select a file from your device.
-              Every byte is processed strictly in your local browser sandbox.
-            </p>
-            <div class="empty-actions">
-              <button type="button" class="btn-header btn-header-primary" id="btnEmptyBrowse">
-                Browse PDF File
-              </button>
-            </div>
-            <div class="empty-privacy-badge">
-              <img src="./assets/icons/lock.svg" alt="" aria-hidden="true" />
-              <span>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</span>
-            </div>
-          </div>
-
-          <!-- In-Document Search & Replace Overlay (Phase 6 & Text Edit) -->
-          <div id="searchBarOverlay" class="search-bar-overlay" style="display: none;" role="search" aria-label="Find and Replace in document">
-            <div class="search-bar-content">
-              <div class="search-bar-inner">
-                <button type="button" class="btn-search-icon" id="btnToggleReplaceMode" title="Toggle Replace (Ctrl+H)" aria-label="Toggle Replace Mode">▶</button>
-                <img src="./assets/icons/search.svg" width="16" height="16" alt="" class="search-bar-icon" aria-hidden="true" />
-                <input type="text" id="searchInput" class="search-input" placeholder="Find in document... (Enter / Shift+Enter)" aria-label="Search term" />
-                <span id="searchSpinner" class="search-spinner" style="display: none;" aria-label="Searching"></span>
-                <span id="searchMatchCount" class="search-match-count"></span>
-                <button type="button" class="btn-search-icon" id="btnSearchCaseSensitive" title="Match Case (Aa)" aria-label="Match Case">Aa</button>
-                <button type="button" class="btn-search-icon" id="btnSearchPrev" title="Previous match (Shift+Enter, ↑)" aria-label="Previous Match" disabled>▲</button>
-                <button type="button" class="btn-search-icon" id="btnSearchNext" title="Next match (Enter, ↓)" aria-label="Next Match" disabled>▼</button>
-                <button type="button" class="btn-search-icon btn-search-close" id="btnSearchClose" title="Close search (Esc)" aria-label="Close search">✕</button>
+          <!-- Scrollable Document Viewport Area -->
+          <div class="workspace-scroll-area" id="workspaceScrollArea" tabindex="0" role="region" aria-label="PDF Document Scroll Viewport">
+            <!-- Workspace Empty State (When no PDF is loaded) -->
+            <div class="workspace-empty-state" id="workspaceEmptyState" role="region" aria-label="Document Dropzone">
+              <div class="empty-icon-box">
+                <img src="./assets/icons/upload.svg" alt="" aria-hidden="true" />
               </div>
-              <div class="search-replace-inner" id="searchReplaceRow" style="display: none;">
-                <input type="text" id="replaceInput" class="search-input replace-input" placeholder="Replace with..." aria-label="Replacement text" />
-                <select id="searchScopeSelect" class="search-scope-select" aria-label="Replacement Scope">
-                  <option value="current">Current Page</option>
-                  <option value="all" selected>All Pages</option>
-                </select>
-                <button type="button" class="btn-replace-action" id="btnSearchReplace" title="Replace Current Match">Replace</button>
-                <button type="button" class="btn-replace-action btn-replace-all" id="btnSearchReplaceAll" title="Replace All Matches">Replace All</button>
+              <h2 class="empty-title">Ready to Open Document</h2>
+              <p class="empty-desc">
+                Drag and drop your PDF file directly into this workspace, or select a file from your device.
+                Every byte is processed strictly in your local browser sandbox.
+              </p>
+              <div class="empty-actions" style="display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap;">
+                <button type="button" class="btn-header btn-header-primary" id="btnEmptyBrowse">
+                  Browse PDF File
+                </button>
+                <button type="button" class="btn-header btn-header-secondary" id="btnEmptyToolbox" title="Explore all 29 tools">
+                  <img src="./assets/icons/tools.svg" width="14" height="14" alt="" aria-hidden="true" />
+                  <span>PDF Toolbox (29 Tools)</span>
+                </button>
+              </div>
+              <div class="empty-privacy-badge">
+                <img src="./assets/icons/lock.svg" alt="" aria-hidden="true" />
+                <span>Your PDF is processed locally in your browser and is never uploaded to SAVY servers.</span>
               </div>
             </div>
-          </div>
 
-          <!-- Active PDF Canvas Viewport Container -->
-          <div class="pdf-viewport-container" id="pdfViewportContainer">
-            <div class="pdf-page-wrapper" id="pdfPageWrapper">
-              <canvas id="pdfCanvas" class="pdf-page-canvas"></canvas>
-              <div id="annotationOverlay" class="annotation-overlay" aria-label="Interactive Annotations"></div>
-              <canvas id="drawingCanvas" class="drawing-canvas" aria-hidden="true"></canvas>
-              <div id="searchHighlightOverlay" class="search-highlight-overlay" aria-hidden="true"></div>
-              <div id="textEditLayer" class="text-edit-layer" style="display: none;" aria-label="PDF Text Editing Layer"></div>
+            <!-- In-Document Search & Replace Overlay (Phase 6 & Text Edit) -->
+            <div id="searchBarOverlay" class="search-bar-overlay" style="display: none;" role="search" aria-label="Find and Replace in document">
+              <div class="search-bar-content">
+                <div class="search-bar-inner">
+                  <button type="button" class="btn-search-icon btn-replace-toggle" id="btnToggleReplaceMode" title="Toggle Replace Mode (Ctrl+H)" aria-label="Toggle Replace Mode"><span id="replaceToggleIcon">▶</span> <span id="replaceToggleText">Replace</span></button>
+                  <img src="./assets/icons/search.svg" width="16" height="16" alt="" class="search-bar-icon" aria-hidden="true" />
+                  <input type="text" id="searchInput" class="search-input" placeholder="Find in document... (Enter / Shift+Enter)" aria-label="Search term" />
+                  <span id="searchSpinner" class="search-spinner" style="display: none;" aria-label="Searching"></span>
+                  <span id="searchMatchCount" class="search-match-count"></span>
+                  <button type="button" class="btn-search-icon" id="btnSearchCaseSensitive" title="Match Case (Aa)" aria-label="Match Case">Aa</button>
+                  <button type="button" class="btn-search-icon" id="btnSearchPrev" title="Previous match (Shift+Enter, ↑)" aria-label="Previous Match" disabled>▲</button>
+                  <button type="button" class="btn-search-icon" id="btnSearchNext" title="Next match (Enter, ↓)" aria-label="Next Match" disabled>▼</button>
+                  <button type="button" class="btn-search-icon btn-search-close" id="btnSearchClose" title="Close search (Esc)" aria-label="Close search">✕</button>
+                </div>
+                <div class="search-replace-inner" id="searchReplaceRow" style="display: none;">
+                  <input type="text" id="replaceInput" class="search-input replace-input" placeholder="Replace with..." aria-label="Replacement text" />
+                  <select id="searchScopeSelect" class="search-scope-select" aria-label="Replacement Scope">
+                    <option value="current">Current Page</option>
+                    <option value="all" selected>All Pages</option>
+                  </select>
+                  <button type="button" class="btn-replace-action" id="btnSearchReplace" title="Replace Current Match">Replace</button>
+                  <button type="button" class="btn-replace-action btn-replace-all" id="btnSearchReplaceAll" title="Replace All Matches">Replace All</button>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <!-- Loading Overlay -->
-          <div class="pdf-loading-overlay" id="pdfLoadingOverlay" role="status" aria-label="Rendering PDF">
-            <div class="spinner"></div>
-            <p style="font-size: 0.875rem; color: var(--color-text-secondary); font-weight: 500;">
-              Rendering page locally...
-            </p>
+            <!-- Active PDF Canvas Viewport Container -->
+            <div class="pdf-viewport-container" id="pdfViewportContainer">
+              <div class="pdf-page-wrapper" id="pdfPageWrapper">
+                <canvas id="pdfCanvas" class="pdf-page-canvas"></canvas>
+                <div id="pdfTextLayer" class="textLayer" aria-label="PDF Text Layer"></div>
+                <div id="annotationOverlay" class="annotation-overlay" aria-label="Interactive Annotations"></div>
+                <canvas id="drawingCanvas" class="drawing-canvas" aria-hidden="true"></canvas>
+                <div id="searchHighlightOverlay" class="search-highlight-overlay" aria-hidden="true"></div>
+                <div id="textEditLayer" class="text-edit-layer" style="display: none;" aria-label="PDF Text Editing Layer"></div>
+              </div>
+            </div>
+
+            <!-- Loading Overlay -->
+            <div class="pdf-loading-overlay" id="pdfLoadingOverlay" role="status" aria-label="Rendering PDF">
+              <div class="spinner"></div>
+              <p style="font-size: 0.875rem; color: var(--color-text-secondary); font-weight: 500;">
+                Rendering page locally...
+              </p>
+            </div>
           </div>
 
           <!-- Floating Bottom Navigation & Zoom Controls -->
@@ -775,166 +789,368 @@
             <button type="button" class="btn-modal-close" id="btnToolboxClose" aria-label="Close modal">✕</button>
           </div>
           <div class="modal-body toolbox-modal-body">
-            <p class="modal-subtitle">Fast, privacy-first PDF utilities running 100% locally in your browser.</p>
+            <p class="modal-subtitle">Fast, privacy-first PDF utilities running 100% locally in your browser. User documents are processed locally and never uploaded to SAVY servers.</p>
 
-            <!-- CONVERT SECTION -->
+            <!-- 1. PDF ORGANIZATION -->
             <div class="toolbox-section">
-              <div class="toolbox-section-label">CONVERT</div>
+              <div class="toolbox-section-label toolbox-category-title">PDF ORGANIZATION</div>
               <div class="toolbox-grid">
-                <div class="toolbox-card" data-toolbox-action="img-to-pdf">
-                  <div class="toolbox-card-icon">
-                    <img src="./assets/icons/image.svg" width="20" height="20" alt="" />
-                  </div>
-                  <div class="toolbox-card-content">
-                    <h4>Images → PDF</h4>
-                    <p>Convert JPG, PNG, and WebP images into a single PDF document.</p>
-                  </div>
-                </div>
-
-                <div class="toolbox-card" data-toolbox-action="pdf-to-img">
-                  <div class="toolbox-card-icon">
-                    <img src="./assets/icons/image.svg" width="20" height="20" alt="" />
-                  </div>
-                  <div class="toolbox-card-content">
-                    <h4>PDF → Images</h4>
-                    <p>Export pages as PNG or JPG images, or download all pages in a ZIP.</p>
-                  </div>
-                </div>
-
-                <div class="toolbox-card" data-toolbox-action="pdf-to-text">
-                  <div class="toolbox-card-icon">
-                    <img src="./assets/icons/type.svg" width="20" height="20" alt="" />
-                  </div>
-                  <div class="toolbox-card-content">
-                    <h4>PDF → Text</h4>
-                    <p>Extract selectable text across pages with copy and .txt download.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- OPTIMIZE SECTION -->
-            <div class="toolbox-section">
-              <div class="toolbox-section-label">OPTIMIZE</div>
-              <div class="toolbox-grid">
-                <div class="toolbox-card" data-toolbox-action="compress">
-                  <div class="toolbox-card-icon">
-                    <img src="./assets/icons/file-pdf.svg" width="20" height="20" alt="" />
-                  </div>
-                  <div class="toolbox-card-content">
-                    <h4>Compress PDF</h4>
-                    <p>Reduce document file size with lossless streams or visual optimization.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- DOCUMENT SECTION -->
-            <div class="toolbox-section">
-              <div class="toolbox-section-label">DOCUMENT</div>
-              <div class="toolbox-grid">
-                <div class="toolbox-card" data-toolbox-action="metadata">
-                  <div class="toolbox-card-icon">
-                    <img src="./assets/icons/info.svg" width="20" height="20" alt="" />
-                  </div>
-                  <div class="toolbox-card-content">
-                    <h4>Metadata</h4>
-                    <p>View, edit, or clear PDF title, author, subject, keywords, and producer.</p>
-                  </div>
-                </div>
-
-                <div class="toolbox-card" data-toolbox-action="watermark">
-                  <div class="toolbox-card-icon">
-                    <img src="./assets/icons/signature.svg" width="20" height="20" alt="" />
-                  </div>
-                  <div class="toolbox-card-content">
-                    <h4>Watermark</h4>
-                    <p>Add customizable text watermarks with angle, opacity, and color.</p>
-                  </div>
-                </div>
-
-                <div class="toolbox-card" data-toolbox-action="page-numbers">
+                <div class="toolbox-card" data-toolbox-action="merge" data-tool="merge" role="button" tabindex="0" aria-label="Merge PDF">
                   <div class="toolbox-card-icon">
                     <img src="./assets/icons/layers.svg" width="20" height="20" alt="" />
                   </div>
                   <div class="toolbox-card-content">
-                    <h4>Page Numbers</h4>
-                    <p>Add custom page numbers with positioning, format, and margins.</p>
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Merge PDF</h4>
+                    </div>
+                    <p>Combine multiple separate PDF files into a single unified document.</p>
                   </div>
                 </div>
 
-                <div class="toolbox-card" data-toolbox-action="flatten">
+                <div class="toolbox-card" data-toolbox-action="split" data-tool="split" role="button" tabindex="0" aria-label="Split PDF">
                   <div class="toolbox-card-icon">
-                    <img src="./assets/icons/lock.svg" width="20" height="20" alt="" />
+                    <img src="./assets/icons/scissors.svg" width="20" height="20" alt="" />
                   </div>
                   <div class="toolbox-card-content">
-                    <h4>Flatten PDF</h4>
-                    <p>Burn annotations and drawings into permanent non-editable base graphics.</p>
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Split PDF</h4>
+                    </div>
+                    <p>Extract specific page ranges or break a document into individual files.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="organize" data-tool="organize" role="button" tabindex="0" aria-label="Organize PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/layout.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Organize PDF</h4>
+                    </div>
+                    <p>Reorder, duplicate, delete, and insert blank or imported pages.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="rotate" data-tool="rotate" role="button" tabindex="0" aria-label="Rotate PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/rotate-cw.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Rotate PDF</h4>
+                    </div>
+                    <p>Rotate pages 90°, 180°, or 270° with lossless orientation tags.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="crop" data-tool="crop" role="button" tabindex="0" aria-label="Crop PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/crop.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Crop PDF</h4>
+                    </div>
+                    <p>Losslessly adjust visual boundaries using the standard PDF /CropBox.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="page-numbers" data-tool="page-numbering" role="button" tabindex="0" aria-label="Page Numbers">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/layers.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Page Numbers</h4>
+                    </div>
+                    <p>Add dynamic running page numbers with custom formats and positions.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="watermark" data-tool="watermark" role="button" tabindex="0" aria-label="Watermark PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/signature.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Watermark PDF</h4>
+                    </div>
+                    <p>Burn customizable text watermarks with angle, opacity, and color.</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- ADVANCED PRODUCTIVITY SECTION (PHASE 6) -->
+            <!-- 2. CONVERT FROM PDF -->
             <div class="toolbox-section">
-              <div class="toolbox-section-label">ADVANCED PRODUCTIVITY</div>
+              <div class="toolbox-section-label toolbox-category-title">CONVERT FROM PDF</div>
               <div class="toolbox-grid">
-                <div class="toolbox-card" data-toolbox-action="crop">
+                <div class="toolbox-card" data-toolbox-action="pdf-to-word" data-tool="pdf-to-word" role="button" tabindex="0" aria-label="PDF to Word">
                   <div class="toolbox-card-icon">
-                    <img src="./assets/icons/crop.svg" width="20" height="20" alt="" />
+                    <img src="./assets/icons/file-text.svg" width="20" height="20" alt="" />
                   </div>
                   <div class="toolbox-card-content">
-                    <h4>Crop Pages</h4>
-                    <p>Losslessly adjust visual boundaries using PDF /CropBox dictionary.</p>
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">PDF → Word</h4>
+                    </div>
+                    <p>Convert PDF text and structure into a genuine OpenXML Word (.docx) document.</p>
                   </div>
                 </div>
 
-                <div class="toolbox-card" data-toolbox-action="resize">
+                <div class="toolbox-card" data-toolbox-action="pdf-to-excel" data-tool="pdf-to-excel" role="button" tabindex="0" aria-label="PDF to Excel">
                   <div class="toolbox-card-icon">
-                    <img src="./assets/icons/fit-page.svg" width="20" height="20" alt="" />
+                    <img src="./assets/icons/layout.svg" width="20" height="20" alt="" />
                   </div>
                   <div class="toolbox-card-content">
-                    <h4>Resize & Margins</h4>
-                    <p>Standardize page sizes (A4, Letter, Legal) with proportional scaling.</p>
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">PDF → Excel</h4>
+                    </div>
+                    <p>Extract tabular rows and aligned columns into a valid Excel (.xlsx) workbook.</p>
                   </div>
                 </div>
 
-                <div class="toolbox-card" data-toolbox-action="headers-footers">
+                <div class="toolbox-card" data-toolbox-action="pdf-to-pptx" data-tool="pdf-to-pptx" role="button" tabindex="0" aria-label="PDF to PowerPoint">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/presentation.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">PDF → PowerPoint</h4>
+                    </div>
+                    <p>Map PDF pages into presentation slides in a real PowerPoint (.pptx) deck.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="pdf-to-images" data-tool="pdf-to-images" role="button" tabindex="0" aria-label="PDF to JPG">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/image.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">PDF → JPG</h4>
+                    </div>
+                    <p>Export pages as high-resolution JPG or PNG images, or download all in a ZIP.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="pdf-to-text" data-tool="pdf-to-text" role="button" tabindex="0" aria-label="PDF to Text">
                   <div class="toolbox-card-icon">
                     <img src="./assets/icons/type.svg" width="20" height="20" alt="" />
                   </div>
                   <div class="toolbox-card-content">
-                    <h4>Headers & Footers</h4>
-                    <p>Add dynamic running heads and footers with page numbers and titles.</p>
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">PDF → TXT</h4>
+                    </div>
+                    <p>Extract all selectable text content with one-click copy and .txt export.</p>
                   </div>
                 </div>
 
-                <div class="toolbox-card" data-toolbox-action="bates">
+                <div class="toolbox-card" data-toolbox-action="pdf-to-markdown" data-tool="pdf-to-markdown" role="button" tabindex="0" aria-label="PDF to Markdown">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/file-text.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">PDF → Markdown</h4>
+                    </div>
+                    <p>Convert headings, lists, and body paragraphs into a clean .md document.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="pdf-to-pdfa" data-tool="pdf-to-pdfa" role="button" tabindex="0" aria-label="PDF to PDF/A">
                   <div class="toolbox-card-icon">
                     <img src="./assets/icons/file-pdf.svg" width="20" height="20" alt="" />
                   </div>
                   <div class="toolbox-card-content">
-                    <h4>Bates Numbering</h4>
-                    <p>Apply legal sequential numbering (PREFIX-000001) across pages.</p>
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">PDF → PDF/A</h4>
+                    </div>
+                    <p>Prepare document for long-term archiving with PDF/A XMP metadata and OutputIntent.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. CONVERT TO PDF -->
+            <div class="toolbox-section">
+              <div class="toolbox-section-label toolbox-category-title">CONVERT TO PDF</div>
+              <div class="toolbox-grid">
+                <div class="toolbox-card" data-toolbox-action="images-to-pdf" data-tool="images-to-pdf" role="button" tabindex="0" aria-label="JPG to PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/image.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">JPG → PDF</h4>
+                    </div>
+                    <p>Convert JPG, PNG, and WebP images into a clean, standardized PDF document.</p>
                   </div>
                 </div>
 
-                <div class="toolbox-card" data-toolbox-action="ocr">
+                <div class="toolbox-card" data-toolbox-action="html-to-pdf" data-tool="html-to-pdf" role="button" tabindex="0" aria-label="HTML to PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/globe.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">HTML → PDF</h4>
+                    </div>
+                    <p>Render HTML code, web snippets, or formatted text into high-fidelity PDF pages.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 4. SCANNING & OCR -->
+            <div class="toolbox-section">
+              <div class="toolbox-section-label toolbox-category-title">SCANNING &amp; OCR</div>
+              <div class="toolbox-grid">
+                <div class="toolbox-card" data-toolbox-action="ocr" data-tool="ocr" role="button" tabindex="0" aria-label="OCR PDF">
                   <div class="toolbox-card-icon">
                     <img src="./assets/icons/search.svg" width="20" height="20" alt="" />
                   </div>
                   <div class="toolbox-card-content">
-                    <h4>Client-Side OCR</h4>
-                    <p>Extract text from scanned PDF pages using local WebAssembly OCR.</p>
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">OCR PDF</h4>
+                    </div>
+                    <p>Extract searchable text from paper scans using in-browser WebAssembly OCR.</p>
                   </div>
                 </div>
 
-                <div class="toolbox-card" data-toolbox-action="inspector">
+                <div class="toolbox-card" data-toolbox-action="scan-to-pdf" data-tool="scan-to-pdf" role="button" tabindex="0" aria-label="Scan to PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/camera.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Scan → PDF</h4>
+                    </div>
+                    <p>Capture paper documents via camera with B&amp;W photocopy contrast enhancement.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5. SECURITY -->
+            <div class="toolbox-section">
+              <div class="toolbox-section-label toolbox-category-title">SECURITY</div>
+              <div class="toolbox-grid">
+                <div class="toolbox-card" data-toolbox-action="redact" data-tool="redact" role="button" tabindex="0" aria-label="Redact PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/shield.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Redact PDF</h4>
+                    </div>
+                    <p>Permanently sanitize sensitive content via high-resolution rasterization.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 6. ADVANCED -->
+            <div class="toolbox-section">
+              <div class="toolbox-section-label toolbox-category-title">ADVANCED</div>
+              <div class="toolbox-grid">
+                <div class="toolbox-card" data-toolbox-action="compress" data-tool="compress" role="button" tabindex="0" aria-label="Compress PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/download.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Compress PDF</h4>
+                    </div>
+                    <p>Reduce document file size with lossless streams or visual optimization.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="compare-pdf" data-tool="compare-pdf" role="button" tabindex="0" aria-label="Compare PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/split.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Compare PDF</h4>
+                    </div>
+                    <p>Side-by-side text difference highlighting and visual page comparison.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="forms" data-tool="forms" role="button" tabindex="0" aria-label="PDF Forms">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/edit-3.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">PDF Forms</h4>
+                    </div>
+                    <p>Inspect, fill, flatten, or create interactive ISO 32000 AcroForm fields.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="repair-pdf" data-tool="repair-pdf" role="button" tabindex="0" aria-label="Repair PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/tool.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Repair PDF</h4>
+                    </div>
+                    <p>Fault-tolerant recovery rebuilding damaged cross-reference tables and trailers.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 7. IMAGE/DOCUMENT -->
+            <div class="toolbox-section">
+              <div class="toolbox-section-label toolbox-category-title">IMAGE / DOCUMENT</div>
+              <div class="toolbox-grid">
+                <div class="toolbox-card" data-toolbox-action="image-to-word" data-tool="image-to-word" role="button" tabindex="0" aria-label="Image to Word">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/file-text.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Image → Word</h4>
+                    </div>
+                    <p>Embed document images into a valid Word (.docx) document with optional OCR text.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="metadata" data-tool="metadata" role="button" tabindex="0" aria-label="Metadata Editor">
                   <div class="toolbox-card-icon">
                     <img src="./assets/icons/info.svg" width="20" height="20" alt="" />
                   </div>
                   <div class="toolbox-card-content">
-                    <h4>Document Inspector</h4>
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Metadata</h4>
+                    </div>
+                    <p>View, edit, or clear PDF title, author, subject, keywords, and producer.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="flatten" data-tool="flatten" role="button" tabindex="0" aria-label="Flatten PDF">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/lock.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Flatten PDF</h4>
+                    </div>
+                    <p>Burn annotations and drawings into permanent non-editable base graphics.</p>
+                  </div>
+                </div>
+
+                <div class="toolbox-card" data-toolbox-action="inspector" data-tool="inspector" role="button" tabindex="0" aria-label="Document Inspector">
+                  <div class="toolbox-card-icon">
+                    <img src="./assets/icons/info.svg" width="20" height="20" alt="" />
+                  </div>
+                  <div class="toolbox-card-content">
+                    <div class="toolbox-card-header-row">
+                      <h4 class="toolbox-card-title">Document Inspector</h4>
+                    </div>
                     <p>Inspect PDF version, dimensions, embedded AcroForms, and security.</p>
                   </div>
                 </div>
@@ -943,9 +1159,9 @@
 
             <!-- AI PDF INTELLIGENCE SECTION (PHASE 8) -->
             <div class="toolbox-section">
-              <div class="toolbox-section-label">AI PDF INTELLIGENCE (100% LOCAL)</div>
+              <div class="toolbox-section-label toolbox-category-title">AI PDF INTELLIGENCE (100% LOCAL)</div>
               <div class="toolbox-grid">
-                <div class="toolbox-card" data-toolbox-action="ai-summary">
+                <div class="toolbox-card" data-toolbox-action="ai-summary" data-tool="ai-summary" role="button" tabindex="0" aria-label="AI PDF Summary">
                   <div class="toolbox-card-icon">
                     <img src="./assets/icons/sparkles.svg" width="20" height="20" alt="" />
                   </div>
@@ -955,7 +1171,7 @@
                   </div>
                 </div>
 
-                <div class="toolbox-card" data-toolbox-action="ai-chat">
+                <div class="toolbox-card" data-toolbox-action="ai-chat" data-tool="ai-chat" role="button" tabindex="0" aria-label="Ask Your PDF">
                   <div class="toolbox-card-icon">
                     <img src="./assets/icons/message-square.svg" width="20" height="20" alt="" />
                   </div>
@@ -965,7 +1181,7 @@
                   </div>
                 </div>
 
-                <div class="toolbox-card" data-toolbox-action="ai-keypoints">
+                <div class="toolbox-card" data-toolbox-action="ai-keypoints" data-tool="ai-keypoints" role="button" tabindex="0" aria-label="Key Points">
                   <div class="toolbox-card-icon">
                     <img src="./assets/icons/list.svg" width="20" height="20" alt="" />
                   </div>
@@ -975,7 +1191,7 @@
                   </div>
                 </div>
 
-                <div class="toolbox-card" data-toolbox-action="ai-outline">
+                <div class="toolbox-card" data-toolbox-action="ai-outline" data-tool="ai-outline" role="button" tabindex="0" aria-label="Document Outline">
                   <div class="toolbox-card-icon">
                     <img src="./assets/icons/layers.svg" width="20" height="20" alt="" />
                   </div>
@@ -985,7 +1201,7 @@
                   </div>
                 </div>
 
-                <div class="toolbox-card" data-toolbox-action="ai-smart-actions">
+                <div class="toolbox-card" data-toolbox-action="ai-smart-actions" data-tool="ai-smart-actions" role="button" tabindex="0" aria-label="Smart Text Actions">
                   <div class="toolbox-card-icon">
                     <img src="./assets/icons/zap.svg" width="20" height="20" alt="" />
                   </div>
@@ -996,10 +1212,10 @@
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
+
 
       <!-- 1. Image to PDF Modal -->
       <div class="modal-backdrop savy-modal" id="imgToPdfModal" role="dialog" aria-modal="true" style="display: none;">
@@ -1392,6 +1608,379 @@
         </div>
       </div>
 
+      
+      <!-- 9. Rotate PDF Modal -->
+      <div class="modal-backdrop savy-modal" id="rotateModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 class="modal-title">Rotate PDF Pages</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Rotate document pages permanently with lossless PDF orientation tags.</p>
+            <div class="form-group">
+              <label class="form-label" for="rotateAngle">Rotation Angle</label>
+              <select id="rotateAngle" class="prop-select full-width">
+                <option value="90">90° Clockwise</option>
+                <option value="180">180° Upside Down</option>
+                <option value="270">90° Counter-Clockwise (270°)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Page Selection</label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="rotateScope" value="all" checked /> All Pages
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="rotateScope" value="current" /> Current Page Only
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecuteRotate">Rotate & Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10. PDF to Word Modal -->
+      <div class="modal-backdrop savy-modal" id="pdfToWordModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 class="modal-title">PDF → Word (.docx)</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Convert PDF text and structure into a genuine Microsoft Word (.docx) OpenXML document.</p>
+            <div id="pdfToWordFileInputContainer" class="form-group" style="display: none;">
+              <label class="form-label" for="pdfToWordFileInput">Select PDF Document</label>
+              <input type="file" id="pdfToWordFileInput" class="form-input" accept="application/pdf" />
+            </div>
+            <div class="alert-box-info" style="margin-top: 0.75rem;">
+              ℹ️ <strong>Formatting Note:</strong> Best for text-based PDFs. Headings, bullet lists, and paragraphs are preserved. Complex multi-column layouts or freeform graphics may require adjustment in Word.
+            </div>
+            <div id="pdfToWordProgress" class="form-hint" style="display: none; margin-top: 0.75rem; color: var(--color-primary); font-weight: 600;">
+              Converting document to Word (.docx)...
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecutePdfToWord">Convert & Download Word (.docx)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 11. Image to Word Modal -->
+      <div class="modal-backdrop savy-modal" id="imageToWordModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <h3 class="modal-title">Image → Word (.docx)</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Embed document photos into a valid Microsoft Word (.docx) file with optional OCR text.</p>
+            <div class="form-group">
+              <label class="form-label" for="imageToWordFileInput">Select Image (JPG, PNG, WebP)</label>
+              <input type="file" id="imageToWordFileInput" class="form-input" accept="image/jpeg,image/png,image/webp" />
+            </div>
+            <div class="form-group" style="margin-top: 0.5rem;">
+              <label class="checkbox-label">
+                <input type="checkbox" id="imageToWordOcrCheck" checked /> Run client-side OCR to transcribe text into Word
+              </label>
+            </div>
+            <div id="imageToWordProgress" class="form-hint" style="display: none; margin-top: 0.5rem; color: var(--color-primary); font-weight: 600;">
+              Processing image and generating DOCX...
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecuteImageToWord">Generate Word (.docx)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12. PDF to Excel Modal -->
+      <div class="modal-backdrop savy-modal" id="pdfToExcelModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <h3 class="modal-title">PDF → Excel (.xlsx)</h3>
+            </div>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Extract tabular numbers and text columns into a valid Microsoft Excel (.xlsx) spreadsheet.</p>
+            <div id="pdfToExcelFileInputContainer" class="form-group" style="display: none;">
+              <label class="form-label" for="pdfToExcelFileInput">Select PDF Document</label>
+              <input type="file" id="pdfToExcelFileInput" class="form-input" accept="application/pdf" />
+            </div>
+            <div class="alert-box-warning" style="margin-top: 0.75rem;">
+              ⚠️ <strong>Notice:</strong> Table reconstruction uses coordinate heuristics to detect rows and aligned columns. Complex nested tables or irregular grids may require manual adjustment in Excel.
+            </div>
+            <div id="pdfToExcelProgress" class="form-hint" style="display: none; margin-top: 0.75rem; color: var(--color-primary); font-weight: 600;">
+              Extracting tables and generating Excel workbook...
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecutePdfToExcel">Extract to Excel & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 13. PDF to PowerPoint Modal -->
+      <div class="modal-backdrop savy-modal" id="pdfToPptxModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <h3 class="modal-title">PDF → PowerPoint (.pptx)</h3>
+            </div>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Map PDF pages to presentation slides in a genuine Microsoft PowerPoint (.pptx) deck.</p>
+            <div id="pdfToPptxFileInputContainer" class="form-group" style="display: none;">
+              <label class="form-label" for="pdfToPptxFileInput">Select PDF Document</label>
+              <input type="file" id="pdfToPptxFileInput" class="form-input" accept="application/pdf" />
+            </div>
+            <div class="alert-box-warning" style="margin-top: 0.75rem;">
+              ℹ️ <strong>High-Fidelity Mode:</strong> Generates standards-compliant OpenXML PresentationML with crisp slide layouts and graphics.
+            </div>
+            <div id="pdfToPptxProgress" class="form-hint" style="display: none; margin-top: 0.75rem; color: var(--color-primary); font-weight: 600;">
+              Generating presentation slides...
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecutePdfToPptx">Convert to PowerPoint & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 14. PDF to PDF/A Modal -->
+      <div class="modal-backdrop savy-modal" id="pdfToPdfaModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <h3 class="modal-title">PDF → PDF/A (Archival)</h3>
+            </div>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Prepare document for long-term preservation by embedding PDF/A XMP metadata and OutputIntent profile.</p>
+            <div id="pdfToPdfaFileInputContainer" class="form-group" style="display: none;">
+              <label class="form-label" for="pdfToPdfaFileInput">Select PDF Document</label>
+              <input type="file" id="pdfToPdfaFileInput" class="form-input" accept="application/pdf" />
+            </div>
+            <div class="alert-box-warning" style="margin-top: 0.75rem;">
+              ⚠️ <strong>Experimental Notice:</strong> PDF/A metadata/profile preparation — full conformance validation not guaranteed. Injects ISO 19005-1 (PDF/A-1b) metadata packet and sRGB OutputIntent.
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecutePdfToPdfa">Apply PDF/A & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 15. PDF to Markdown Modal -->
+      <div class="modal-backdrop savy-modal" id="pdfToMarkdownModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-md">
+          <div class="modal-header">
+            <h3 class="modal-title">PDF → Markdown (.md)</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Extract document headings, bullet points, and paragraphs into formatted Markdown syntax.</p>
+            <div id="pdfToMdFileInputContainer" class="form-group" style="display: none;">
+              <label class="form-label" for="pdfToMdFileInput">Select PDF Document</label>
+              <input type="file" id="pdfToMdFileInput" class="form-input" accept="application/pdf" />
+            </div>
+            <div class="form-group" style="margin-top: 0.75rem;">
+              <label class="form-label" for="pdfToMdPreview">Markdown Preview</label>
+              <textarea id="pdfToMdPreview" class="form-textarea" rows="10" readonly style="font-family: monospace; font-size: 0.8125rem;"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="btnCopyPdfToMd">Copy Markdown</button>
+            <button type="button" class="btn btn-primary" id="btnDownloadPdfToMd">Download .md</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 16. HTML to PDF Modal -->
+      <div class="modal-backdrop savy-modal" id="htmlToPdfModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-md">
+          <div class="modal-header">
+            <h3 class="modal-title">HTML → PDF</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Render HTML markup or web snippets into a high-fidelity PDF document purely in your browser.</p>
+            <div class="form-group">
+              <label class="form-label" for="htmlToPdfFileInput">Upload HTML File (or paste below)</label>
+              <input type="file" id="htmlToPdfFileInput" class="form-input" accept=".html,.htm,text/html" />
+            </div>
+            <div class="form-group" style="margin-top: 0.5rem;">
+              <label class="form-label" for="htmlToPdfContent">HTML Code</label>
+              <textarea id="htmlToPdfContent" class="form-textarea" rows="8" placeholder="<h1>Document Title</h1><p>Enter HTML here...</p>"></textarea>
+            </div>
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="htmlToPdfPageSize">Page Size</label>
+                <select id="htmlToPdfPageSize" class="prop-select full-width">
+                  <option value="a4" selected>A4 (210 × 297 mm)</option>
+                  <option value="letter">Letter (8.5 × 11 in)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecuteHtmlToPdf">Render HTML & Download PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 17. Scan to PDF Modal -->
+      <div class="modal-backdrop savy-modal" id="scanToPdfModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-md">
+          <div class="modal-header">
+            <h3 class="modal-title">Scan → PDF</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Capture paper documents via camera or upload scanned images with photocopy contrast enhancement.</p>
+            
+            <div class="scan-mode-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <button type="button" class="btn btn-sm btn-primary" id="btnScanModeCamera">📷 Camera Live Capture</button>
+              <button type="button" class="btn btn-sm btn-outline" id="btnScanModeUpload">📁 Upload Scanned Images</button>
+            </div>
+
+            <div id="scanCameraSection" class="scan-camera-container" style="display: none; flex-direction: column; align-items: center; gap: 0.5rem;">
+              <video id="scanCameraVideo" autoplay playsinline style="max-width: 100%; max-height: 240px; border-radius: 4px; background: #000;"></video>
+              <button type="button" class="btn btn-sm btn-primary" id="btnScanCapture">📸 Capture Page</button>
+            </div>
+
+            <div id="scanUploadSection" class="form-group" style="display: block;">
+              <label class="form-label" for="scanFileInput">Select Images</label>
+              <input type="file" id="scanFileInput" class="form-input" accept="image/*" multiple />
+            </div>
+
+            <div class="form-group" style="margin-top: 0.75rem;">
+              <label class="checkbox-label">
+                <input type="checkbox" id="scanBwEnhance" checked /> Enhance Document (High-Contrast B&amp;W Photocopy Filter)
+              </label>
+            </div>
+
+            <div class="scan-preview-list" id="scanCapturedList" style="margin-top: 0.75rem; max-height: 140px; overflow-y: auto;">
+              <div class="empty-hint">No pages captured yet.</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecuteScanToPdf">Compile Scans to PDF & Download</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 18. Compare PDF Modal -->
+      <div class="modal-backdrop savy-modal" id="comparePdfModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-lg">
+          <div class="modal-header">
+            <h3 class="modal-title">Compare PDF Documents</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Client-side text and visual difference comparison. Both documents are processed strictly in your browser.</p>
+            
+            <div class="toolbox-form-row">
+              <div class="form-group flex-1">
+                <label class="form-label" for="compareDocAInput">Document A (Original)</label>
+                <input type="file" id="compareDocAInput" class="form-input" accept="application/pdf" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label" for="compareDocBInput">Document B (Modified)</label>
+                <input type="file" id="compareDocBInput" class="form-input" accept="application/pdf" />
+              </div>
+            </div>
+
+            <div id="compareResultContainer" style="display: none; margin-top: 1rem;">
+              <div class="compare-stats-card" style="display: flex; gap: 1rem; align-items: center; padding: 0.75rem; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 6px;">
+                <span>Text Match: <strong id="compareMatchBadge" class="badge-success">100%</strong></span>
+                <span style="color: #16A34A;">+ <strong id="compareAddedCount">0</strong> additions</span>
+                <span style="color: #DC2626;">- <strong id="compareRemovedCount">0</strong> deletions</span>
+              </div>
+              <div class="compare-diff-view" style="margin-top: 0.75rem; max-height: 240px; overflow-y: auto; background: #0f172a; color: #f8fafc; padding: 0.75rem; font-family: monospace; font-size: 0.75rem; border-radius: 4px; white-space: pre-wrap;" id="compareDiffOutput">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecuteCompare">Run Comparison</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 19. PDF Forms Modal -->
+      <div class="modal-backdrop savy-modal" id="pdfFormsModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog modal-dialog-md">
+          <div class="modal-header">
+            <h3 class="modal-title">Interactive PDF Forms</h3>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Inspect, fill, flatten, or create ISO 32000 interactive AcroForm fields.</p>
+            <div id="pdfFormsFileInputContainer" class="form-group" style="display: none;">
+              <label class="form-label" for="pdfFormsFileInput">Select PDF with Forms</label>
+              <input type="file" id="pdfFormsFileInput" class="form-input" accept="application/pdf" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Detected Interactive Fields</label>
+              <div id="pdfFormsFieldsContainer" style="max-height: 200px; overflow-y: auto; border: 1px solid var(--color-border); border-radius: 4px; padding: 0.5rem;">
+                <div class="empty-hint">Scanning document for form fields...</div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="btnLaunchFormBuilderFromForms">AcroForm Builder</button>
+            <button type="button" class="btn btn-outline" id="btnFlattenPdfForms">Flatten Fields</button>
+            <button type="button" class="btn btn-primary" id="btnSavePdfForms">Save Filled PDF</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 20. Repair PDF Modal -->
+      <div class="modal-backdrop savy-modal" id="repairPdfModal" role="dialog" aria-modal="true" style="display: none;">
+        <div class="modal-dialog">
+          <div class="modal-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <h3 class="modal-title">Repair PDF Document</h3>
+            </div>
+            <button type="button" class="btn-modal-close">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-subtitle">Recover damaged PDF files by rebuilding corrupted cross-reference tables and trailers in local memory.</p>
+            <div class="form-group">
+              <label class="form-label" for="repairPdfFileInput">Select Damaged PDF File</label>
+              <input type="file" id="repairPdfFileInput" class="form-input" accept="application/pdf" />
+            </div>
+            <div class="alert-box-warning" style="margin-top: 0.75rem;">
+              ⚠️ <strong>Experimental Notice:</strong> Fault-tolerant recovery re-indexes uncorrupted object streams and rebuilds damaged xref tables. Completely destroyed or zero-byte streams cannot be recovered.
+            </div>
+            <div id="repairProgress" class="form-hint" style="display: none; margin-top: 0.75rem; color: var(--color-primary); font-weight: 600;">
+              Scanning objects and reconstructing PDF structure...
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline btn-modal-cancel">Cancel</button>
+            <button type="button" class="btn btn-primary" id="btnExecuteRepair">Attempt Repair & Download</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Phase 6: Presentation Mode Container -->
       <div id="presentationContainer" class="presentation-container" style="display: none;" role="region" aria-label="Fullscreen Presentation View">
         <canvas id="presentationCanvas" class="presentation-canvas"></canvas>
@@ -1551,7 +2140,7 @@
           <div class="modal-body">
             <p class="modal-subtitle">Add running heads and footers with dynamic tags: <code>{page}</code>, <code>{total}</code>, <code>{filename}</code>, <code>{date}</code>.</p>
             <div class="hf-section">
-              <div class="toolbox-section-label">HEADER (TOP OF PAGE)</div>
+              <div class="toolbox-section-label toolbox-category-title">HEADER (TOP OF PAGE)</div>
               <div class="toolbox-form-row">
                 <div class="form-group flex-1">
                   <label class="form-label" for="hfHeaderLeft">Left Header</label>
@@ -1568,7 +2157,7 @@
               </div>
             </div>
             <div class="hf-section" style="margin-top: 14px;">
-              <div class="toolbox-section-label">FOOTER (BOTTOM OF PAGE)</div>
+              <div class="toolbox-section-label toolbox-category-title">FOOTER (BOTTOM OF PAGE)</div>
               <div class="toolbox-form-row">
                 <div class="form-group flex-1">
                   <label class="form-label" for="hfFooterLeft">Left Footer</label>
@@ -1746,7 +2335,7 @@
               </button>
             </div>
 
-            <div class="toolbox-section-label" style="margin-top: 18px;">CUSTOM STAMP</div>
+            <div class="toolbox-section-label toolbox-category-title" style="margin-top: 18px;">CUSTOM STAMP</div>
             <div class="toolbox-form-row">
               <div class="form-group flex-2">
                 <label class="form-label" for="stampCustomText">Stamp Text</label>

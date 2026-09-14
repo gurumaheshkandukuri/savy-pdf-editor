@@ -59,11 +59,41 @@ export class PageOrganizer {
     this.renderThumbnails();
   }
 
-  togglePanel(forceState = null) {
-    this.isOpen = forceState !== null ? forceState : !this.isOpen;
+  open() {
+    this.isOpen = true;
     if (this.panelEl) {
-      this.panelEl.classList.toggle('is-open', this.isOpen);
-      this.panelEl.style.display = this.isOpen ? 'flex' : 'none';
+      this.panelEl.classList.add('is-open');
+      this.panelEl.style.display = 'flex';
+    }
+    if (this.documentModel && this.documentModel.getPageCount() > 0) {
+      if (!this.containerEl || this.containerEl.children.length === 0) {
+        this.renderThumbnails();
+      }
+      this.updateActiveThumbnailHighlight();
+    }
+  }
+
+  close() {
+    this.isOpen = false;
+    if (this.panelEl) {
+      this.panelEl.classList.remove('is-open');
+      this.panelEl.style.display = 'none';
+    }
+  }
+
+  getSelectedPages() {
+    if (!this.documentModel) return [];
+    return Array.from(this.selectedPageIds)
+      .map((id) => this.documentModel.getPageById(id))
+      .filter(Boolean);
+  }
+
+  togglePanel(forceState = null) {
+    const targetState = forceState !== null ? forceState : !this.isOpen;
+    if (targetState) {
+      this.open();
+    } else {
+      this.close();
     }
   }
 

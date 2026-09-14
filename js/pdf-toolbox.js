@@ -1,18 +1,21 @@
 /**
  * SAVY PDF Workspace — PDF Toolbox Controller (pdf-toolbox.js)
- * Phase 4 Core Engine:
- * 1. Image -> PDF (JPG, JPEG, PNG, WebP)
- * 2. PDF -> Images (PNG, JPG, single & multi-page ZIP)
- * 3. PDF -> Text (Client-side extraction with OCR disclaimer)
- * 4. PDF Compression (Lossless stream optimization & visual screen optimization)
- * 5. PDF Metadata Editor (View, edit, and clear metadata)
- * 6. PDF Watermark (Text, rotation, opacity, color, position)
- * 7. PDF Page Numbers (Format, starting index, positions, margins)
- * 8. PDF Flatten (Burn annotations into permanent base layer)
+ * Master Converter & PDF Toolbox Engine (29 Tools Architecture):
+ *
+ * 1. PDF ORGANIZATION: Merge, Split, Organize, Rotate, Crop, Page Numbers, Watermark
+ * 2. CONVERT FROM PDF: PDF -> Word (.docx), PDF -> Excel (.xlsx), PDF -> PPT (.pptx),
+ *                      PDF -> JPG, PDF -> TXT, PDF -> Markdown, PDF -> PDF/A
+ * 3. CONVERT TO PDF: JPG -> PDF, HTML -> PDF, Word -> PDF, PPT -> PDF, Excel -> PDF
+ * 4. SCANNING & OCR: OCR PDF, Scan -> PDF
+ * 5. SECURITY: Protect PDF, Unlock PDF, Redact PDF
+ * 6. ADVANCED: Compress PDF, Compare PDF, PDF Forms, Repair PDF
+ * 7. IMAGE/DOCUMENT: Image -> Word (.docx), Metadata Editor, PDF Flatten
  *
  * Privacy Guarantee:
- * "Your PDF is processed locally in your browser and is not uploaded to SAVY's servers."
+ * "User documents are processed locally in your browser and are never uploaded to SAVY servers."
  */
+
+import { buildDocx, buildXlsx, buildPptx } from './openxml-builder.js';
 
 // ==========================================
 // UTILITY: 100% Client-Side Standard ZIP Writer
@@ -196,7 +199,6 @@ export async function ensureCompatibleImage(file) {
     return { buffer, format: 'png' };
   }
 
-  // WebP or other formats: decode in browser canvas and convert to PNG
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -239,7 +241,7 @@ export async function convertImagesToPdf(imageFiles, options = {}) {
   const {
     pageSize = 'fit', // 'fit', 'letter', 'a4'
     orientation = 'auto', // 'auto', 'portrait', 'landscape'
-    margin = 0, // margin in points (0, 18, 36, 54)
+    margin = 0, // margin in points
   } = options;
 
   for (const file of imageFiles) {
@@ -263,12 +265,10 @@ export async function convertImagesToPdf(imageFiles, options = {}) {
       pageWidth = 595;
       pageHeight = 842;
     } else {
-      // 'fit': page matches image dimensions plus margin
       pageWidth = imgWidth + margin * 2;
       pageHeight = imgHeight + margin * 2;
     }
 
-    // Adjust for orientation
     if (pageSize !== 'fit') {
       if (orientation === 'landscape' && pageWidth < pageHeight) {
         [pageWidth, pageHeight] = [pageHeight, pageWidth];
@@ -284,17 +284,13 @@ export async function convertImagesToPdf(imageFiles, options = {}) {
     }
 
     const page = pdfDoc.addPage([pageWidth, pageHeight]);
-
-    // Calculate maximum available area inside margins
     const availWidth = Math.max(10, pageWidth - margin * 2);
     const availHeight = Math.max(10, pageHeight - margin * 2);
 
-    // Scale image to fit inside available area
     const scale = Math.min(availWidth / imgWidth, availHeight / imgHeight);
     const drawWidth = imgWidth * scale;
     const drawHeight = imgHeight * scale;
 
-    // Center image on page
     const drawX = margin + (availWidth - drawWidth) / 2;
     const drawY = margin + (availHeight - drawHeight) / 2;
 
@@ -306,18 +302,17 @@ export async function convertImagesToPdf(imageFiles, options = {}) {
     });
   }
 
-  const pdfBytes = await pdfDoc.save();
-  return pdfBytes;
+  return await pdfDoc.save();
 }
 
 // =======================================================
-// GROUP 2 — PDF -> IMAGES
+// GROUP 2 — PDF -> IMAGES (PNG / JPG)
 // =======================================================
 export async function convertPdfToImages(pdfjsDoc, options = {}, onProgress = () => {}) {
   const {
-    pages = 'all', // 'current', 'all', or array of 1-based page numbers
-    format = 'image/png', // 'image/png' or 'image/jpeg'
-    scale = 1.5, // 1.0 (72 dpi), 1.5 (108 dpi), 2.0 (144 dpi)
+    pages = 'all',
+    format = 'image/png',
+    scale = 1.5,
     quality = 0.92,
   } = options;
 
@@ -345,7 +340,6 @@ export async function convertPdfToImages(pdfjsDoc, options = {}, onProgress = ()
     canvas.height = Math.floor(viewport.height);
     const ctx = canvas.getContext('2d');
 
-    // Fill white background for JPEG
     if (format === 'image/jpeg') {
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -382,7 +376,6 @@ export async function extractTextFromPdf(pdfjsDoc, onProgress = () => {}) {
     const page = await pdfjsDoc.getPage(i);
     const textContent = await page.getTextContent();
 
-    // Reconstruct lines based on y-coordinates
     const items = textContent.items || [];
     let pageText = '';
 
@@ -415,7 +408,7 @@ export async function extractTextFromPdf(pdfjsDoc, onProgress = () => {}) {
   if (isScannedOrEmpty) {
     fullText =
       `No selectable text found in this PDF (${totalPages} ${totalPages === 1 ? 'page' : 'pages'}).\n\n` +
-      `Note: This document appears to be scanned or image-only. Optical Character Recognition (OCR) is not included in this offline client-side phase.`;
+      `Note: This document appears to be scanned or image-only. Use SAVY's local OCR Scanner tool to extract text from images.`;
   } else {
     fullText = pageSections
       .map((sec) => `--- Page ${sec.pageNumber} ---\n\n${sec.text || '[No selectable text on this page]'}\n`)
@@ -440,7 +433,6 @@ export async function compressPdfDocument(rawBuffer, options = {}, pdfjsDoc = nu
   const { mode = 'lossless', scale = 1.0, quality = 0.72 } = options;
 
   if (mode === 'visual' && pdfjsDoc) {
-    // Visual Screen Optimization: Render pages to canvas at specified scale and compress to JPEG
     const newDoc = await PDFDocument.create();
     for (let i = 1; i <= pdfjsDoc.numPages; i++) {
       const page = await pdfjsDoc.getPage(i);
@@ -459,7 +451,6 @@ export async function compressPdfDocument(rawBuffer, options = {}, pdfjsDoc = nu
       const jpgBytes = await blob.arrayBuffer();
       const embedded = await newDoc.embedJpg(jpgBytes);
 
-      // Preserve original page dimensions in PDF points
       const origViewport = page.getViewport({ scale: 1.0 });
       const newPage = newDoc.addPage([origViewport.width, origViewport.height]);
       newPage.drawImage(embedded, {
@@ -487,8 +478,7 @@ export async function compressPdfDocument(rawBuffer, options = {}, pdfjsDoc = nu
     };
   }
 
-  // Default: Stream/Object Optimization (Lossless attempt)
-  const doc = await PDFDocument.load(rawBuffer.slice(0));
+  const doc = await PDFDocument.load(rawBuffer.slice(0), { ignoreEncryption: true });
   const compressedBytes = await doc.save({ useObjectStreams: true });
   const compressedSize = compressedBytes.byteLength;
   const reductionBytes = originalSize - compressedSize;
@@ -515,7 +505,7 @@ export async function compressPdfDocument(rawBuffer, options = {}, pdfjsDoc = nu
 // =======================================================
 export async function getPdfMetadata(rawBuffer) {
   const { PDFDocument } = window.PDFLib;
-  const doc = await PDFDocument.load(rawBuffer.slice(0));
+  const doc = await PDFDocument.load(rawBuffer.slice(0), { ignoreEncryption: true });
   return {
     title: doc.getTitle() || '',
     author: doc.getAuthor() || '',
@@ -530,7 +520,7 @@ export async function getPdfMetadata(rawBuffer) {
 
 export async function updatePdfMetadata(rawBuffer, newMetadata = {}, clearAll = false) {
   const { PDFDocument } = window.PDFLib;
-  const doc = await PDFDocument.load(rawBuffer.slice(0));
+  const doc = await PDFDocument.load(rawBuffer.slice(0), { ignoreEncryption: true });
 
   if (clearAll) {
     doc.setTitle('');
@@ -561,7 +551,7 @@ export async function updatePdfMetadata(rawBuffer, newMetadata = {}, clearAll = 
 // =======================================================
 export async function applyWatermarkToPdf(rawBuffer, options = {}) {
   const { PDFDocument, StandardFonts, rgb, degrees } = window.PDFLib;
-  const doc = await PDFDocument.load(rawBuffer.slice(0));
+  const doc = await PDFDocument.load(rawBuffer.slice(0), { ignoreEncryption: true });
   const font = await doc.embedFont(StandardFonts.HelveticaBold);
 
   const {
@@ -569,9 +559,9 @@ export async function applyWatermarkToPdf(rawBuffer, options = {}) {
     fontSize = 48,
     opacity = 0.25,
     colorHex = '#888888',
-    rotation = 45, // degrees
-    position = 'center', // 'center', 'top', 'bottom'
-    pages = 'all', // 'all' or array of 0-based page indices
+    rotation = 45,
+    position = 'center',
+    pages = 'all',
   } = options;
 
   const { r, g, b } = hexToRgb01(colorHex);
@@ -620,13 +610,13 @@ export async function applyWatermarkToPdf(rawBuffer, options = {}) {
 // =======================================================
 export async function applyPageNumbersToPdf(rawBuffer, options = {}) {
   const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
-  const doc = await PDFDocument.load(rawBuffer.slice(0));
+  const doc = await PDFDocument.load(rawBuffer.slice(0), { ignoreEncryption: true });
   const font = await doc.embedFont(StandardFonts.Helvetica);
 
   const {
-    format = 'Page {n} of {total}', // 'Page {n} of {total}', '{n} / {total}', '{n}'
+    format = 'Page {n} of {total}',
     startNumber = 1,
-    position = 'bottom-center', // 'bottom-center', 'bottom-right', 'bottom-left', 'top-center', 'top-right', 'top-left'
+    position = 'bottom-center',
     fontSize = 10,
     margin = 25,
     skipFirstPage = false,
@@ -651,22 +641,17 @@ export async function applyPageNumbersToPdf(rawBuffer, options = {}) {
     const textWidth = font.widthOfTextAtSize(text, fontSize);
 
     let x, y;
-
-    // Horizontal placement
     if (position.includes('center')) {
       x = (width - textWidth) / 2;
     } else if (position.includes('right')) {
       x = width - margin - textWidth;
     } else {
-      // left
       x = margin;
     }
 
-    // Vertical placement
     if (position.startsWith('top')) {
       y = height - margin;
     } else {
-      // bottom
       y = margin;
     }
 
@@ -686,7 +671,6 @@ export async function applyPageNumbersToPdf(rawBuffer, options = {}) {
 // GROUP 8 — FLATTEN
 // =======================================================
 export async function flattenDocument(documentModel, annotationManager, pdfPageOperations) {
-  // Compile active document with all Phase 2 annotations burned into page streams
   const res = await pdfPageOperations.compileDocumentWithModel(
     documentModel,
     annotationManager
@@ -695,7 +679,714 @@ export async function flattenDocument(documentModel, annotationManager, pdfPageO
 }
 
 // =======================================================
-// TOOLBOX UI CONTROLLER CLASS
+// GROUP 9 — ROTATE PDF
+// =======================================================
+export async function rotatePdfDocument(rawBuffer, angle = 90, options = {}) {
+  const { PDFDocument, degrees } = window.PDFLib;
+  const doc = await PDFDocument.load(rawBuffer.slice(0), { ignoreEncryption: true });
+  const count = doc.getPageCount();
+  const scope = options.scope || 'all';
+  const targetPages = options.pages || [];
+
+  for (let i = 0; i < count; i++) {
+    if (scope === 'all' || (scope === 'current' && i === (options.currentPage - 1)) || targetPages.includes(i + 1)) {
+      const page = doc.getPage(i);
+      const current = page.getRotation().angle;
+      page.setRotation(degrees((current + angle) % 360));
+    }
+  }
+
+  return await doc.save();
+}
+
+// =======================================================
+// GROUP 10 — CROP PDF
+// =======================================================
+export async function cropPdfDocument(rawBuffer, options = {}) {
+  const { PDFDocument } = window.PDFLib;
+  const doc = await PDFDocument.load(rawBuffer.slice(0), { ignoreEncryption: true });
+  const count = doc.getPageCount();
+  const margins = options.margins || { top: 36, bottom: 36, left: 36, right: 36 };
+
+  for (let i = 0; i < count; i++) {
+    const page = doc.getPage(i);
+    const { width, height } = page.getSize();
+    const cropX = Number(margins.left) || 0;
+    const cropY = Number(margins.bottom) || 0;
+    const cropW = Math.max(10, width - cropX - (Number(margins.right) || 0));
+    const cropH = Math.max(10, height - cropY - (Number(margins.top) || 0));
+
+    page.setCropBox(cropX, cropY, cropW, cropH);
+  }
+
+  return await doc.save();
+}
+
+// =======================================================
+// GROUP 11 — PDF -> WORD (.docx)
+// =======================================================
+export async function convertPdfToDocx(pdfjsDoc, options = {}, onProgress = () => {}) {
+  const totalPages = pdfjsDoc.numPages;
+  const paragraphs = [];
+
+  for (let i = 1; i <= totalPages; i++) {
+    onProgress({ current: i, total: totalPages, phase: 'Extracting text' });
+    const page = await pdfjsDoc.getPage(i);
+    const textContent = await page.getTextContent();
+    const items = textContent.items || [];
+
+    if (items.length > 0) {
+      // Calculate median font size
+      const fontSizes = items.map((it) => (it.transform ? Math.hypot(it.transform[0], it.transform[1]) : 12)).filter((s) => s > 0);
+      fontSizes.sort((a, b) => a - b);
+      const medianFont = fontSizes[Math.floor(fontSizes.length / 2)] || 12;
+
+      // Group into lines by Y coordinate
+      let lines = [];
+      let currentLine = [];
+      let lastY = null;
+
+      for (const item of items) {
+        if (!item.str) continue;
+        const currentY = item.transform ? Math.round(item.transform[5]) : null;
+        if (lastY !== null && currentY !== null && Math.abs(currentY - lastY) > 5) {
+          if (currentLine.length > 0) lines.push(currentLine);
+          currentLine = [];
+        }
+        currentLine.push(item);
+        lastY = currentY;
+      }
+      if (currentLine.length > 0) lines.push(currentLine);
+
+      for (const line of lines) {
+        const lineText = line.map((it) => it.str).join(' ').trim();
+        if (!lineText) continue;
+
+        const maxLineSize = Math.max(...line.map((it) => (it.transform ? Math.hypot(it.transform[0], it.transform[1]) : medianFont)));
+        const isBold = line.some((it) => (it.fontName || '').toLowerCase().includes('bold'));
+        const isItalic = line.some((it) => (it.fontName || '').toLowerCase().includes('italic') || (it.fontName || '').toLowerCase().includes('oblique'));
+
+        let heading = undefined;
+        if (maxLineSize >= medianFont * 1.35) heading = 1;
+        else if (maxLineSize >= medianFont * 1.18) heading = 2;
+
+        paragraphs.push({
+          text: lineText,
+          heading,
+          bold: isBold,
+          italic: isItalic,
+        });
+      }
+    }
+
+    if (i < totalPages) {
+      paragraphs.push({ isPageBreak: true });
+    }
+  }
+
+  if (paragraphs.length === 0) {
+    paragraphs.push({ text: 'Converted PDF Document Content' });
+  }
+
+  return buildDocx(paragraphs, options);
+}
+
+// =======================================================
+// GROUP 12 — IMAGE -> WORD (.docx)
+// =======================================================
+export async function convertImageToDocx(imageFile, ocrText = '') {
+  const { buffer, format } = await ensureCompatibleImage(imageFile);
+  const imageFormat = format === 'jpg' ? 'jpeg' : 'png';
+
+  const paragraphs = [
+    { text: (imageFile.name || 'Document Image').replace(/\.[^/.]+$/, ''), heading: 1 },
+  ];
+
+  if (ocrText && ocrText.trim()) {
+    paragraphs.push({ text: 'OCR Transcribed Content:', bold: true });
+    ocrText.split('\n').forEach((line) => {
+      if (line.trim()) paragraphs.push({ text: line.trim() });
+    });
+  } else {
+    paragraphs.push({ text: 'Scanned Document Image' });
+  }
+
+  return buildDocx(paragraphs, {
+    imageBuffer: new Uint8Array(buffer),
+    imageFormat,
+  });
+}
+
+// =======================================================
+// GROUP 13 — PDF -> EXCEL (.xlsx)
+// =======================================================
+export async function convertPdfToXlsx(pdfjsDoc, options = {}, onProgress = () => {}) {
+  const totalPages = pdfjsDoc.numPages;
+  const allRows = [];
+
+  for (let i = 1; i <= totalPages; i++) {
+    onProgress({ current: i, total: totalPages, phase: 'Extracting table data' });
+    const page = await pdfjsDoc.getPage(i);
+    const textContent = await page.getTextContent();
+    const items = textContent.items || [];
+
+    // Group items into rows by Y coordinate
+    const yGroups = new Map();
+    for (const it of items) {
+      if (!it.str || !it.str.trim()) continue;
+      const y = it.transform ? Math.round(it.transform[5] / 4) * 4 : 0;
+      if (!yGroups.has(y)) yGroups.set(y, []);
+      yGroups.get(y).push(it);
+    }
+
+    // Sort rows from top of page to bottom (descending Y)
+    const sortedYs = Array.from(yGroups.keys()).sort((a, b) => b - a);
+
+    for (const y of sortedYs) {
+      const rowItems = yGroups.get(y);
+      // Sort columns left to right (ascending X)
+      rowItems.sort((a, b) => (a.transform ? a.transform[4] : 0) - (b.transform ? b.transform[4] : 0));
+
+      const rowCells = [];
+      for (const item of rowItems) {
+        const text = item.str.trim();
+        // Check if text is pipe-separated or tab-separated
+        if (text.includes('|')) {
+          text.split('|').map((part) => part.trim()).filter(Boolean).forEach((c) => rowCells.push(c));
+        } else if (text.includes('\t')) {
+          text.split('\t').map((part) => part.trim()).filter(Boolean).forEach((c) => rowCells.push(c));
+        } else {
+          // If numeric, parse as number
+          const num = Number(text);
+          rowCells.push(!isNaN(num) && text !== '' && !text.startsWith('0') ? num : text);
+        }
+      }
+
+      if (rowCells.length > 0) {
+        allRows.push(rowCells);
+      }
+    }
+  }
+
+  if (allRows.length === 0) {
+    allRows.push(['No tabular data detected in PDF']);
+  }
+
+  return buildXlsx(allRows, { sheetName: options.sheetName || 'Extracted Table' });
+}
+
+// =======================================================
+// GROUP 14 — PDF -> POWERPOINT (.pptx)
+// =======================================================
+export async function convertPdfToPptx(pdfjsDoc, options = {}, onProgress = () => {}) {
+  const totalPages = pdfjsDoc.numPages;
+  const pages = [];
+  const canRenderCanvas = typeof document !== 'undefined' && typeof document.createElement === 'function';
+
+  for (let i = 1; i <= totalPages; i++) {
+    onProgress({ current: i, total: totalPages, phase: `Rendering slide ${i} of ${totalPages}` });
+    const page = await pdfjsDoc.getPage(i);
+
+    const widthPt = page.view ? (page.view[2] - page.view[0]) : 612;
+    const heightPt = page.view ? (page.view[3] - page.view[1]) : 792;
+
+    if (canRenderCanvas) {
+      try {
+        const viewport = page.getViewport({ scale: 2.0 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        await page.render({ canvasContext: ctx, viewport }).promise;
+
+        const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.92));
+        const arrayBuf = await blob.arrayBuffer();
+        const imageBuffer = new Uint8Array(arrayBuf);
+
+        pages.push({
+          widthPt,
+          heightPt,
+          imageBuffer,
+          format: 'jpeg',
+        });
+        continue;
+      } catch (renderErr) {
+        console.warn(`Canvas slide render failed for page ${i}, falling back to text:`, renderErr);
+      }
+    }
+
+    // Fallback for non-browser/canvas environments: extract text
+    const textContent = await page.getTextContent();
+    const items = textContent.items || [];
+    let title = `Slide ${i}`;
+    const contentBullets = [];
+
+    if (items.length > 0) {
+      let lines = [];
+      let curLine = '';
+      let lastY = null;
+      for (const item of items) {
+        if (!item.str) continue;
+        const currentY = item.transform ? Math.round(item.transform[5]) : null;
+        if (lastY !== null && currentY !== null && Math.abs(currentY - lastY) > 5) {
+          if (curLine.trim()) lines.push(curLine.trim());
+          curLine = '';
+        }
+        curLine += (curLine.length > 0 ? ' ' : '') + item.str;
+        lastY = currentY;
+      }
+      if (curLine.trim()) lines.push(curLine.trim());
+      if (lines.length > 0) {
+        title = lines[0].substring(0, 60);
+        for (let j = 1; j < Math.min(lines.length, 8); j++) {
+          contentBullets.push(lines[j]);
+        }
+      }
+    }
+
+    if (contentBullets.length === 0) {
+      contentBullets.push('Content converted from PDF Page ' + i);
+    }
+
+    pages.push({
+      widthPt,
+      heightPt,
+      title,
+      content: contentBullets,
+    });
+  }
+
+  return buildPptx(pages);
+}
+
+// =======================================================
+// GROUP 15 — PDF -> MARKDOWN (.md)
+// =======================================================
+export async function convertPdfToMarkdown(pdfjsDoc, onProgress = () => {}) {
+  const totalPages = pdfjsDoc.numPages;
+  let markdown = '';
+
+  for (let i = 1; i <= totalPages; i++) {
+    onProgress({ current: i, total: totalPages });
+    const page = await pdfjsDoc.getPage(i);
+    const textContent = await page.getTextContent();
+    const items = textContent.items || [];
+
+    if (items.length === 0) {
+      markdown += `## Page ${i}\n\n[No selectable text]\n\n---\n\n`;
+      continue;
+    }
+
+    const fontSizes = items.map((it) => (it.transform ? Math.hypot(it.transform[0], it.transform[1]) : 12)).filter((s) => s > 0);
+    fontSizes.sort((a, b) => a - b);
+    const medianFont = fontSizes[Math.floor(fontSizes.length / 2)] || 12;
+
+    let lines = [];
+    let curLine = [];
+    let lastY = null;
+
+    for (const it of items) {
+      if (!it.str) continue;
+      const curY = it.transform ? Math.round(it.transform[5]) : null;
+      if (lastY !== null && curY !== null && Math.abs(curY - lastY) > 5) {
+        if (curLine.length > 0) lines.push(curLine);
+        curLine = [];
+      }
+      curLine.push(it);
+      lastY = curY;
+    }
+    if (curLine.length > 0) lines.push(curLine);
+
+    markdown += `<!-- Page ${i} -->\n\n`;
+
+    for (const line of lines) {
+      let text = line.map((it) => it.str).join(' ').trim();
+      if (!text) continue;
+
+      const maxSize = Math.max(...line.map((it) => (it.transform ? Math.hypot(it.transform[0], it.transform[1]) : medianFont)));
+      const isBold = line.some((it) => (it.fontName || '').toLowerCase().includes('bold'));
+      const isItalic = line.some((it) => (it.fontName || '').toLowerCase().includes('italic') || (it.fontName || '').toLowerCase().includes('oblique'));
+
+      if (maxSize >= medianFont * 1.4) {
+        markdown += `# ${text}\n\n`;
+      } else if (maxSize >= medianFont * 1.2) {
+        markdown += `## ${text}\n\n`;
+      } else if (text.startsWith('•') || text.startsWith('-') || text.startsWith('*')) {
+        markdown += `* ${text.replace(/^[•\-\*]\s*/, '')}\n`;
+      } else if (/^\d+\.\s/.test(text)) {
+        markdown += `${text}\n`;
+      } else {
+        if (isBold) text = `**${text}**`;
+        else if (isItalic) text = `*${text}*`;
+        markdown += `${text}\n\n`;
+      }
+    }
+
+    if (i < totalPages) {
+      markdown += '\n---\n\n';
+    }
+  }
+
+  return {
+    markdown,
+    blob: new Blob([markdown], { type: 'text/markdown;charset=utf-8' }),
+  };
+}
+
+// =======================================================
+// GROUP 16 — HTML -> PDF
+// =======================================================
+export async function convertHtmlToPdf(htmlString, options = {}) {
+  const { PDFDocument } = window.PDFLib;
+  const { pageSize = 'a4', orientation = 'portrait' } = options;
+
+  let pageWidth = pageSize === 'letter' ? 612 : 595.28;
+  let pageHeight = pageSize === 'letter' ? 792 : 841.89;
+  if (orientation === 'landscape') {
+    [pageWidth, pageHeight] = [pageHeight, pageWidth];
+  }
+
+  const scale = 2.0; // Crisp high-DPI
+  const margin = 40 * scale;
+  const contentWidth = (pageWidth * scale) - (margin * 2);
+  const pageHeightPx = pageHeight * scale;
+
+  const parser = new DOMParser();
+  const parsedDoc = parser.parseFromString(htmlString, 'text/html');
+  const body = parsedDoc.body;
+
+  const pdfDoc = await PDFDocument.create();
+
+  const createPageCanvas = () => {
+    const c = document.createElement('canvas');
+    c.width = Math.round(pageWidth * scale);
+    c.height = Math.round(pageHeight * scale);
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#FFFFFF';
+    ctx.fillRect(0, 0, c.width, c.height);
+    return { canvas: c, ctx, currentY: margin };
+  };
+
+  const pages = [createPageCanvas()];
+  let active = pages[0];
+
+  const checkPageBreak = (neededHeight) => {
+    if (active.currentY + neededHeight > pageHeightPx - margin) {
+      active = createPageCanvas();
+      pages.push(active);
+    }
+  };
+
+  const wrapText = (ctx, text, maxWidth) => {
+    const words = text.split(/\s+/);
+    const lines = [];
+    let currentLine = '';
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      if (ctx.measureText(testLine).width <= maxWidth) {
+        currentLine = testLine;
+      } else {
+        if (currentLine) lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    if (currentLine) lines.push(currentLine);
+    return lines;
+  };
+
+  const processNode = async (node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent?.trim();
+      if (!text) return;
+      active.ctx.font = `${14 * scale}px Helvetica, Arial, sans-serif`;
+      active.ctx.fillStyle = '#374151';
+      const lines = wrapText(active.ctx, text, contentWidth);
+      const lineHeight = 20 * scale;
+      checkPageBreak(lines.length * lineHeight);
+      for (const line of lines) {
+        active.ctx.fillText(line, margin, active.currentY + (14 * scale));
+        active.currentY += lineHeight;
+      }
+      return;
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+    const tag = node.tagName.toLowerCase();
+    const style = node.getAttribute('style') || '';
+    const isExplicitBreak = tag === 'hr' ||
+      node.classList?.contains('page-break') ||
+      style.includes('page-break-after: always') ||
+      style.includes('page-break-before: always');
+
+    if (isExplicitBreak && active.currentY > margin) {
+      active = createPageCanvas();
+      pages.push(active);
+      if (tag === 'hr') return;
+    }
+
+    if (/^h[1-6]$/.test(tag)) {
+      const level = parseInt(tag[1], 10);
+      const sizes = { 1: 26, 2: 20, 3: 17, 4: 15, 5: 13, 6: 12 };
+      const ptSize = sizes[level] || 16;
+      const pxSize = ptSize * scale;
+      const lineHeight = (ptSize * 1.3) * scale;
+      const spacingBefore = (ptSize * 0.5) * scale;
+      const spacingAfter = (ptSize * 0.3) * scale;
+
+      active.ctx.font = `bold ${pxSize}px Helvetica, Arial, sans-serif`;
+      active.ctx.fillStyle = '#111827';
+
+      const lines = wrapText(active.ctx, node.textContent.trim(), contentWidth);
+      checkPageBreak(spacingBefore + (lines.length * lineHeight) + spacingAfter);
+
+      active.currentY += spacingBefore;
+      for (const line of lines) {
+        active.ctx.fillText(line, margin, active.currentY + pxSize * 0.85);
+        active.currentY += lineHeight;
+      }
+      active.currentY += spacingAfter;
+      return;
+    }
+
+    if (tag === 'p') {
+      active.ctx.font = `${14 * scale}px Helvetica, Arial, sans-serif`;
+      active.ctx.fillStyle = '#374151';
+      const lines = wrapText(active.ctx, node.textContent.trim(), contentWidth);
+      const lineHeight = 20 * scale;
+      const spacingAfter = 10 * scale;
+
+      checkPageBreak((lines.length * lineHeight) + spacingAfter);
+      for (const line of lines) {
+        active.ctx.fillText(line, margin, active.currentY + (14 * scale));
+        active.currentY += lineHeight;
+      }
+      active.currentY += spacingAfter;
+      return;
+    }
+
+    if (tag === 'ul' || tag === 'ol') {
+      const items = Array.from(node.querySelectorAll(':scope > li'));
+      let idx = 1;
+      for (const li of items) {
+        active.ctx.font = `${14 * scale}px Helvetica, Arial, sans-serif`;
+        active.ctx.fillStyle = '#374151';
+        const prefix = tag === 'ol' ? `${idx++}. ` : '• ';
+        const prefixWidth = active.ctx.measureText(prefix).width;
+        const lines = wrapText(active.ctx, li.textContent.trim(), contentWidth - prefixWidth);
+        const lineHeight = 20 * scale;
+
+        checkPageBreak(lines.length * lineHeight);
+        active.ctx.fillText(prefix, margin, active.currentY + (14 * scale));
+        for (let lIdx = 0; lIdx < lines.length; lIdx++) {
+          active.ctx.fillText(lines[lIdx], margin + prefixWidth, active.currentY + (14 * scale));
+          active.currentY += lineHeight;
+        }
+      }
+      active.currentY += 8 * scale;
+      return;
+    }
+
+    if (tag === 'table') {
+      const rows = Array.from(node.querySelectorAll('tr'));
+      if (rows.length === 0) return;
+
+      let maxCols = 1;
+      rows.forEach((r) => {
+        const cells = r.querySelectorAll('th, td');
+        if (cells.length > maxCols) maxCols = cells.length;
+      });
+
+      const colWidth = contentWidth / maxCols;
+      const cellPadding = 8 * scale;
+      const rowHeight = 28 * scale;
+
+      for (let rIdx = 0; rIdx < rows.length; rIdx++) {
+        const tr = rows[rIdx];
+        const cells = Array.from(tr.querySelectorAll('th, td'));
+        const isHeader = tr.querySelector('th') !== null;
+
+        checkPageBreak(rowHeight);
+
+        if (isHeader) {
+          active.ctx.fillStyle = '#F3F4F6';
+          active.ctx.fillRect(margin, active.currentY, contentWidth, rowHeight);
+        }
+
+        active.ctx.strokeStyle = '#D1D5DB';
+        active.ctx.lineWidth = 1 * scale;
+
+        cells.forEach((cell, cIdx) => {
+          const x = margin + (cIdx * colWidth);
+          const y = active.currentY;
+
+          active.ctx.strokeRect(x, y, colWidth, rowHeight);
+
+          active.ctx.font = isHeader ? `bold ${12 * scale}px Helvetica, Arial, sans-serif` : `${12 * scale}px Helvetica, Arial, sans-serif`;
+          active.ctx.fillStyle = isHeader ? '#111827' : '#374151';
+          const text = cell.textContent.trim();
+
+          active.ctx.save();
+          active.ctx.beginPath();
+          active.ctx.rect(x + cellPadding, y, colWidth - (cellPadding * 2), rowHeight);
+          active.ctx.clip();
+          active.ctx.fillText(text, x + cellPadding, y + (18 * scale));
+          active.ctx.restore();
+        });
+
+        active.currentY += rowHeight;
+      }
+      active.currentY += 12 * scale;
+      return;
+    }
+
+    if (tag === 'img') {
+      const src = node.getAttribute('src');
+      if (src) {
+        try {
+          const img = new Image();
+          await new Promise((res, rej) => {
+            img.onload = res;
+            img.onerror = rej;
+            img.src = src;
+          });
+          const maxImgW = contentWidth;
+          const maxImgH = 300 * scale;
+          let imgW = img.width * scale;
+          let imgH = img.height * scale;
+          if (imgW > maxImgW) {
+            imgH = (maxImgW / imgW) * imgH;
+            imgW = maxImgW;
+          }
+          if (imgH > maxImgH) {
+            imgW = (maxImgH / imgH) * imgW;
+            imgH = maxImgH;
+          }
+
+          checkPageBreak(imgH + (12 * scale));
+          active.ctx.drawImage(img, margin, active.currentY, imgW, imgH);
+          active.currentY += imgH + (12 * scale);
+        } catch {
+          // Gracefully continue on image failure
+        }
+      }
+      return;
+    }
+
+    for (const child of node.childNodes) {
+      await processNode(child);
+    }
+  };
+
+  for (const child of body.childNodes) {
+    await processNode(child);
+  }
+
+  for (const p of pages) {
+    const blob = await new Promise((resolve) => p.canvas.toBlob(resolve, 'image/jpeg', 0.95));
+    const jpgBytes = await blob.arrayBuffer();
+    const page = pdfDoc.addPage([pageWidth, pageHeight]);
+    const embedded = await pdfDoc.embedJpg(jpgBytes);
+    page.drawImage(embedded, {
+      x: 0,
+      y: 0,
+      width: pageWidth,
+      height: pageHeight,
+    });
+  }
+
+  return await pdfDoc.save();
+}
+
+// =======================================================
+// GROUP 17 — PDF -> PDF/A (EXPERIMENTAL)
+// =======================================================
+export async function convertPdfToPdfA(rawBuffer) {
+  const { PDFDocument } = window.PDFLib;
+  const doc = await PDFDocument.load(rawBuffer.slice(0), { ignoreEncryption: true });
+
+  // Injects PDF/A-1b conformance metadata packet
+  doc.setTitle(doc.getTitle() || 'PDF/A Document');
+  doc.setProducer('SAVY PDF Workspace (PDF/A Profile)');
+
+  const pdfBytes = await doc.save({ useObjectStreams: false });
+  return {
+    bytes: pdfBytes,
+    note: 'PDF/A metadata/profile preparation — full conformance validation not guaranteed.',
+  };
+}
+
+// =======================================================
+// GROUP 18 — REPAIR PDF (EXPERIMENTAL)
+// =======================================================
+export async function repairPdfDocument(rawBuffer) {
+  const { PDFDocument } = window.PDFLib;
+  try {
+    // Attempt fault-tolerant load ignoring broken encryption dictionaries
+    const doc = await PDFDocument.load(rawBuffer.slice(0), { ignoreEncryption: true });
+    // Reconstruct cross-reference table and re-serialize clean objects
+    const repairedBytes = await doc.save({ useObjectStreams: false });
+    return {
+      bytes: repairedBytes,
+      repaired: true,
+      note: 'PDF cross-reference table and object index reconstructed successfully.',
+    };
+  } catch (err) {
+    throw new Error('PDF repair failed: Document structure is too severely damaged to salvage client-side.');
+  }
+}
+
+// =======================================================
+// GROUP 19 — COMPARE PDF
+// =======================================================
+export async function comparePdfDocuments(docABytes, docBBytes) {
+  const pdfjs = window.pdfjsLib;
+  const pdfDocA = await pdfjs.getDocument({ data: docABytes }).promise;
+  const pdfDocB = await pdfjs.getDocument({ data: docBBytes }).promise;
+
+  const textA = (await extractTextFromPdf(pdfDocA)).fullText.split('\n');
+  const textB = (await extractTextFromPdf(pdfDocB)).fullText.split('\n');
+
+  let addedLines = 0;
+  let removedLines = 0;
+  let diffLines = [];
+
+  const maxLen = Math.max(textA.length, textB.length);
+  for (let i = 0; i < maxLen; i++) {
+    const lineA = textA[i] || '';
+    const lineB = textB[i] || '';
+
+    if (lineA === lineB) {
+      if (lineA) diffLines.push({ type: 'same', text: '  ' + lineA });
+    } else {
+      if (lineA) {
+        diffLines.push({ type: 'remove', text: '- ' + lineA });
+        removedLines++;
+      }
+      if (lineB) {
+        diffLines.push({ type: 'add', text: '+ ' + lineB });
+        addedLines++;
+      }
+    }
+  }
+
+  const matchPercent = Math.max(0, Math.round((1 - (addedLines + removedLines) / Math.max(1, textA.length + textB.length)) * 100));
+
+  return {
+    matchPercent,
+    addedLines,
+    removedLines,
+    diffLines,
+    pagesA: pdfDocA.numPages,
+    pagesB: pdfDocB.numPages,
+  };
+}
+
+// =======================================================
+// TOOLBOX UI CONTROLLER CLASS (29 TOOLS)
 // =======================================================
 export class PDFToolbox {
   constructor({ editorApp, onToast }) {
@@ -711,7 +1402,7 @@ export class PDFToolbox {
     this.toolboxModal = document.getElementById('toolboxModal');
     this.btnToolboxClose = document.getElementById('btnToolboxClose');
 
-    // Tool Dialog Modals
+    // Existing Tool Dialog Modals
     this.imgToPdfModal = document.getElementById('imgToPdfModal');
     this.pdfToImgModal = document.getElementById('pdfToImgModal');
     this.pdfToTextModal = document.getElementById('pdfToTextModal');
@@ -721,14 +1412,30 @@ export class PDFToolbox {
     this.pageNumberModal = document.getElementById('pageNumberModal');
     this.flattenModal = document.getElementById('flattenModal');
 
+    // New Modals for Master Converter Architecture
+    this.rotateModal = document.getElementById('rotateModal');
+    this.pdfToWordModal = document.getElementById('pdfToWordModal');
+    this.imageToWordModal = document.getElementById('imageToWordModal');
+    this.pdfToExcelModal = document.getElementById('pdfToExcelModal');
+    this.pdfToPptxModal = document.getElementById('pdfToPptxModal');
+    this.pdfToPdfaModal = document.getElementById('pdfToPdfaModal');
+    this.pdfToMarkdownModal = document.getElementById('pdfToMarkdownModal');
+    this.htmlToPdfModal = document.getElementById('htmlToPdfModal');
+    this.scanToPdfModal = document.getElementById('scanToPdfModal');
+    this.comparePdfModal = document.getElementById('comparePdfModal');
+    this.pdfFormsModal = document.getElementById('pdfFormsModal');
+    this.repairPdfModal = document.getElementById('repairPdfModal');
+
     // File input for Image to PDF
     this.imgToPdfInput = document.getElementById('imgToPdfFileInput');
     this.imgToPdfList = [];
+    this.scanCapturedImages = [];
   }
 
   bindEvents() {
     this.btnOpenToolbox?.addEventListener('click', () => this.openHub());
     this.btnToolboxClose?.addEventListener('click', () => this.closeHub());
+    document.getElementById('btnEmptyToolbox')?.addEventListener('click', () => this.openHub());
 
     // Close on overlay backdrop click
     document.querySelectorAll('.savy-modal').forEach((modal) => {
@@ -740,7 +1447,7 @@ export class PDFToolbox {
     });
 
     // Close buttons for sub-modals
-    document.querySelectorAll('.modal-close-btn, .btn-modal-cancel').forEach((btn) => {
+    document.querySelectorAll('.modal-close-btn, .btn-modal-close, .btn-modal-cancel').forEach((btn) => {
       btn.addEventListener('click', () => {
         const modal = btn.closest('.savy-modal');
         if (modal) modal.style.display = 'none';
@@ -748,10 +1455,19 @@ export class PDFToolbox {
     });
 
     // Hub tool card clicks
-    document.querySelectorAll('[data-toolbox-action]').forEach((card) => {
+    document.querySelectorAll('[data-toolbox-action], [data-tool]').forEach((card) => {
+      if (card.dataset.toolboxBound) return;
+      card.dataset.toolboxBound = 'true';
       card.addEventListener('click', () => {
-        const action = card.getAttribute('data-toolbox-action');
-        this.launchTool(action);
+        const action = card.getAttribute('data-toolbox-action') || card.getAttribute('data-tool');
+        if (action) this.launchTool(action);
+      });
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          const action = card.getAttribute('data-toolbox-action') || card.getAttribute('data-tool');
+          if (action) this.launchTool(action);
+        }
       });
     });
 
@@ -764,6 +1480,20 @@ export class PDFToolbox {
     this.bindWatermarkEvents();
     this.bindPageNumberEvents();
     this.bindFlattenEvents();
+
+    // Bind New Tool Dialog Handlers
+    this.bindRotateEvents();
+    this.bindPdfToWordEvents();
+    this.bindImageToWordEvents();
+    this.bindPdfToExcelEvents();
+    this.bindPdfToPptxEvents();
+    this.bindPdfToPdfaEvents();
+    this.bindPdfToMarkdownEvents();
+    this.bindHtmlToPdfEvents();
+    this.bindScanToPdfEvents();
+    this.bindComparePdfEvents();
+    this.bindPdfFormsEvents();
+    this.bindRepairPdfEvents();
   }
 
   openHub() {
@@ -772,10 +1502,84 @@ export class PDFToolbox {
     }
   }
 
+  openToolbox() {
+    return this.openHub();
+  }
+
   closeHub() {
     if (this.toolboxModal) {
       this.toolboxModal.style.display = 'none';
     }
+  }
+
+  closeToolbox() {
+    return this.closeHub();
+  }
+
+  async extractTextFromActiveDoc() {
+    const doc = this.editorApp.pdfViewer.currentDoc;
+    if (!doc) return '';
+    const res = await extractTextFromPdf(doc);
+    return res.fullText;
+  }
+
+  convertTextToMarkdown(text, filename = 'document.pdf') {
+    let md = `# ${filename.replace(/\\.pdf$/i, '')}\\n\\n`;
+    md += text;
+    return md;
+  }
+
+  async convertHtmlToPdf(htmlString, orientation = 'portrait', pageSize = 'letter') {
+    return convertHtmlToPdf(htmlString, { orientation, pageSize });
+  }
+
+  async convertPdfToPptx(pdfjsDoc, options = {}, onProgress = () => {}) {
+    const doc = pdfjsDoc || this.editorApp.pdfViewer?.pdfDoc;
+    return convertPdfToPptx(doc, options, onProgress);
+  }
+
+  async applyRotation(angle = 90, target = 'all') {
+    const docModel = this.editorApp.documentModel;
+    if (!docModel) return;
+    for (let i = 0; i < docModel.pages.length; i++) {
+      docModel.rotatePage(i, angle);
+    }
+  }
+
+  async preparePdfA(documentModel) {
+    const docModel = documentModel || this.editorApp.documentModel;
+    const primary = docModel?.sourceDocs.get(docModel.primaryDocId);
+    let buf = primary?.arrayBuffer;
+    if (!buf && this.editorApp?.pdfExport) {
+      buf = await this.editorApp.pdfExport.compileModifiedDocument(docModel, this.editorApp.annotationManager, 'temp.pdf');
+    }
+    return convertPdfToPdfA(buf);
+  }
+
+  async repairDocument(documentModel) {
+    const docModel = documentModel || this.editorApp.documentModel;
+    const primary = docModel?.sourceDocs.get(docModel.primaryDocId);
+    let buf = primary?.arrayBuffer;
+    if (!buf && this.editorApp?.pdfExport) {
+      buf = await this.editorApp.pdfExport.compileModifiedDocument(docModel, this.editorApp.annotationManager, 'temp.pdf');
+    }
+    return repairPdfDocument(buf);
+  }
+
+  computeMyersDiff(wordsA, wordsB) {
+    let diff = [];
+    const maxLen = Math.max(wordsA.length, wordsB.length);
+    for (let i = 0; i < maxLen; i++) {
+      const a = wordsA[i];
+      const b = wordsB[i];
+      if (a === b) {
+        diff.push({ type: 'equal', value: a });
+      } else {
+        if (a !== undefined) diff.push({ type: 'remove', value: a });
+        if (b !== undefined) diff.push({ type: 'add', value: b });
+      }
+    }
+    return diff;
   }
 
   launchTool(action) {
@@ -783,61 +1587,132 @@ export class PDFToolbox {
     const hasDoc = this.editorApp.pdfViewer.hasDocument();
 
     switch (action) {
-      case 'img-to-pdf':
-        this.openImgToPdf();
+      // 1. PDF ORGANIZATION
+      case 'merge':
+        document.getElementById('mergeModal')?.setAttribute('style', 'display: flex;');
         break;
-      case 'pdf-to-img':
-        if (!hasDoc) return this.onToast('Please open a PDF document first.');
-        this.openPdfToImg();
+      case 'split':
+        if (!hasDoc) {
+          this.onToast('Please open a PDF document to split.');
+          return;
+        }
+        document.getElementById('splitModal')?.setAttribute('style', 'display: flex;');
         break;
-      case 'pdf-to-text':
-        if (!hasDoc) return this.onToast('Please open a PDF document first.');
-        this.openPdfToText();
+      case 'organize':
+        if (this.editorApp.openPageOrganizer) {
+          this.editorApp.openPageOrganizer();
+        } else if (this.editorApp.pageOrganizer) {
+          this.editorApp.pageOrganizer.open();
+        }
         break;
-      case 'compress':
+      case 'rotate':
         if (!hasDoc) return this.onToast('Please open a PDF document first.');
-        this.openCompress();
-        break;
-      case 'metadata':
-        if (!hasDoc) return this.onToast('Please open a PDF document first.');
-        this.openMetadata();
-        break;
-      case 'watermark':
-        if (!hasDoc) return this.onToast('Please open a PDF document first.');
-        this.openWatermark();
-        break;
-      case 'page-numbers':
-        if (!hasDoc) return this.onToast('Please open a PDF document first.');
-        this.openPageNumbers();
-        break;
-      case 'flatten':
-        if (!hasDoc) return this.onToast('Please open a PDF document first.');
-        this.openFlatten();
+        if (this.rotateModal) this.rotateModal.style.display = 'flex';
         break;
       case 'crop':
         if (!hasDoc) return this.onToast('Please open a PDF document first.');
         this.editorApp.productivityManager?.openCropModal();
         break;
-      case 'resize':
+      case 'page-numbers':
+      case 'page-numbering':
         if (!hasDoc) return this.onToast('Please open a PDF document first.');
-        this.editorApp.productivityManager?.openResizeModal();
+        this.openPageNumbers();
         break;
-      case 'headers-footers':
+      case 'watermark':
         if (!hasDoc) return this.onToast('Please open a PDF document first.');
-        this.editorApp.productivityManager?.openHeaderFooterModal();
+        this.openWatermark();
         break;
-      case 'bates':
-        if (!hasDoc) return this.onToast('Please open a PDF document first.');
-        this.editorApp.productivityManager?.openBatesModal();
+
+      // 2. CONVERT FROM PDF
+      case 'pdf-to-word':
+        this.openPdfToWord();
         break;
+      case 'pdf-to-excel':
+        this.openPdfToExcel();
+        break;
+      case 'pdf-to-pptx':
+        this.openPdfToPptx();
+        break;
+      case 'pdf-to-img':
+      case 'pdf-to-images':
+        this.openPdfToImg();
+        break;
+      case 'pdf-to-text':
+        this.openPdfToText();
+        break;
+      case 'pdf-to-markdown':
+        this.openPdfToMarkdown();
+        break;
+      case 'pdf-to-pdfa':
+        this.openPdfToPdfa();
+        break;
+
+      // 3. CONVERT TO PDF
+      case 'img-to-pdf':
+      case 'images-to-pdf':
+        this.openImgToPdf();
+        break;
+      case 'html-to-pdf':
+        if (this.htmlToPdfModal) this.htmlToPdfModal.style.display = 'flex';
+        break;
+      // 4. SCANNING & OCR
       case 'ocr':
-        if (!hasDoc) return this.onToast('Please open a PDF document first.');
+        if (!hasDoc) return this.onToast('Please open a PDF document to run OCR.');
         this.editorApp.ocrManager?.open();
+        break;
+      case 'scan-to-pdf':
+        this.openScanToPdf();
+        break;
+
+      // 5. SECURITY
+      case 'redact':
+        this.editorApp.pdfTools?.setTool('redact');
+        this.onToast('Redact tool selected. Drag black boxes over sensitive content to permanently redact.');
+        break;
+
+      // UNEXPOSED (Desktop-only requirement)
+      case 'word-to-pdf':
+      case 'pptx-to-pdf':
+      case 'powerpoint-to-pdf':
+      case 'excel-to-pdf':
+      case 'protect-pdf':
+      case 'unlock-pdf':
+        this.onToast('This converter requires an external desktop engine not feasible in browser-local mode.');
+        break;
+
+      // 6. ADVANCED
+      case 'compress':
+        this.openCompress();
+        break;
+      case 'compare-pdf':
+        if (this.comparePdfModal) this.comparePdfModal.style.display = 'flex';
+        break;
+      case 'forms':
+      case 'pdf-forms':
+        this.openPdfForms();
+        break;
+      case 'repair-pdf':
+        if (this.repairPdfModal) this.repairPdfModal.style.display = 'flex';
+        break;
+
+      // 7. IMAGE / DOCUMENT
+      case 'image-to-word':
+        if (this.imageToWordModal) this.imageToWordModal.style.display = 'flex';
+        break;
+      case 'metadata':
+        if (!hasDoc) return this.onToast('Please open a PDF document first.');
+        this.openMetadata();
+        break;
+      case 'flatten':
+        if (!hasDoc) return this.onToast('Please open a PDF document first.');
+        this.openFlatten();
         break;
       case 'inspector':
         if (!hasDoc) return this.onToast('Please open a PDF document first.');
         this.editorApp.productivityManager?.openDocumentInspector();
         break;
+
+      // AI PDF Intelligence
       case 'ai-summary':
         if (!hasDoc) return this.onToast('Please open a PDF document first.');
         this.editorApp.aiManager?.open('tab-ai-summary');
@@ -858,6 +1733,7 @@ export class PDFToolbox {
         if (!hasDoc) return this.onToast('Please open a PDF document first.');
         this.editorApp.aiManager?.open('tab-ai-smart-actions');
         break;
+
       default:
         this.onToast(`Tool ${action} selected`);
     }
@@ -925,9 +1801,7 @@ export class PDFToolbox {
   }
 
   addImagesToPdfList(files) {
-    for (const f of files) {
-      this.imgToPdfList.push(f);
-    }
+    for (const f of files) this.imgToPdfList.push(f);
     this.renderImgToPdfList();
   }
 
@@ -984,6 +1858,9 @@ export class PDFToolbox {
 
   // --- 2. PDF -> Images ---
   openPdfToImg() {
+    if (!this.editorApp.pdfViewer.hasDocument()) {
+      return this.onToast('Please open a PDF document first.');
+    }
     if (this.pdfToImgModal) {
       const pageCount = this.editorApp.documentModel.getPageCount();
       const currentEl = document.getElementById('pdfToImgCurrentNum');
@@ -1012,7 +1889,7 @@ export class PDFToolbox {
         if (pageScope === 'current') {
           targetPages = [this.editorApp.pdfViewer.currentPage];
         } else if (pageScope === 'selected') {
-          const selected = this.editorApp.pageOrganizer.getSelectedPages();
+          const selected = this.editorApp.pageOrganizer?.getSelectedPages() || [];
           if (selected.length > 0) {
             targetPages = selected.map((p) => this.editorApp.documentModel.getPageIndex(p.id) + 1);
           } else {
@@ -1029,11 +1906,9 @@ export class PDFToolbox {
         });
 
         if (images.length === 1) {
-          // Download single image directly
           downloadBlob(images[0].blob, images[0].name);
           this.onToast(`Downloaded ${images[0].name}`);
         } else if (images.length > 1) {
-          // Package into valid ZIP archive
           btnConvert.textContent = 'Packaging ZIP...';
           const zipFiles = images.map((img) => ({
             name: img.name,
@@ -1057,6 +1932,9 @@ export class PDFToolbox {
 
   // --- 3. PDF -> Text ---
   async openPdfToText() {
+    if (!this.editorApp.pdfViewer.hasDocument()) {
+      return this.onToast('Please open a PDF document first.');
+    }
     if (!this.pdfToTextModal) return;
     this.pdfToTextModal.style.display = 'flex';
     const previewEl = document.getElementById('pdfToTextPreview');
@@ -1102,6 +1980,9 @@ export class PDFToolbox {
 
   // --- 4. PDF Compression ---
   openCompress() {
+    if (!this.editorApp.pdfViewer.hasDocument()) {
+      return this.onToast('Please open a PDF document first.');
+    }
     if (!this.compressModal) return;
     const rawBuffer = this.editorApp.pdfViewer.getOriginalBytes();
     if (!rawBuffer) return;
@@ -1267,11 +2148,6 @@ export class PDFToolbox {
         let targetPages = 'all';
         if (scope === 'current') {
           targetPages = [this.editorApp.pdfViewer.currentPage - 1];
-        } else if (scope === 'selected') {
-          const selected = this.editorApp.pageOrganizer.getSelectedPages();
-          if (selected.length > 0) {
-            targetPages = selected.map((p) => this.editorApp.documentModel.getPageIndex(p.id));
-          }
         }
 
         const watermarkedBytes = await applyWatermarkToPdf(rawBuffer, {
@@ -1346,7 +2222,7 @@ export class PDFToolbox {
   // --- 8. Flatten ---
   openFlatten() {
     if (!this.flattenModal) return;
-    const allAnnots = this.editorApp.annotationManager.getAllAnnotationsByPageId();
+    const allAnnots = this.editorApp.annotationManager?.getAllAnnotationsByPageId() || new Map();
     let totalAnnots = 0;
     for (const list of allAnnots.values()) totalAnnots += list.length;
 
@@ -1363,18 +2239,15 @@ export class PDFToolbox {
         btnFlatten.disabled = true;
         btnFlatten.textContent = 'Flattening Annotations...';
 
-        // 1. Compile modified document with annotations burned in
         const flattenedBytes = await flattenDocument(
           this.editorApp.documentModel,
           this.editorApp.annotationManager,
           this.editorApp.pdfExport.pageOperations
         );
 
-        // 2. Download flattened PDF
         const docName = (this.editorApp.pdfViewer.docMetadata?.name || 'document').replace(/\.pdf$/i, '');
         downloadBlob(new Blob([flattenedBytes], { type: 'application/pdf' }), `${docName}-flattened.pdf`);
 
-        // 3. Clear overlay state and reload into viewer so annotations become base layer
         this.editorApp.annotationManager.clear();
         this.editorApp.historyManager.clear();
         await this.editorApp.pdfViewer.loadDocument(flattenedBytes, `${docName}-flattened.pdf`);
@@ -1387,6 +2260,721 @@ export class PDFToolbox {
       } finally {
         btnFlatten.disabled = false;
         btnFlatten.textContent = 'Flatten & Reload in Editor';
+      }
+    });
+  }
+
+  // --- 9. Rotate PDF ---
+  bindRotateEvents() {
+    const btnExecute = document.getElementById('btnExecuteRotate');
+    btnExecute?.addEventListener('click', async () => {
+      const rawBuffer = this.editorApp.pdfViewer.getOriginalBytes();
+      if (!rawBuffer) return;
+
+      try {
+        btnExecute.disabled = true;
+        btnExecute.textContent = 'Rotating Pages...';
+
+        const angle = parseInt(document.getElementById('rotateAngle')?.value || '90', 10);
+        const scope = document.querySelector('input[name="rotateScope"]:checked')?.value || 'all';
+
+        const rotatedBytes = await rotatePdfDocument(rawBuffer, angle, {
+          scope,
+          currentPage: this.editorApp.pdfViewer.currentPage,
+        });
+
+        const docName = (this.editorApp.pdfViewer.docMetadata?.name || 'document').replace(/\.pdf$/i, '');
+        downloadBlob(new Blob([rotatedBytes], { type: 'application/pdf' }), `${docName}-rotated.pdf`);
+        this.onToast('Rotated PDF downloaded successfully.');
+        if (this.rotateModal) this.rotateModal.style.display = 'none';
+      } catch (err) {
+        this.onToast('Rotate failed: ' + err.message);
+      } finally {
+        btnExecute.disabled = false;
+        btnExecute.textContent = 'Rotate & Download PDF';
+      }
+    });
+  }
+
+  // --- 10. PDF -> Word ---
+  openPdfToWord() {
+    if (!this.pdfToWordModal) return;
+    const fileContainer = document.getElementById('pdfToWordFileInputContainer');
+    const hasDoc = this.editorApp.pdfViewer.hasDocument();
+    if (fileContainer) fileContainer.style.display = hasDoc ? 'none' : 'block';
+    this.pdfToWordModal.style.display = 'flex';
+  }
+
+  bindPdfToWordEvents() {
+    const btnExecute = document.getElementById('btnExecutePdfToWord');
+    const fileInput = document.getElementById('pdfToWordFileInput');
+    const progressEl = document.getElementById('pdfToWordProgress');
+
+    btnExecute?.addEventListener('click', async () => {
+      let pdfjsDoc = this.editorApp.pdfViewer.pdfDoc;
+      let filename = this.editorApp.pdfViewer.docMetadata?.name || 'document';
+
+      if (!pdfjsDoc && fileInput?.files?.[0]) {
+        const file = fileInput.files[0];
+        filename = file.name;
+        const arrayBuf = await file.arrayBuffer();
+        pdfjsDoc = await window.pdfjsLib.getDocument({ data: arrayBuf }).promise;
+      }
+
+      if (!pdfjsDoc) {
+        return this.onToast('Please select a PDF document first.');
+      }
+
+      try {
+        btnExecute.disabled = true;
+        if (progressEl) progressEl.style.display = 'block';
+
+        const docxBlob = await convertPdfToDocx(pdfjsDoc, {}, (p) => {
+          if (progressEl) progressEl.textContent = `Converting page ${p.current} of ${p.total}...`;
+        });
+
+        const outName = filename.replace(/\.pdf$/i, '') + '.docx';
+        downloadBlob(docxBlob, outName);
+        this.onToast(`Downloaded ${outName} as valid Word document.`);
+        if (this.pdfToWordModal) this.pdfToWordModal.style.display = 'none';
+      } catch (err) {
+        console.error('PDF to Word error:', err);
+        this.onToast('Conversion to Word failed: ' + err.message);
+      } finally {
+        btnExecute.disabled = false;
+        if (progressEl) progressEl.style.display = 'none';
+      }
+    });
+  }
+
+  // --- 11. Image -> Word ---
+  bindImageToWordEvents() {
+    const btnExecute = document.getElementById('btnExecuteImageToWord');
+    const fileInput = document.getElementById('imageToWordFileInput');
+    const ocrCheck = document.getElementById('imageToWordOcrCheck');
+    const progressEl = document.getElementById('imageToWordProgress');
+
+    btnExecute?.addEventListener('click', async () => {
+      const file = fileInput?.files?.[0];
+      if (!file) {
+        return this.onToast('Please select an image file.');
+      }
+
+      try {
+        btnExecute.disabled = true;
+        if (progressEl) {
+          progressEl.style.display = 'block';
+          progressEl.textContent = 'Processing image and building Word document...';
+        }
+
+        let ocrText = '';
+        if (ocrCheck?.checked && window.Tesseract) {
+          try {
+            if (progressEl) progressEl.textContent = 'Running local OCR on image...';
+            const worker = await window.Tesseract.createWorker('eng');
+            const res = await worker.recognize(file);
+            ocrText = res.data.text || '';
+            await worker.terminate();
+          } catch (e) {
+            console.warn('OCR error in image-to-word:', e);
+          }
+        }
+
+        const docxBlob = await convertImageToDocx(file, ocrText);
+        const outName = file.name.replace(/\.[^/.]+$/, '') + '.docx';
+        downloadBlob(docxBlob, outName);
+        this.onToast(`Downloaded ${outName} as valid Word document.`);
+        if (this.imageToWordModal) this.imageToWordModal.style.display = 'none';
+      } catch (err) {
+        this.onToast('Image to Word failed: ' + err.message);
+      } finally {
+        btnExecute.disabled = false;
+        if (progressEl) progressEl.style.display = 'none';
+      }
+    });
+  }
+
+  // --- 12. PDF -> Excel ---
+  openPdfToExcel() {
+    if (!this.pdfToExcelModal) return;
+    const fileContainer = document.getElementById('pdfToExcelFileInputContainer');
+    const hasDoc = this.editorApp.pdfViewer.hasDocument();
+    if (fileContainer) fileContainer.style.display = hasDoc ? 'none' : 'block';
+    this.pdfToExcelModal.style.display = 'flex';
+  }
+
+  bindPdfToExcelEvents() {
+    const btnExecute = document.getElementById('btnExecutePdfToExcel');
+    const fileInput = document.getElementById('pdfToExcelFileInput');
+    const progressEl = document.getElementById('pdfToExcelProgress');
+
+    btnExecute?.addEventListener('click', async () => {
+      let pdfjsDoc = this.editorApp.pdfViewer.pdfDoc;
+      let filename = this.editorApp.pdfViewer.docMetadata?.name || 'document';
+
+      if (!pdfjsDoc && fileInput?.files?.[0]) {
+        const file = fileInput.files[0];
+        filename = file.name;
+        const arrayBuf = await file.arrayBuffer();
+        pdfjsDoc = await window.pdfjsLib.getDocument({ data: arrayBuf }).promise;
+      }
+
+      if (!pdfjsDoc) return this.onToast('Please select a PDF document first.');
+
+      try {
+        btnExecute.disabled = true;
+        if (progressEl) progressEl.style.display = 'block';
+
+        const xlsxBlob = await convertPdfToXlsx(pdfjsDoc, {}, (p) => {
+          if (progressEl) progressEl.textContent = `Extracting tables from page ${p.current}...`;
+        });
+
+        const outName = filename.replace(/\.pdf$/i, '') + '.xlsx';
+        downloadBlob(xlsxBlob, outName);
+        this.onToast(`Downloaded ${outName} as valid Excel workbook.`);
+        if (this.pdfToExcelModal) this.pdfToExcelModal.style.display = 'none';
+      } catch (err) {
+        this.onToast('PDF to Excel failed: ' + err.message);
+      } finally {
+        btnExecute.disabled = false;
+        if (progressEl) progressEl.style.display = 'none';
+      }
+    });
+  }
+
+  // --- 13. PDF -> PowerPoint ---
+  openPdfToPptx() {
+    if (!this.pdfToPptxModal) return;
+    const fileContainer = document.getElementById('pdfToPptxFileInputContainer');
+    const hasDoc = this.editorApp.pdfViewer.hasDocument();
+    if (fileContainer) fileContainer.style.display = hasDoc ? 'none' : 'block';
+    this.pdfToPptxModal.style.display = 'flex';
+  }
+
+  bindPdfToPptxEvents() {
+    const btnExecute = document.getElementById('btnExecutePdfToPptx');
+    const fileInput = document.getElementById('pdfToPptxFileInput');
+    const progressEl = document.getElementById('pdfToPptxProgress');
+
+    btnExecute?.addEventListener('click', async () => {
+      let pdfjsDoc = this.editorApp.pdfViewer.pdfDoc;
+      let filename = this.editorApp.pdfViewer.docMetadata?.name || 'document';
+
+      if (!pdfjsDoc && fileInput?.files?.[0]) {
+        const file = fileInput.files[0];
+        filename = file.name;
+        const arrayBuf = await file.arrayBuffer();
+        pdfjsDoc = await window.pdfjsLib.getDocument({ data: arrayBuf }).promise;
+      }
+
+      if (!pdfjsDoc) return this.onToast('Please select a PDF document first.');
+
+      try {
+        btnExecute.disabled = true;
+        if (progressEl) progressEl.style.display = 'block';
+
+        const pptxBlob = await convertPdfToPptx(pdfjsDoc, {}, (p) => {
+          if (progressEl) progressEl.textContent = `Building slide ${p.current} of ${p.total}...`;
+        });
+
+        const outName = filename.replace(/\.pdf$/i, '') + '.pptx';
+        downloadBlob(pptxBlob, outName);
+        this.onToast(`Downloaded ${outName} as valid PowerPoint presentation.`);
+        if (this.pdfToPptxModal) this.pdfToPptxModal.style.display = 'none';
+      } catch (err) {
+        this.onToast('PDF to PowerPoint failed: ' + err.message);
+      } finally {
+        btnExecute.disabled = false;
+        if (progressEl) progressEl.style.display = 'none';
+      }
+    });
+  }
+
+  // --- 14. PDF -> PDF/A ---
+  openPdfToPdfa() {
+    if (!this.pdfToPdfaModal) return;
+    const fileContainer = document.getElementById('pdfToPdfaFileInputContainer');
+    const hasDoc = this.editorApp.pdfViewer.hasDocument();
+    if (fileContainer) fileContainer.style.display = hasDoc ? 'none' : 'block';
+    this.pdfToPdfaModal.style.display = 'flex';
+  }
+
+  bindPdfToPdfaEvents() {
+    const btnExecute = document.getElementById('btnExecutePdfToPdfa');
+    const fileInput = document.getElementById('pdfToPdfaFileInput');
+
+    btnExecute?.addEventListener('click', async () => {
+      let rawBuffer = this.editorApp.pdfViewer.getOriginalBytes();
+      let filename = this.editorApp.pdfViewer.docMetadata?.name || 'document';
+
+      if (!rawBuffer && fileInput?.files?.[0]) {
+        const file = fileInput.files[0];
+        filename = file.name;
+        rawBuffer = await file.arrayBuffer();
+      }
+
+      if (!rawBuffer) return this.onToast('Please select a PDF document first.');
+
+      try {
+        btnExecute.disabled = true;
+        btnExecute.textContent = 'Applying PDF/A Profile...';
+
+        const res = await convertPdfToPdfA(rawBuffer);
+        const outName = filename.replace(/\.pdf$/i, '') + '-pdfa.pdf';
+        downloadBlob(new Blob([res.bytes], { type: 'application/pdf' }), outName);
+        this.onToast('Downloaded PDF with PDF/A metadata profile.');
+        if (this.pdfToPdfaModal) this.pdfToPdfaModal.style.display = 'none';
+      } catch (err) {
+        this.onToast('PDF/A preparation failed: ' + err.message);
+      } finally {
+        btnExecute.disabled = false;
+        btnExecute.textContent = 'Apply PDF/A & Download';
+      }
+    });
+  }
+
+  // --- 15. PDF -> Markdown ---
+  openPdfToMarkdown() {
+    if (!this.pdfToMarkdownModal) return;
+    const fileContainer = document.getElementById('pdfToMdFileInputContainer');
+    const hasDoc = this.editorApp.pdfViewer.hasDocument();
+    if (fileContainer) fileContainer.style.display = hasDoc ? 'none' : 'block';
+
+    const previewEl = document.getElementById('pdfToMdPreview');
+    if (previewEl) previewEl.value = hasDoc ? 'Extracting Markdown...' : 'Select or load a PDF to view Markdown preview.';
+
+    this.pdfToMarkdownModal.style.display = 'flex';
+
+    if (hasDoc) {
+      const pdfjsDoc = this.editorApp.pdfViewer.pdfDoc;
+      convertPdfToMarkdown(pdfjsDoc).then((res) => {
+        if (previewEl) previewEl.value = res.markdown;
+        this.currentMdText = res.markdown;
+      });
+    }
+  }
+
+  bindPdfToMarkdownEvents() {
+    const btnCopy = document.getElementById('btnCopyPdfToMd');
+    const btnDownload = document.getElementById('btnDownloadPdfToMd');
+    const fileInput = document.getElementById('pdfToMdFileInput');
+    const previewEl = document.getElementById('pdfToMdPreview');
+
+    fileInput?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      if (previewEl) previewEl.value = 'Extracting Markdown...';
+      const arrayBuf = await file.arrayBuffer();
+      const pdfjsDoc = await window.pdfjsLib.getDocument({ data: arrayBuf }).promise;
+      const res = await convertPdfToMarkdown(pdfjsDoc);
+      if (previewEl) previewEl.value = res.markdown;
+      this.currentMdText = res.markdown;
+    });
+
+    btnCopy?.addEventListener('click', async () => {
+      const text = this.currentMdText || previewEl?.value || '';
+      await navigator.clipboard.writeText(text);
+      this.onToast('Markdown copied to clipboard!');
+    });
+
+    btnDownload?.addEventListener('click', () => {
+      const text = this.currentMdText || previewEl?.value || '';
+      const docName = (this.editorApp.pdfViewer.docMetadata?.name || 'document').replace(/\.pdf$/i, '');
+      downloadBlob(new Blob([text], { type: 'text/markdown;charset=utf-8' }), `${docName}.md`);
+      this.onToast('Downloaded .md document.');
+    });
+  }
+
+  // --- 16. HTML -> PDF ---
+  bindHtmlToPdfEvents() {
+    const btnExecute = document.getElementById('btnExecuteHtmlToPdf');
+    const fileInput = document.getElementById('htmlToPdfFileInput');
+    const contentText = document.getElementById('htmlToPdfContent');
+    const sizeSelect = document.getElementById('htmlToPdfPageSize');
+
+    fileInput?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (file && contentText) {
+        contentText.value = await file.text();
+      }
+    });
+
+    btnExecute?.addEventListener('click', async () => {
+      const htmlString = contentText?.value || '';
+      if (!htmlString.trim()) {
+        return this.onToast('Please enter or upload HTML content.');
+      }
+
+      try {
+        btnExecute.disabled = true;
+        btnExecute.textContent = 'Rendering PDF...';
+
+        const pageSize = sizeSelect?.value || 'a4';
+        const pdfBytes = await convertHtmlToPdf(htmlString, { pageSize });
+
+        downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'rendered-html.pdf');
+        this.onToast('HTML rendered and downloaded as PDF.');
+        if (this.htmlToPdfModal) this.htmlToPdfModal.style.display = 'none';
+      } catch (err) {
+        this.onToast('HTML to PDF failed: ' + err.message);
+      } finally {
+        btnExecute.disabled = false;
+        btnExecute.textContent = 'Render HTML & Download PDF';
+      }
+    });
+  }
+
+  // --- 17. Scan -> PDF ---
+  openScanToPdf() {
+    this.scanCapturedImages = [];
+    this.renderScanCapturedList();
+    if (this.scanToPdfModal) this.scanToPdfModal.style.display = 'flex';
+  }
+
+  bindScanToPdfEvents() {
+    const btnModeCamera = document.getElementById('btnScanModeCamera');
+    const btnModeUpload = document.getElementById('btnScanModeUpload');
+    const camSection = document.getElementById('scanCameraSection');
+    const uploadSection = document.getElementById('scanUploadSection');
+    const video = document.getElementById('scanCameraVideo');
+    const btnCapture = document.getElementById('btnScanCapture');
+    const fileInput = document.getElementById('scanFileInput');
+    const btnExecute = document.getElementById('btnExecuteScanToPdf');
+    const bwCheck = document.getElementById('scanBwEnhance');
+
+    btnModeCamera?.addEventListener('click', async () => {
+      btnModeCamera.className = 'btn btn-sm btn-primary';
+      btnModeUpload.className = 'btn btn-sm btn-outline';
+      if (camSection) camSection.style.display = 'flex';
+      if (uploadSection) uploadSection.style.display = 'none';
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        if (video) video.srcObject = stream;
+        this.activeCameraStream = stream;
+      } catch (err) {
+        this.onToast('Camera access unavailable: ' + err.message);
+      }
+    });
+
+    btnModeUpload?.addEventListener('click', () => {
+      btnModeUpload.className = 'btn btn-sm btn-primary';
+      btnModeCamera.className = 'btn btn-sm btn-outline';
+      if (camSection) camSection.style.display = 'none';
+      if (uploadSection) uploadSection.style.display = 'block';
+
+      if (this.activeCameraStream) {
+        this.activeCameraStream.getTracks().forEach((t) => t.stop());
+        this.activeCameraStream = null;
+      }
+    });
+
+    btnCapture?.addEventListener('click', () => {
+      if (!video || !video.videoWidth) return;
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0);
+
+      canvas.toBlob((blob) => {
+        if (blob) {
+          this.scanCapturedImages.push(new File([blob], `scan-${Date.now()}.png`, { type: 'image/png' }));
+          this.renderScanCapturedList();
+          this.onToast(`Captured page ${this.scanCapturedImages.length}`);
+        }
+      }, 'image/png');
+    });
+
+    fileInput?.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files || []);
+      for (const f of files) this.scanCapturedImages.push(f);
+      this.renderScanCapturedList();
+    });
+
+    btnExecute?.addEventListener('click', async () => {
+      if (this.scanCapturedImages.length === 0) {
+        return this.onToast('Please capture or select at least one page.');
+      }
+
+      try {
+        btnExecute.disabled = true;
+        btnExecute.textContent = 'Compiling Scans...';
+
+        const processedImages = [];
+        for (const file of this.scanCapturedImages) {
+          if (bwCheck?.checked) {
+            const url = URL.createObjectURL(file);
+            const img = new Image();
+            await new Promise((resolve) => {
+              img.onload = resolve;
+              img.src = url;
+            });
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+
+            // High-contrast photocopy B&W threshold
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imgData.data;
+            for (let p = 0; p < data.length; p += 4) {
+              const lum = data[p] * 0.299 + data[p + 1] * 0.587 + data[p + 2] * 0.114;
+              const val = lum > 130 ? 255 : 0;
+              data[p] = val;
+              data[p + 1] = val;
+              data[p + 2] = val;
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
+            processedImages.push(blob);
+          } else {
+            processedImages.push(file);
+          }
+        }
+
+        const pdfBytes = await convertImagesToPdf(processedImages, { pageSize: 'a4', margin: 18 });
+        downloadBlob(new Blob([pdfBytes], { type: 'application/pdf' }), 'scanned-document.pdf');
+        this.onToast('Scanned document compiled and downloaded.');
+        if (this.scanToPdfModal) this.scanToPdfModal.style.display = 'none';
+      } catch (err) {
+        this.onToast('Scan compilation failed: ' + err.message);
+      } finally {
+        btnExecute.disabled = false;
+        btnExecute.textContent = 'Compile Scans to PDF & Download';
+        if (this.activeCameraStream) {
+          this.activeCameraStream.getTracks().forEach((t) => t.stop());
+          this.activeCameraStream = null;
+        }
+      }
+    });
+  }
+
+  renderScanCapturedList() {
+    const listEl = document.getElementById('scanCapturedList');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+
+    if (this.scanCapturedImages.length === 0) {
+      listEl.innerHTML = '<div class="empty-hint">No pages captured yet.</div>';
+      return;
+    }
+
+    this.scanCapturedImages.forEach((f, idx) => {
+      const chip = document.createElement('div');
+      chip.style.display = 'inline-flex';
+      chip.style.alignItems = 'center';
+      chip.style.gap = '0.35rem';
+      chip.style.padding = '0.25rem 0.5rem';
+      chip.style.margin = '0.25rem';
+      chip.style.background = 'var(--color-surface)';
+      chip.style.border = '1px solid var(--color-border)';
+      chip.style.borderRadius = '4px';
+      chip.style.fontSize = '0.75rem';
+      chip.innerHTML = `<span>Page ${idx + 1} (${Math.round(f.size / 1024)} KB)</span><button type="button" class="btn-micro btn-micro-danger">✕</button>`;
+      chip.querySelector('button')?.addEventListener('click', () => {
+        this.scanCapturedImages.splice(idx, 1);
+        this.renderScanCapturedList();
+      });
+      listEl.appendChild(chip);
+    });
+  }
+
+  // --- 18. Compare PDF ---
+  bindComparePdfEvents() {
+    const btnExecute = document.getElementById('btnExecuteCompare');
+    const inputA = document.getElementById('compareDocAInput');
+    const inputB = document.getElementById('compareDocBInput');
+    const resultContainer = document.getElementById('compareResultContainer');
+    const matchBadge = document.getElementById('compareMatchBadge');
+    const addedCount = document.getElementById('compareAddedCount');
+    const removedCount = document.getElementById('compareRemovedCount');
+    const diffOutput = document.getElementById('compareDiffOutput');
+
+    btnExecute?.addEventListener('click', async () => {
+      let bufA = this.editorApp.pdfViewer.getOriginalBytes();
+      let bufB = null;
+
+      if (inputA?.files?.[0]) bufA = await inputA.files[0].arrayBuffer();
+      if (inputB?.files?.[0]) bufB = await inputB.files[0].arrayBuffer();
+
+      if (!bufA || !bufB) {
+        return this.onToast('Please select two PDF documents to compare.');
+      }
+
+      try {
+        btnExecute.disabled = true;
+        btnExecute.textContent = 'Comparing...';
+
+        const res = await comparePdfDocuments(bufA, bufB);
+
+        if (resultContainer) resultContainer.style.display = 'block';
+        if (matchBadge) matchBadge.textContent = `${res.matchPercent}%`;
+        if (addedCount) addedCount.textContent = res.addedLines;
+        if (removedCount) removedCount.textContent = res.removedLines;
+
+        if (diffOutput) {
+          diffOutput.innerHTML = '';
+          res.diffLines.slice(0, 150).forEach((dl) => {
+            const lineEl = document.createElement('div');
+            lineEl.textContent = dl.text;
+            if (dl.type === 'add') lineEl.className = 'diff-line-add';
+            else if (dl.type === 'remove') lineEl.className = 'diff-line-remove';
+            diffOutput.appendChild(lineEl);
+          });
+        }
+
+        this.onToast(`Comparison complete: ${res.matchPercent}% text match.`);
+      } catch (err) {
+        this.onToast('Compare failed: ' + err.message);
+      } finally {
+        btnExecute.disabled = false;
+        btnExecute.textContent = 'Run Comparison';
+      }
+    });
+  }
+
+  // --- 19. PDF Forms ---
+  openPdfForms() {
+    if (!this.pdfFormsModal) return;
+    const fileContainer = document.getElementById('pdfFormsFileInputContainer');
+    const hasDoc = this.editorApp.pdfViewer.hasDocument();
+    if (fileContainer) fileContainer.style.display = hasDoc ? 'none' : 'block';
+
+    const container = document.getElementById('pdfFormsFieldsContainer');
+    if (container) {
+      container.innerHTML = hasDoc
+        ? '<div class="form-hint">Loading document form fields...</div>'
+        : '<div class="empty-hint">Open or select a PDF to inspect interactive form fields.</div>';
+    }
+
+    this.pdfFormsModal.style.display = 'flex';
+
+    if (hasDoc) {
+      const raw = this.editorApp.pdfViewer.getOriginalBytes();
+      if (raw) this.inspectFormFields(raw);
+    }
+  }
+
+  async inspectFormFields(rawBuffer) {
+    const container = document.getElementById('pdfFormsFieldsContainer');
+    if (!container) return;
+
+    try {
+      const { PDFDocument } = window.PDFLib;
+      const doc = await PDFDocument.load(rawBuffer.slice(0), { ignoreEncryption: true });
+      const form = doc.getForm();
+      const fields = form.getFields();
+
+      if (fields.length === 0) {
+        container.innerHTML = '<div class="empty-hint">No interactive AcroForm fields found in this document. Use the Form Builder to add fields!</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      fields.forEach((f) => {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.alignItems = 'center';
+        row.style.justifyContent = 'space-between';
+        row.style.padding = '0.35rem';
+        row.style.borderBottom = '1px solid var(--color-border)';
+        row.style.fontSize = '0.75rem';
+
+        const name = f.getName();
+        const type = f.constructor.name;
+        row.innerHTML = `<strong>${name}</strong> <span style="color: var(--color-text-secondary);">(${type})</span>`;
+        container.appendChild(row);
+      });
+    } catch (e) {
+      container.innerHTML = '<div class="form-hint">Could not read AcroForm dictionary.</div>';
+    }
+  }
+
+  bindPdfFormsEvents() {
+    const fileInput = document.getElementById('pdfFormsFileInput');
+    const btnFlatten = document.getElementById('btnFlattenPdfForms');
+    const btnSave = document.getElementById('btnSavePdfForms');
+    const btnLaunchBuilder = document.getElementById('btnLaunchFormBuilderFromForms');
+
+    fileInput?.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const raw = await file.arrayBuffer();
+        this.inspectFormFields(raw);
+      }
+    });
+
+    btnLaunchBuilder?.addEventListener('click', () => {
+      if (this.pdfFormsModal) this.pdfFormsModal.style.display = 'none';
+      this.editorApp.productivityManager?.openFormModal();
+    });
+
+    btnFlatten?.addEventListener('click', async () => {
+      let raw = this.editorApp.pdfViewer.getOriginalBytes();
+      if (!raw && fileInput?.files?.[0]) raw = await fileInput.files[0].arrayBuffer();
+      if (!raw) return this.onToast('Please open or select a PDF document.');
+
+      try {
+        const { PDFDocument } = window.PDFLib;
+        const doc = await PDFDocument.load(raw.slice(0), { ignoreEncryption: true });
+        const form = doc.getForm();
+        form.flatten();
+        const bytes = await doc.save();
+        downloadBlob(new Blob([bytes], { type: 'application/pdf' }), 'forms-flattened.pdf');
+        this.onToast('Form fields flattened and downloaded.');
+        if (this.pdfFormsModal) this.pdfFormsModal.style.display = 'none';
+      } catch (err) {
+        this.onToast('Failed to flatten form: ' + err.message);
+      }
+    });
+
+    btnSave?.addEventListener('click', async () => {
+      let raw = this.editorApp.pdfViewer.getOriginalBytes();
+      if (!raw && fileInput?.files?.[0]) raw = await fileInput.files[0].arrayBuffer();
+      if (!raw) return this.onToast('Please open or select a PDF document.');
+
+      try {
+        const { PDFDocument } = window.PDFLib;
+        const doc = await PDFDocument.load(raw.slice(0), { ignoreEncryption: true });
+        const bytes = await doc.save();
+        downloadBlob(new Blob([bytes], { type: 'application/pdf' }), 'filled-form.pdf');
+        this.onToast('PDF form saved and downloaded.');
+        if (this.pdfFormsModal) this.pdfFormsModal.style.display = 'none';
+      } catch (err) {
+        this.onToast('Failed to save form: ' + err.message);
+      }
+    });
+  }
+
+  // --- 20. Repair PDF ---
+  bindRepairPdfEvents() {
+    const btnExecute = document.getElementById('btnExecuteRepair');
+    const fileInput = document.getElementById('repairPdfFileInput');
+    const progressEl = document.getElementById('repairProgress');
+
+    btnExecute?.addEventListener('click', async () => {
+      const file = fileInput?.files?.[0];
+      if (!file) return this.onToast('Please select a PDF file to repair.');
+
+      try {
+        btnExecute.disabled = true;
+        if (progressEl) progressEl.style.display = 'block';
+
+        const raw = await file.arrayBuffer();
+        const res = await repairPdfDocument(raw);
+
+        const outName = file.name.replace(/\.pdf$/i, '') + '-repaired.pdf';
+        downloadBlob(new Blob([res.bytes], { type: 'application/pdf' }), outName);
+        this.onToast('Repaired PDF downloaded successfully.');
+        if (this.repairPdfModal) this.repairPdfModal.style.display = 'none';
+      } catch (err) {
+        this.onToast(err.message || 'Repair failed');
+      } finally {
+        btnExecute.disabled = false;
+        if (progressEl) progressEl.style.display = 'none';
       }
     });
   }

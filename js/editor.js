@@ -85,6 +85,7 @@ class EditorApp {
     this.btnApplyRedactionToolbar = document.getElementById('btnApplyRedactionToolbar');
     this.btnOpenPrivacyCenter = document.getElementById('btnOpenPrivacyCenter');
     this.btnHeaderSearch = document.getElementById('btnHeaderSearch');
+    this.btnHeaderFindReplace = document.getElementById('btnHeaderFindReplace');
     this.btnHeaderPresentation = document.getElementById('btnHeaderPresentation');
     this.btnHeaderInspector = document.getElementById('btnHeaderInspector');
     this.btnHeaderShortcuts = document.getElementById('btnHeaderShortcuts');
@@ -99,7 +100,8 @@ class EditorApp {
     this.sidebarEl = document.getElementById('editorSidebar');
 
     // Workspace & Layers
-    this.workspaceEl = document.getElementById('editorWorkspace');
+    this.scrollAreaEl = document.getElementById('workspaceScrollArea');
+    this.workspaceEl = this.scrollAreaEl || document.getElementById('editorWorkspace');
     this.emptyStateEl = document.getElementById('workspaceEmptyState');
     this.viewportContainer = document.getElementById('pdfViewportContainer');
     this.pdfPageWrapper = document.getElementById('pdfPageWrapper');
@@ -107,6 +109,7 @@ class EditorApp {
     this.annotationOverlay = document.getElementById('annotationOverlay');
     this.drawingCanvas = document.getElementById('drawingCanvas');
     this.drawingCtx = this.drawingCanvas ? this.drawingCanvas.getContext('2d') : null;
+    this.textLayerEl = document.getElementById('pdfTextLayer');
     this.textEditLayer = document.getElementById('textEditLayer');
     this.loadingOverlay = document.getElementById('pdfLoadingOverlay');
     this.btnEmptyBrowse = document.getElementById('btnEmptyBrowse');
@@ -245,6 +248,7 @@ class EditorApp {
     this.pdfViewer = new PDFViewer({
       canvas: this.pdfCanvas,
       viewportContainer: this.workspaceEl,
+      textLayer: this.textLayerEl,
       onDocumentLoaded: (meta) => this.handleDocumentLoaded(meta),
       onPageChange: (current, total, pageRecord) => this.handlePageChanged(current, total, pageRecord),
       onZoomChange: (scale) => this.handleZoomChanged(scale),
@@ -502,7 +506,10 @@ class EditorApp {
 
     // Phase 6 Header Triggers (Search, Presentation, Inspector)
     this.btnHeaderSearch?.addEventListener('click', () => {
-      this.searchManager?.open();
+      this.searchManager?.open(false);
+    });
+    this.btnHeaderFindReplace?.addEventListener('click', () => {
+      this.searchManager?.open(true);
     });
     this.btnHeaderPresentation?.addEventListener('click', () => {
       this.presentationManager?.start();
@@ -1016,6 +1023,16 @@ class EditorApp {
     if (!this.pdfCanvas || !this.drawingCanvas || !this.annotationOverlay) return;
     const w = this.pdfCanvas.style.width;
     const h = this.pdfCanvas.style.height;
+
+    if (this.pdfPageWrapper) {
+      this.pdfPageWrapper.style.width = w;
+      this.pdfPageWrapper.style.height = h;
+    }
+
+    if (this.textLayerEl) {
+      this.textLayerEl.style.width = w;
+      this.textLayerEl.style.height = h;
+    }
 
     this.annotationOverlay.style.width = w;
     this.annotationOverlay.style.height = h;
@@ -1615,10 +1632,92 @@ class EditorApp {
         case 'inspector':
           this.productivityManager?.openDocumentInspector();
           break;
+        case 'toolbox':
+          this.pdfToolbox?.openToolbox();
+          break;
+        case 'rotate':
+          this.pdfToolbox?.launchTool('rotate');
+          break;
+        case 'organize':
+          this.openPageOrganizer();
+          break;
+        case 'pdf-to-word':
+        case 'word':
+          this.pdfToolbox?.launchTool('pdf-to-word');
+          break;
+        case 'image-to-word':
+          this.pdfToolbox?.launchTool('image-to-word');
+          break;
+        case 'pdf-to-excel':
+        case 'excel':
+          this.pdfToolbox?.launchTool('pdf-to-excel');
+          break;
+        case 'pdf-to-powerpoint':
+        case 'pdf-to-pptx':
+        case 'powerpoint':
+          this.pdfToolbox?.launchTool('pdf-to-pptx');
+          break;
+        case 'pdf-to-pdfa':
+        case 'pdfa':
+          this.pdfToolbox?.launchTool('pdf-to-pdfa');
+          break;
+        case 'pdf-to-markdown':
+        case 'markdown':
+          this.pdfToolbox?.launchTool('pdf-to-markdown');
+          break;
+        case 'html-to-pdf':
+        case 'html':
+          this.pdfToolbox?.launchTool('html-to-pdf');
+          break;
+        case 'scan-to-pdf':
+        case 'scan':
+          this.pdfToolbox?.launchTool('scan-to-pdf');
+          break;
+        case 'compare-pdf':
+        case 'compare':
+          this.pdfToolbox?.launchTool('compare-pdf');
+          break;
+        case 'repair-pdf':
+        case 'repair':
+          this.pdfToolbox?.launchTool('repair-pdf');
+          break;
+        case 'protect-pdf':
+        case 'protect':
+          this.pdfToolbox?.launchTool('protect-pdf');
+          break;
+        case 'unlock-pdf':
+        case 'unlock':
+          this.pdfToolbox?.launchTool('unlock-pdf');
+          break;
+        case 'word-to-pdf':
+          this.pdfToolbox?.launchTool('word-to-pdf');
+          break;
+        case 'powerpoint-to-pdf':
+          this.pdfToolbox?.launchTool('powerpoint-to-pdf');
+          break;
+        case 'excel-to-pdf':
+          this.pdfToolbox?.launchTool('excel-to-pdf');
+          break;
         default:
+          if (this.pdfToolbox) {
+            this.pdfToolbox.launchTool(act);
+          }
           break;
       }
     }, 400);
+  }
+
+  openPageOrganizer() {
+    if (!this.documentModel?.isLoaded) {
+      this.showToast('Please open a PDF document to organize pages.');
+      this.fileInput?.click();
+      return;
+    }
+    this.pageOrganizer?.open();
+    if (this.drawerBackdrop && window.innerWidth <= 768) {
+      this.drawerBackdrop.style.display = 'block';
+    }
+    this.showToast('Page Organizer opened. Drag thumbnails to reorder, or use page actions.');
   }
 
   handlePageChanged(current, total, pageRecord = null) {
@@ -2007,10 +2106,19 @@ class EditorApp {
       }
     }
 
-    if (tool.id === 'hand') {
-      this.workspaceEl.style.cursor = 'grab';
-    } else {
-      this.workspaceEl.style.cursor = 'default';
+    const targetCursor = tool.id === 'hand' ? 'grab' : 'default';
+    if (this.workspaceEl) this.workspaceEl.style.cursor = targetCursor;
+    const rootWorkspace = document.getElementById('editorWorkspace');
+    if (rootWorkspace) rootWorkspace.style.cursor = targetCursor;
+
+    if (this.textLayerEl) {
+      if (tool.id === 'hand') {
+        this.textLayerEl.style.pointerEvents = 'none';
+        this.textLayerEl.style.userSelect = 'none';
+      } else {
+        this.textLayerEl.style.pointerEvents = 'auto';
+        this.textLayerEl.style.userSelect = 'text';
+      }
     }
 
     if (tool.id !== 'select') {

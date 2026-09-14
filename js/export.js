@@ -6,6 +6,7 @@
  */
 
 import { PDFPageOperations } from './pdf-page-operations.js';
+import { PdfContentStreamEditor } from './pdf-content-stream-editor.js';
 
 export class PDFExport {
   constructor({ onExportStart, onExportSuccess, onExportError } = {}) {
@@ -94,7 +95,19 @@ export class PDFExport {
         const pdfPage = pages[pageIdx];
         const { width: pageWidth, height: pageHeight } = pdfPage.getSize();
 
-        for (const annot of pageAnnots) {
+        // 1. Apply true underlying PDF content stream text replacements
+        const textReplacements = pageAnnots.filter((a) => a.type === 'text_replacement');
+        if (textReplacements.length > 0) {
+          const replacements = textReplacements.map((a) => ({
+            originalText: a.originalText,
+            newText: a.newText !== undefined ? a.newText : (a.text !== undefined ? a.text : (a.content || '')),
+          }));
+          await PdfContentStreamEditor.replaceTextInPage(pdfDoc, pdfPage, replacements);
+        }
+
+        // 2. Burn remaining visual annotations (excluding text_replacement)
+        const nonStreamAnnots = pageAnnots.filter((a) => a.type !== 'text_replacement');
+        for (const annot of nonStreamAnnots) {
           const s = annot.style || {};
 
           switch (annot.type) {
@@ -266,27 +279,8 @@ export class PDFExport {
             }
 
             case 'text_replacement': {
-              const bgColorHex = annot.backgroundColor || '#FFFFFF';
-              const bgColor = this.hexToRgb(bgColorHex, rgb);
-
-              // 1. Solid background masking rectangle covering original text completely
-              const padX = 1.5;
-              const padY = 1.0;
-              const maskX = Math.max(0, annot.x - padX);
-              const maskW = annot.width + (padX * 2);
-              const maskH = annot.height + (padY * 2);
-              const maskY = pageHeight - annot.y - annot.height - padY;
-
-              pdfPage.drawRectangle({
-                x: maskX,
-                y: maskY,
-                width: maskW,
-                height: maskH,
-                color: bgColor,
-                opacity: 1.0,
-              });
-
-              // 2. Draw replacement text if present
+              // True PDF text replacement is applied at the content stream level.
+              // Zero background masking rectangles are drawn.
               const content = annot.text !== undefined ? annot.text : (annot.content || '');
               if (content && content.trim().length > 0) {
                 const family = fontMap[annot.fontFamily || annot.style?.fontFamily] || fontMap.Helvetica;

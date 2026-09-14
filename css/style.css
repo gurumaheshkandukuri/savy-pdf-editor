@@ -766,6 +766,33 @@ button {
   align-self: flex-start;
 }
 
+.tool-badge-pill.badge-experimental {
+  color: #b45309;
+  background-color: #fef3c7;
+  border-color: #fcd34d;
+}
+
+.tool-badge-pill.badge-coming-soon {
+  color: #475569;
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.tools-category-group {
+  margin-top: 3rem;
+}
+
+.tools-category-heading {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: 1.5rem;
+}
+
 /* --------------------------------------------------------------------------
    Step-by-Step How-To Section
    -------------------------------------------------------------------------- */
