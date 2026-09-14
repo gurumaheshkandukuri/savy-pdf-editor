@@ -247,6 +247,9 @@ export class SecurityManager {
   }
 
   resetWorkspace() {
+    // 0. Clear persistent local session
+    this.editorApp?.sessionManager?.clearActiveSession();
+
     // 1. Cancel ongoing renders and reset viewer
     if (this.editorApp.pdfViewer) {
       if (this.editorApp.pdfViewer.renderTask) {

@@ -273,7 +273,7 @@
         </table>
         </div>
         <p>
-          These requests download client software to your browser. Your PDF documents and contents are <strong>never</strong> attached to or sent with any of these requests.
+          These requests download client software to your browser. SAVY may fetch static application resources, libraries, and updates over the network, which can subsequently be served from the browser/service-worker cache. Your files are processed locally in your browser and are never uploaded to SAVY servers.
         </p>
       </section>
 
@@ -283,10 +283,11 @@
           SAVY uses browser storage minimally and strictly for functional execution:
         </p>
         <ul style="margin-left: 1.5rem; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 1rem;">
-          <li><strong>Landing Page Handoff (IndexedDB):</strong> When you drop a PDF on the landing page, it is temporarily held in local browser memory (IndexedDB database <code>SAVY_LOCAL_STORE</code>) to hand off to the editor tab. The handoff record is <strong>automatically deleted immediately upon retrieval</strong> by the editor.</li>
+          <li><strong>Landing & Tool Page Handoff (IndexedDB):</strong> When you select or drop a PDF on the landing page or a dedicated tool page, it is temporarily held in local browser storage (IndexedDB database <code>SAVY_LOCAL_STORE</code>, store <code>pending_documents</code>) to hand off to the editor workspace. The pending handoff record is deleted immediately upon retrieval.</li>
+          <li><strong>Local Working Session Persistence (IndexedDB):</strong> To prevent accidental data loss if your browser refreshes or reloads, your active working document, page sequence, rotations, and annotations are saved strictly locally on your device in your browser's IndexedDB (store <code>document_sessions</code>). <em>"Your working document is stored locally in your browser so it can be restored after a refresh."</em> Your files are processed locally in your browser and are never uploaded to SAVY servers. SAVY may fetch static application resources, libraries, and updates over the network, which can subsequently be served from the browser/service-worker cache. Clicking <strong>"Close Document"</strong> permanently deletes and wipes your active session from your browser's local IndexedDB.</li>
           <li><strong>No LocalStorage of PDFs:</strong> SAVY does not store PDF binaries or personal document data in persistent <code>localStorage</code> or <code>sessionStorage</code>.</li>
           <li><strong>Object URLs:</strong> All temporary browser memory Blob URLs are tracked and revoked upon document switch, export completion, or document closure.</li>
-          <li><strong>Document Reset:</strong> Using the "Close Document" button cancels background render tasks and purges active document models from memory.</li>
+          <li><strong>Document Reset:</strong> Using the "Close Document" button cancels background render tasks, permanently wipes the local session from IndexedDB, and purges all document models and annotations from memory.</li>
         </ul>
       </section>
 

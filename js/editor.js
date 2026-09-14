@@ -23,18 +23,26 @@ import { OCRManager } from './ocr-manager.js';
 import { ProductivityManager } from './productivity-manager.js';
 import { AIManager } from './ai-manager.js';
 import { TextEditorManager } from './text-editor-manager.js';
+import {
+  SessionManager,
+  DB_NAME,
+  DB_VERSION,
+  STORE_PENDING,
+  STORE_SESSIONS,
+  SESSION_KEY,
+} from './session-manager.js';
 
 // IndexedDB Helper for cross-page document passing
-const DB_NAME = 'SAVY_LOCAL_STORE';
-const STORE_NAME = 'pending_documents';
-
 function openIndexedDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = (e) => {
       const db = e.target.result;
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME);
+      if (!db.objectStoreNames.contains(STORE_PENDING)) {
+        db.createObjectStore(STORE_PENDING);
+      }
+      if (!db.objectStoreNames.contains(STORE_SESSIONS)) {
+        db.createObjectStore(STORE_SESSIONS);
       }
     };
     request.onsuccess = (e) => resolve(e.target.result);
@@ -46,12 +54,12 @@ async function getPendingDocument() {
   try {
     const db = await openIndexedDB();
     return new Promise((resolve) => {
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
+      const tx = db.transaction(STORE_PENDING, 'readwrite');
+      const store = tx.objectStore(STORE_PENDING);
       const req = store.get('active_pdf');
       req.onsuccess = () => {
         const item = req.result;
-        // Clean up once retrieved so page reload behaves cleanly
+        // Clean up once retrieved so landing page handoff is consumed
         store.delete('active_pdf');
         resolve(item || null);
       };
@@ -192,11 +200,23 @@ class EditorApp {
     // 0. Document Model
     this.documentModel = new DocumentModel();
 
+    // Session Manager (Browser-local session persistence across page refreshes)
+    this.sessionManager = new SessionManager({
+      editorApp: this,
+      onToast: (msg, type) => this.showToast(msg, type),
+    });
+
+    // Auto-save on document structure modifications (rotations, reorders, deletes, blank pages)
+    this.documentModel.on('change', () => {
+      this.sessionManager?.scheduleSave();
+    });
+
     // 1. History Manager
     this.historyManager = new HistoryManager({
       onHistoryChange: ({ canUndo, canRedo }) => {
         if (this.btnUndo) this.btnUndo.disabled = !canUndo;
         if (this.btnRedo) this.btnRedo.disabled = !canRedo;
+        this.sessionManager?.scheduleSave();
       },
     });
 
@@ -209,6 +229,7 @@ class EditorApp {
       onAnnotationChange: () => {
         this.securityManager?.updateSecurityStatus();
         this.updateRedactionToolbarVisibility();
+        this.sessionManager?.scheduleSave();
       },
     });
     this.annotationManager.setDocumentModel(this.documentModel);
@@ -1396,6 +1417,9 @@ class EditorApp {
     const initialAction = urlParams.get('action') || urlParams.get('tool');
 
     if (payload && payload.file) {
+      // Clear previous saved session so newly chosen document takes over cleanly
+      await this.sessionManager?.clearActiveSession();
+
       const isImage = (payload.file.type && payload.file.type.startsWith('image/')) ||
         /\.(jpe?g|png|webp|gif|bmp|svg)$/i.test(payload.name || payload.file.name || '');
 
@@ -1405,16 +1429,23 @@ class EditorApp {
           this.pdfToolbox.addImagesToPdfList([payload.file]);
         }
       } else {
-        this.loadFile(payload.file, payload.name);
+        await this.loadFile(payload.file, payload.name);
       }
-    } else if (initialAction) {
-      this.handleInitialToolAction(initialAction);
+    } else {
+      // Check for an active saved session to restore across page refresh
+      const activeSession = await this.sessionManager?.loadActiveSession();
+      if (activeSession && activeSession.sourcePdfBytes) {
+        await this.restoreSession(activeSession);
+      } else if (initialAction) {
+        this.handleInitialToolAction(initialAction);
+      }
     }
   }
 
   async loadFile(file, name) {
     try {
       this.showLoading(true);
+      await this.sessionManager?.clearActiveSession();
       this.annotationManager.clear();
       this.historyManager.clear();
       await this.pdfViewer.loadDocument(file, name || file.name);
@@ -1425,7 +1456,149 @@ class EditorApp {
     }
   }
 
+  async restoreSession(session) {
+    if (!session || !session.sourcePdfBytes) return;
+    try {
+      this.showLoading(true);
+      if (this.sessionManager) {
+        this.sessionManager.isRestoring = true;
+      }
+
+      // Convert stored sourcePdfBytes to File object for PDFViewer
+      const pdfBlob = new Blob([session.sourcePdfBytes], { type: 'application/pdf' });
+      const fileObj = new File([pdfBlob], session.filename || 'document.pdf', { type: 'application/pdf' });
+
+      // Load primary PDF into PDFViewer
+      await this.pdfViewer.loadDocument(fileObj, session.filename || 'document.pdf');
+
+      // Setup primary document in DocumentModel
+      const primaryDocId = session.primaryDocId || ('doc_' + Math.random().toString(36).substring(2, 9));
+      this.documentModel.primaryDocId = primaryDocId;
+      this.documentModel.originalFilename = session.filename || 'document.pdf';
+      this.documentModel.sourceDocs.clear();
+      this.documentModel.sourceDocs.set(primaryDocId, {
+        id: primaryDocId,
+        name: session.filename || 'document.pdf',
+        arrayBuffer: this.pdfViewer.getOriginalBytes().slice(0),
+        pdfjsDoc: this.pdfViewer.pdfDoc,
+      });
+
+      // Restore secondary source documents if any
+      if (session.sourceDocs && Array.isArray(session.sourceDocs)) {
+        for (const sDoc of session.sourceDocs) {
+          if (sDoc && sDoc.id && sDoc.arrayBuffer) {
+            let secPdfDoc = null;
+            try {
+              if (window.pdfjsLib) {
+                secPdfDoc = await window.pdfjsLib.getDocument({ data: sDoc.arrayBuffer }).promise;
+              }
+            } catch (e) {
+              console.warn('Could not re-parse secondary source doc:', e);
+            }
+            this.documentModel.sourceDocs.set(sDoc.id, {
+              id: sDoc.id,
+              name: sDoc.name || 'imported.pdf',
+              arrayBuffer: sDoc.arrayBuffer,
+              pdfjsDoc: secPdfDoc,
+            });
+          }
+        }
+      }
+
+      // Restore DocumentModel page records
+      if (session.pages && Array.isArray(session.pages) && session.pages.length > 0) {
+        this.documentModel.pages = session.pages.map((p) => ({
+          id: p.id,
+          docId: p.docId || primaryDocId,
+          sourceIndex: p.sourceIndex,
+          width: p.width,
+          height: p.height,
+          rotation: p.rotation || 0,
+          baseRotation: p.baseRotation || 0,
+          isBlank: Boolean(p.isBlank),
+          customWidth: p.customWidth,
+          customHeight: p.customHeight,
+          cropBox: p.cropBox ? { ...p.cropBox } : null,
+        }));
+      }
+      this.documentModel.totalPages = this.documentModel.pages.length;
+      this.pdfViewer.totalPages = this.documentModel.totalPages;
+      this.pageOrganizer.setDocumentModel(this.documentModel);
+
+      // Restore annotations map
+      this.annotationManager.clear();
+      if (session.annotationsByPage && Array.isArray(session.annotationsByPage)) {
+        for (const [pageId, annotList] of session.annotationsByPage) {
+          if (Array.isArray(annotList) && annotList.length > 0) {
+            this.annotationManager.annotationsByPage.set(String(pageId), annotList);
+          }
+        }
+      }
+
+      // Restore zoom/scale
+      if (session.scale && typeof session.scale === 'number') {
+        this.pdfViewer.scale = session.scale;
+        if (this.zoomSelect) {
+          this.zoomSelect.value = session.scale.toFixed(2);
+        }
+      }
+
+      // Render target page
+      const targetPage = Math.min(
+        Math.max(1, session.currentPage || 1),
+        this.documentModel.getPageCount() || 1
+      );
+      await this.pdfViewer.renderPage(targetPage);
+
+      const pageRecord = this.documentModel.getPage(targetPage - 1);
+      this.annotationManager.setPageContext(
+        targetPage,
+        this.pdfViewer.scale,
+        this.pdfViewer.getPageSize(),
+        pageRecord?.id
+      );
+      this.annotationManager.render();
+      this.pageOrganizer.setActivePage(targetPage, pageRecord);
+      this.pageOrganizer.renderThumbnails();
+
+      // Restore UI metadata
+      if (this.fileNameEl) this.fileNameEl.textContent = session.filename || 'document.pdf';
+      const totalPgs = this.documentModel.getPageCount();
+      const formattedSize = this.formatFileSize(session.filesize || 0);
+      if (this.fileMetaEl) {
+        this.fileMetaEl.textContent = `${totalPgs} ${totalPgs === 1 ? 'page' : 'pages'} • ${formattedSize}`;
+      }
+      if (this.pageNumInput) {
+        this.pageNumInput.value = targetPage;
+        this.pageNumInput.max = totalPgs;
+      }
+      if (this.totalPagesEl) {
+        this.totalPagesEl.textContent = totalPgs;
+      }
+      if (this.metaPropName) this.metaPropName.textContent = session.filename || 'document.pdf';
+      if (this.metaPropSize) this.metaPropSize.textContent = formattedSize;
+      if (this.metaPropPages) this.metaPropPages.textContent = totalPgs;
+      if (this.btnCloseDocument) this.btnCloseDocument.style.display = 'inline-flex';
+
+      this.updateRedactionToolbarVisibility();
+      this.securityManager?.updateSecurityStatus();
+
+      this.showToast(`Restored session: ${session.filename}`);
+    } catch (err) {
+      console.error('Failed to restore session:', err);
+      this.showToast('Could not restore previous session.', 'warning');
+      await this.sessionManager?.clearActiveSession();
+      this.resetWorkspace();
+    } finally {
+      if (this.sessionManager) {
+        this.sessionManager.isRestoring = false;
+      }
+      this.showLoading(false);
+    }
+  }
+
   closeDocument() {
+    this.sessionManager?.clearActiveSession();
     if (this.securityManager) {
       this.securityManager.resetWorkspace();
     } else {
@@ -1434,6 +1607,7 @@ class EditorApp {
   }
 
   resetWorkspace() {
+    this.sessionManager?.clearActiveSession();
     if (this.pdfViewer) {
       if (typeof this.pdfViewer.closeDocument === 'function') {
         this.pdfViewer.closeDocument();
@@ -1507,6 +1681,11 @@ class EditorApp {
     if (this.emptyStateEl) this.emptyStateEl.style.display = 'none';
     if (this.viewportContainer) this.viewportContainer.classList.add('active');
 
+    // If currently restoring a saved session, restoreSession handles documentModel & UI state
+    if (this.sessionManager?.isRestoring) {
+      return;
+    }
+
     // Initialize DocumentModel with the loaded pdfjsDoc and rawArrayBuffer
     const originalBytes = this.pdfViewer.getOriginalBytes();
     if (originalBytes && this.pdfViewer.pdfDoc) {
@@ -1545,6 +1724,9 @@ class EditorApp {
     }
     await this.securityManager?.updateSecurityStatus();
     this.updateRedactionToolbarVisibility();
+
+    // Schedule local session save so newly loaded PDF persists on refresh
+    this.sessionManager?.scheduleSave(100);
 
     // Check for direct tool action requested via URL (from /tools/ pages)
     const urlParams = new URLSearchParams(window.location.search);
@@ -1749,6 +1931,7 @@ class EditorApp {
 
     this.securityManager?.updateSecurityStatus();
     this.updateRedactionToolbarVisibility();
+    this.sessionManager?.scheduleSave(800);
   }
 
   // --- Phase 3 Modals & Document Operations ---
@@ -2090,6 +2273,7 @@ class EditorApp {
     if (this.textEditorManager?.isActive) {
       this.textEditorManager.renderCurrentPage();
     }
+    this.sessionManager?.scheduleSave(800);
   }
 
   handleToolChanged(tool) {

@@ -2,7 +2,7 @@
  * SAVY PDF Workspace — PDF Export Module (export.js)
  * Real client-side PDF compilation and annotation burning engine utilizing pdf-lib.
  *
- * Privacy Guarantee: 100% in-browser memory compilation. Zero bytes transmitted to any server.
+ * Privacy Guarantee: Your files are processed locally in your browser and are never uploaded to SAVY servers.
  */
 
 import { PDFPageOperations } from './pdf-page-operations.js';

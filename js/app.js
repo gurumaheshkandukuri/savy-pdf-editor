@@ -7,15 +7,20 @@
  */
 
 const DB_NAME = 'SAVY_LOCAL_STORE';
+const DB_VERSION = 2;
 const STORE_NAME = 'pending_documents';
+const STORE_SESSIONS = 'document_sessions';
 
 function openIndexedDB() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
     request.onupgradeneeded = (e) => {
       const db = e.target.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME);
+      }
+      if (!db.objectStoreNames.contains(STORE_SESSIONS)) {
+        db.createObjectStore(STORE_SESSIONS);
       }
     };
     request.onsuccess = (e) => resolve(e.target.result);
