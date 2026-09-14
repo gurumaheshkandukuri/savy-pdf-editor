@@ -1,13 +1,5 @@
-/editor                /editor.html              200
-/privacy               /privacy.html             200
-/tools/pdf-editor      /tools/pdf-editor.html    200
-/tools/merge-pdf       /tools/merge-pdf.html     200
-/tools/split-pdf       /tools/split-pdf.html     200
-/tools/compress-pdf    /tools/compress-pdf.html  200
-/tools/pdf-to-image    /tools/pdf-to-image.html  200
-/tools/image-to-pdf    /tools/image-to-pdf.html  200
-/tools/pdf-to-text     /tools/pdf-to-text.html   200
-/tools/redact-pdf      /tools/redact-pdf.html    200
-/tools/pdf-forms       /tools/pdf-forms.html     200
-/tools/ocr-pdf         /tools/ocr-pdf.html       200
-/*                     /index.html               200
+# Cloudflare Pages Redirects
+# SAVY is a Multi-Page Application (MPA).
+# Clean URLs (/editor, /privacy, /tools/*) are resolved natively by Cloudflare Pages to the corresponding .html files.
+# Do NOT add /route -> /route.html 200 rewrites, as they create 308 redirect loops with Cloudflare's canonical URL engine.
+# Do NOT add /* -> /index.html 200 SPA catch-alls, as they swallow 404s and break direct tool routing.

@@ -9,7 +9,7 @@
  * cached, transmitted, or stored remotely by this service worker.
  */
 
-const CACHE_NAME = 'savy-shell-v2';
+const CACHE_NAME = 'savy-shell-v3';
 
 // Dynamic base path detection for subdirectory hosting (e.g., GitHub Pages)
 const BASE_PATH = self.location.pathname.replace(/\/[^/]*$/, '');
@@ -19,6 +19,16 @@ const RAW_SHELL_ASSETS = [
   '/index.html',
   '/editor.html',
   '/privacy.html',
+  '/tools/pdf-editor.html',
+  '/tools/merge-pdf.html',
+  '/tools/split-pdf.html',
+  '/tools/compress-pdf.html',
+  '/tools/pdf-to-image.html',
+  '/tools/image-to-pdf.html',
+  '/tools/pdf-to-text.html',
+  '/tools/redact-pdf.html',
+  '/tools/pdf-forms.html',
+  '/tools/ocr-pdf.html',
   '/404.html',
   '/manifest.json',
   '/assets/images/savy-logo.svg',
@@ -110,7 +120,8 @@ self.addEventListener('fetch', (event) => {
             url.pathname.endsWith('.css') ||
             url.pathname.endsWith('.js') ||
             url.pathname.endsWith('.svg') ||
-            url.pathname.endsWith('.json'))
+            url.pathname.endsWith('.json') ||
+            networkResponse.headers.get('content-type')?.includes('text/html'))
         ) {
           const responseClone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -124,9 +135,23 @@ self.addEventListener('fetch', (event) => {
           if (cachedResponse) {
             return cachedResponse;
           }
+          // If a clean URL was requested offline, try matching the corresponding .html file
+          const cleanUrl = new URL(event.request.url);
+          if (!cleanUrl.pathname.endsWith('.html') && !cleanUrl.pathname.endsWith('/')) {
+            const htmlPath = (BASE_PATH && BASE_PATH !== '/')
+              ? cleanUrl.pathname + '.html'
+              : cleanUrl.pathname + '.html';
+            return caches.match(htmlPath).then((htmlMatch) => {
+              if (htmlMatch) {
+                return htmlMatch;
+              }
+              const fallback404 = (BASE_PATH && BASE_PATH !== '/') ? BASE_PATH + '/404.html' : '/404.html';
+              return caches.match(fallback404);
+            });
+          }
           if (event.request.headers.get('accept')?.includes('text/html')) {
-            const fallbackPath = (BASE_PATH && BASE_PATH !== '/') ? BASE_PATH + '/editor.html' : '/editor.html';
-            return caches.match(fallbackPath);
+            const fallback404 = (BASE_PATH && BASE_PATH !== '/') ? BASE_PATH + '/404.html' : '/404.html';
+            return caches.match(fallback404);
           }
           return new Response('Offline: Resource not cached.', {
             status: 503,
